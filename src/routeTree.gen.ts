@@ -13,6 +13,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedProRouteImport } from './routes/_authenticated/pro'
+import { Route as AuthenticatedOnboardingProRouteImport } from './routes/_authenticated/onboarding-pro'
 import { Route as AuthenticatedAppRouteImport } from './routes/_authenticated/app'
 import { Route as AuthenticatedProIndexRouteImport } from './routes/_authenticated/pro.index'
 import { Route as AuthenticatedAppIndexRouteImport } from './routes/_authenticated/app.index'
@@ -45,6 +46,12 @@ const AuthenticatedProRoute = AuthenticatedProRouteImport.update({
   path: '/pro',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedOnboardingProRoute =
+  AuthenticatedOnboardingProRouteImport.update({
+    id: '/onboarding-pro',
+    path: '/onboarding-pro',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedAppRoute = AuthenticatedAppRouteImport.update({
   id: '/app',
   path: '/app',
@@ -115,6 +122,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/app': typeof AuthenticatedAppRouteWithChildren
+  '/onboarding-pro': typeof AuthenticatedOnboardingProRoute
   '/pro': typeof AuthenticatedProRouteWithChildren
   '/app/buscar': typeof AuthenticatedAppBuscarRoute
   '/app/consultas': typeof AuthenticatedAppConsultasRoute
@@ -131,6 +139,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/onboarding-pro': typeof AuthenticatedOnboardingProRoute
   '/app/buscar': typeof AuthenticatedAppBuscarRoute
   '/app/consultas': typeof AuthenticatedAppConsultasRoute
   '/app/documentos': typeof AuthenticatedAppDocumentosRoute
@@ -149,6 +158,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/_authenticated/app': typeof AuthenticatedAppRouteWithChildren
+  '/_authenticated/onboarding-pro': typeof AuthenticatedOnboardingProRoute
   '/_authenticated/pro': typeof AuthenticatedProRouteWithChildren
   '/_authenticated/app/buscar': typeof AuthenticatedAppBuscarRoute
   '/_authenticated/app/consultas': typeof AuthenticatedAppConsultasRoute
@@ -168,6 +178,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/app'
+    | '/onboarding-pro'
     | '/pro'
     | '/app/buscar'
     | '/app/consultas'
@@ -184,6 +195,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
+    | '/onboarding-pro'
     | '/app/buscar'
     | '/app/consultas'
     | '/app/documentos'
@@ -201,6 +213,7 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/auth'
     | '/_authenticated/app'
+    | '/_authenticated/onboarding-pro'
     | '/_authenticated/pro'
     | '/_authenticated/app/buscar'
     | '/_authenticated/app/consultas'
@@ -249,6 +262,13 @@ declare module '@tanstack/react-router' {
       path: '/pro'
       fullPath: '/pro'
       preLoaderRoute: typeof AuthenticatedProRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/onboarding-pro': {
+      id: '/_authenticated/onboarding-pro'
+      path: '/onboarding-pro'
+      fullPath: '/onboarding-pro'
+      preLoaderRoute: typeof AuthenticatedOnboardingProRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/app': {
@@ -380,11 +400,13 @@ const AuthenticatedProRouteWithChildren =
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAppRoute: typeof AuthenticatedAppRouteWithChildren
+  AuthenticatedOnboardingProRoute: typeof AuthenticatedOnboardingProRoute
   AuthenticatedProRoute: typeof AuthenticatedProRouteWithChildren
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAppRoute: AuthenticatedAppRouteWithChildren,
+  AuthenticatedOnboardingProRoute: AuthenticatedOnboardingProRoute,
   AuthenticatedProRoute: AuthenticatedProRouteWithChildren,
 }
 
