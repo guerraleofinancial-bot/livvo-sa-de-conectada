@@ -175,7 +175,9 @@ function PatientHome() {
           <Link to="/app/buscar" className="text-xs font-semibold text-primary">Ver todos</Link>
         </div>
         <div className="space-y-3">
-          {(pros ?? []).map((p) => (
+          {(pros ?? []).map((row) => {
+            const p = row as typeof row & { profiles: { full_name?: string; avatar_url?: string } | null; specialties: { name?: string } | null };
+            return (
             <Link
               key={p.id}
               to="/app/profissional/$id"
@@ -184,15 +186,12 @@ function PatientHome() {
             >
               <div className="flex gap-4">
                 <div className="size-16 rounded-full bg-primary-soft shrink-0 grid place-items-center text-primary font-bold border border-border overflow-hidden">
-                  
-                  {p.profiles?.avatar_url ? <img src={p.profiles.avatar_url} className="size-full object-cover" alt="" /> : (p.profiles as { full_name?: string } | null)?.full_name?.charAt(0)}
+                  {p.profiles?.avatar_url ? <img src={p.profiles.avatar_url} className="size-full object-cover" alt="" /> : (p.profiles?.full_name ?? "?").charAt(0)}
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex justify-between items-start gap-2">
                     <div className="min-w-0">
-                      
                       <h3 className="text-sm font-semibold truncate">{p.profiles?.full_name}</h3>
-                      
                       <p className="text-xs text-muted-foreground truncate">{p.specialties?.name}</p>
                     </div>
                     <div className="flex items-center gap-1 text-xs font-semibold text-amber-500 shrink-0">
