@@ -2,9 +2,9 @@ import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { z } from "zod";
 
-async function assertAdmin(ctx: { supabase: { rpc: (...args: unknown[]) => unknown }; userId: string }) {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data } = await (ctx.supabase as any).rpc("has_role", { _user_id: ctx.userId, _role: "admin" });
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function assertAdmin(ctx: any) {
+  const { data } = await ctx.supabase.rpc("has_role", { _user_id: ctx.userId, _role: "admin" });
   if (!data) throw new Error("Forbidden");
 }
 
