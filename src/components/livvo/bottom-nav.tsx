@@ -1,13 +1,15 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { Home, Search, Calendar, MessageSquare, User } from "lucide-react";
 
-const items = [
+type NavItem = { to: string; label: string; icon: typeof Home; exact?: boolean };
+
+const items: NavItem[] = [
   { to: "/app", label: "Início", icon: Home, exact: true },
   { to: "/app/buscar", label: "Buscar", icon: Search },
   { to: "/app/consultas", label: "Consultas", icon: Calendar },
   { to: "/app/mensagens", label: "Mensagens", icon: MessageSquare },
   { to: "/app/perfil", label: "Perfil", icon: User },
-] as const;
+];
 
 export function PatientBottomNav() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
