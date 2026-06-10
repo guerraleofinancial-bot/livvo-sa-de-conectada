@@ -2,7 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { z } from "zod";
 
-async function ensureAdmin(context: { supabase: { rpc: (fn: string, args: Record<string, unknown>) => Promise<{ data: unknown }> }; userId: string }) {
+async function ensureAdmin(context: { supabase: { rpc: (fn: "has_role", args: { _user_id: string; _role: "admin" | "paciente" | "profissional" }) => Promise<{ data: boolean | null }> }; userId: string }) {
   const { data: isAdmin } = await context.supabase.rpc("has_role", { _user_id: context.userId, _role: "admin" });
   if (!isAdmin) throw new Error("Forbidden");
 }
