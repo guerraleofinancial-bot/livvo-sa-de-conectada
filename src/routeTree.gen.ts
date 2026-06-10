@@ -18,14 +18,20 @@ import { Route as AuthenticatedAppRouteImport } from './routes/_authenticated/ap
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedProIndexRouteImport } from './routes/_authenticated/pro.index'
 import { Route as AuthenticatedAppIndexRouteImport } from './routes/_authenticated/app.index'
+import { Route as AuthenticatedProServicosRouteImport } from './routes/_authenticated/pro.servicos'
 import { Route as AuthenticatedProPacientesRouteImport } from './routes/_authenticated/pro.pacientes'
+import { Route as AuthenticatedProFinanceiroRouteImport } from './routes/_authenticated/pro.financeiro'
 import { Route as AuthenticatedProAgendaRouteImport } from './routes/_authenticated/pro.agenda'
 import { Route as AuthenticatedAppPerfilRouteImport } from './routes/_authenticated/app.perfil'
 import { Route as AuthenticatedAppMensagensRouteImport } from './routes/_authenticated/app.mensagens'
+import { Route as AuthenticatedAppFavoritosRouteImport } from './routes/_authenticated/app.favoritos'
 import { Route as AuthenticatedAppDocumentosRouteImport } from './routes/_authenticated/app.documentos'
 import { Route as AuthenticatedAppConsultasRouteImport } from './routes/_authenticated/app.consultas'
+import { Route as AuthenticatedAppCarteiraRouteImport } from './routes/_authenticated/app.carteira'
 import { Route as AuthenticatedAppBuscarRouteImport } from './routes/_authenticated/app.buscar'
 import { Route as AuthenticatedAppProfissionalIdRouteImport } from './routes/_authenticated/app.profissional.$id'
+import { Route as AuthenticatedAppEmpresaIdRouteImport } from './routes/_authenticated/app.empresa.$id'
+import { Route as AuthenticatedAppCheckoutIdRouteImport } from './routes/_authenticated/app.checkout.$id'
 import { Route as AuthenticatedAppChatIdRouteImport } from './routes/_authenticated/app.chat.$id'
 
 const AuthRoute = AuthRouteImport.update({
@@ -73,10 +79,22 @@ const AuthenticatedAppIndexRoute = AuthenticatedAppIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AuthenticatedAppRoute,
 } as any)
+const AuthenticatedProServicosRoute =
+  AuthenticatedProServicosRouteImport.update({
+    id: '/servicos',
+    path: '/servicos',
+    getParentRoute: () => AuthenticatedProRoute,
+  } as any)
 const AuthenticatedProPacientesRoute =
   AuthenticatedProPacientesRouteImport.update({
     id: '/pacientes',
     path: '/pacientes',
+    getParentRoute: () => AuthenticatedProRoute,
+  } as any)
+const AuthenticatedProFinanceiroRoute =
+  AuthenticatedProFinanceiroRouteImport.update({
+    id: '/financeiro',
+    path: '/financeiro',
     getParentRoute: () => AuthenticatedProRoute,
   } as any)
 const AuthenticatedProAgendaRoute = AuthenticatedProAgendaRouteImport.update({
@@ -95,6 +113,12 @@ const AuthenticatedAppMensagensRoute =
     path: '/mensagens',
     getParentRoute: () => AuthenticatedAppRoute,
   } as any)
+const AuthenticatedAppFavoritosRoute =
+  AuthenticatedAppFavoritosRouteImport.update({
+    id: '/favoritos',
+    path: '/favoritos',
+    getParentRoute: () => AuthenticatedAppRoute,
+  } as any)
 const AuthenticatedAppDocumentosRoute =
   AuthenticatedAppDocumentosRouteImport.update({
     id: '/documentos',
@@ -107,6 +131,12 @@ const AuthenticatedAppConsultasRoute =
     path: '/consultas',
     getParentRoute: () => AuthenticatedAppRoute,
   } as any)
+const AuthenticatedAppCarteiraRoute =
+  AuthenticatedAppCarteiraRouteImport.update({
+    id: '/carteira',
+    path: '/carteira',
+    getParentRoute: () => AuthenticatedAppRoute,
+  } as any)
 const AuthenticatedAppBuscarRoute = AuthenticatedAppBuscarRouteImport.update({
   id: '/buscar',
   path: '/buscar',
@@ -116,6 +146,18 @@ const AuthenticatedAppProfissionalIdRoute =
   AuthenticatedAppProfissionalIdRouteImport.update({
     id: '/profissional/$id',
     path: '/profissional/$id',
+    getParentRoute: () => AuthenticatedAppRoute,
+  } as any)
+const AuthenticatedAppEmpresaIdRoute =
+  AuthenticatedAppEmpresaIdRouteImport.update({
+    id: '/empresa/$id',
+    path: '/empresa/$id',
+    getParentRoute: () => AuthenticatedAppRoute,
+  } as any)
+const AuthenticatedAppCheckoutIdRoute =
+  AuthenticatedAppCheckoutIdRouteImport.update({
+    id: '/checkout/$id',
+    path: '/checkout/$id',
     getParentRoute: () => AuthenticatedAppRoute,
   } as any)
 const AuthenticatedAppChatIdRoute = AuthenticatedAppChatIdRouteImport.update({
@@ -132,15 +174,21 @@ export interface FileRoutesByFullPath {
   '/onboarding-pro': typeof AuthenticatedOnboardingProRoute
   '/pro': typeof AuthenticatedProRouteWithChildren
   '/app/buscar': typeof AuthenticatedAppBuscarRoute
+  '/app/carteira': typeof AuthenticatedAppCarteiraRoute
   '/app/consultas': typeof AuthenticatedAppConsultasRoute
   '/app/documentos': typeof AuthenticatedAppDocumentosRoute
+  '/app/favoritos': typeof AuthenticatedAppFavoritosRoute
   '/app/mensagens': typeof AuthenticatedAppMensagensRoute
   '/app/perfil': typeof AuthenticatedAppPerfilRoute
   '/pro/agenda': typeof AuthenticatedProAgendaRoute
+  '/pro/financeiro': typeof AuthenticatedProFinanceiroRoute
   '/pro/pacientes': typeof AuthenticatedProPacientesRoute
+  '/pro/servicos': typeof AuthenticatedProServicosRoute
   '/app/': typeof AuthenticatedAppIndexRoute
   '/pro/': typeof AuthenticatedProIndexRoute
   '/app/chat/$id': typeof AuthenticatedAppChatIdRoute
+  '/app/checkout/$id': typeof AuthenticatedAppCheckoutIdRoute
+  '/app/empresa/$id': typeof AuthenticatedAppEmpresaIdRoute
   '/app/profissional/$id': typeof AuthenticatedAppProfissionalIdRoute
 }
 export interface FileRoutesByTo {
@@ -149,15 +197,21 @@ export interface FileRoutesByTo {
   '/admin': typeof AuthenticatedAdminRoute
   '/onboarding-pro': typeof AuthenticatedOnboardingProRoute
   '/app/buscar': typeof AuthenticatedAppBuscarRoute
+  '/app/carteira': typeof AuthenticatedAppCarteiraRoute
   '/app/consultas': typeof AuthenticatedAppConsultasRoute
   '/app/documentos': typeof AuthenticatedAppDocumentosRoute
+  '/app/favoritos': typeof AuthenticatedAppFavoritosRoute
   '/app/mensagens': typeof AuthenticatedAppMensagensRoute
   '/app/perfil': typeof AuthenticatedAppPerfilRoute
   '/pro/agenda': typeof AuthenticatedProAgendaRoute
+  '/pro/financeiro': typeof AuthenticatedProFinanceiroRoute
   '/pro/pacientes': typeof AuthenticatedProPacientesRoute
+  '/pro/servicos': typeof AuthenticatedProServicosRoute
   '/app': typeof AuthenticatedAppIndexRoute
   '/pro': typeof AuthenticatedProIndexRoute
   '/app/chat/$id': typeof AuthenticatedAppChatIdRoute
+  '/app/checkout/$id': typeof AuthenticatedAppCheckoutIdRoute
+  '/app/empresa/$id': typeof AuthenticatedAppEmpresaIdRoute
   '/app/profissional/$id': typeof AuthenticatedAppProfissionalIdRoute
 }
 export interface FileRoutesById {
@@ -170,15 +224,21 @@ export interface FileRoutesById {
   '/_authenticated/onboarding-pro': typeof AuthenticatedOnboardingProRoute
   '/_authenticated/pro': typeof AuthenticatedProRouteWithChildren
   '/_authenticated/app/buscar': typeof AuthenticatedAppBuscarRoute
+  '/_authenticated/app/carteira': typeof AuthenticatedAppCarteiraRoute
   '/_authenticated/app/consultas': typeof AuthenticatedAppConsultasRoute
   '/_authenticated/app/documentos': typeof AuthenticatedAppDocumentosRoute
+  '/_authenticated/app/favoritos': typeof AuthenticatedAppFavoritosRoute
   '/_authenticated/app/mensagens': typeof AuthenticatedAppMensagensRoute
   '/_authenticated/app/perfil': typeof AuthenticatedAppPerfilRoute
   '/_authenticated/pro/agenda': typeof AuthenticatedProAgendaRoute
+  '/_authenticated/pro/financeiro': typeof AuthenticatedProFinanceiroRoute
   '/_authenticated/pro/pacientes': typeof AuthenticatedProPacientesRoute
+  '/_authenticated/pro/servicos': typeof AuthenticatedProServicosRoute
   '/_authenticated/app/': typeof AuthenticatedAppIndexRoute
   '/_authenticated/pro/': typeof AuthenticatedProIndexRoute
   '/_authenticated/app/chat/$id': typeof AuthenticatedAppChatIdRoute
+  '/_authenticated/app/checkout/$id': typeof AuthenticatedAppCheckoutIdRoute
+  '/_authenticated/app/empresa/$id': typeof AuthenticatedAppEmpresaIdRoute
   '/_authenticated/app/profissional/$id': typeof AuthenticatedAppProfissionalIdRoute
 }
 export interface FileRouteTypes {
@@ -191,15 +251,21 @@ export interface FileRouteTypes {
     | '/onboarding-pro'
     | '/pro'
     | '/app/buscar'
+    | '/app/carteira'
     | '/app/consultas'
     | '/app/documentos'
+    | '/app/favoritos'
     | '/app/mensagens'
     | '/app/perfil'
     | '/pro/agenda'
+    | '/pro/financeiro'
     | '/pro/pacientes'
+    | '/pro/servicos'
     | '/app/'
     | '/pro/'
     | '/app/chat/$id'
+    | '/app/checkout/$id'
+    | '/app/empresa/$id'
     | '/app/profissional/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -208,15 +274,21 @@ export interface FileRouteTypes {
     | '/admin'
     | '/onboarding-pro'
     | '/app/buscar'
+    | '/app/carteira'
     | '/app/consultas'
     | '/app/documentos'
+    | '/app/favoritos'
     | '/app/mensagens'
     | '/app/perfil'
     | '/pro/agenda'
+    | '/pro/financeiro'
     | '/pro/pacientes'
+    | '/pro/servicos'
     | '/app'
     | '/pro'
     | '/app/chat/$id'
+    | '/app/checkout/$id'
+    | '/app/empresa/$id'
     | '/app/profissional/$id'
   id:
     | '__root__'
@@ -228,15 +300,21 @@ export interface FileRouteTypes {
     | '/_authenticated/onboarding-pro'
     | '/_authenticated/pro'
     | '/_authenticated/app/buscar'
+    | '/_authenticated/app/carteira'
     | '/_authenticated/app/consultas'
     | '/_authenticated/app/documentos'
+    | '/_authenticated/app/favoritos'
     | '/_authenticated/app/mensagens'
     | '/_authenticated/app/perfil'
     | '/_authenticated/pro/agenda'
+    | '/_authenticated/pro/financeiro'
     | '/_authenticated/pro/pacientes'
+    | '/_authenticated/pro/servicos'
     | '/_authenticated/app/'
     | '/_authenticated/pro/'
     | '/_authenticated/app/chat/$id'
+    | '/_authenticated/app/checkout/$id'
+    | '/_authenticated/app/empresa/$id'
     | '/_authenticated/app/profissional/$id'
   fileRoutesById: FileRoutesById
 }
@@ -311,11 +389,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAppIndexRouteImport
       parentRoute: typeof AuthenticatedAppRoute
     }
+    '/_authenticated/pro/servicos': {
+      id: '/_authenticated/pro/servicos'
+      path: '/servicos'
+      fullPath: '/pro/servicos'
+      preLoaderRoute: typeof AuthenticatedProServicosRouteImport
+      parentRoute: typeof AuthenticatedProRoute
+    }
     '/_authenticated/pro/pacientes': {
       id: '/_authenticated/pro/pacientes'
       path: '/pacientes'
       fullPath: '/pro/pacientes'
       preLoaderRoute: typeof AuthenticatedProPacientesRouteImport
+      parentRoute: typeof AuthenticatedProRoute
+    }
+    '/_authenticated/pro/financeiro': {
+      id: '/_authenticated/pro/financeiro'
+      path: '/financeiro'
+      fullPath: '/pro/financeiro'
+      preLoaderRoute: typeof AuthenticatedProFinanceiroRouteImport
       parentRoute: typeof AuthenticatedProRoute
     }
     '/_authenticated/pro/agenda': {
@@ -339,6 +431,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAppMensagensRouteImport
       parentRoute: typeof AuthenticatedAppRoute
     }
+    '/_authenticated/app/favoritos': {
+      id: '/_authenticated/app/favoritos'
+      path: '/favoritos'
+      fullPath: '/app/favoritos'
+      preLoaderRoute: typeof AuthenticatedAppFavoritosRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
     '/_authenticated/app/documentos': {
       id: '/_authenticated/app/documentos'
       path: '/documentos'
@@ -351,6 +450,13 @@ declare module '@tanstack/react-router' {
       path: '/consultas'
       fullPath: '/app/consultas'
       preLoaderRoute: typeof AuthenticatedAppConsultasRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
+    '/_authenticated/app/carteira': {
+      id: '/_authenticated/app/carteira'
+      path: '/carteira'
+      fullPath: '/app/carteira'
+      preLoaderRoute: typeof AuthenticatedAppCarteiraRouteImport
       parentRoute: typeof AuthenticatedAppRoute
     }
     '/_authenticated/app/buscar': {
@@ -367,6 +473,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAppProfissionalIdRouteImport
       parentRoute: typeof AuthenticatedAppRoute
     }
+    '/_authenticated/app/empresa/$id': {
+      id: '/_authenticated/app/empresa/$id'
+      path: '/empresa/$id'
+      fullPath: '/app/empresa/$id'
+      preLoaderRoute: typeof AuthenticatedAppEmpresaIdRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
+    '/_authenticated/app/checkout/$id': {
+      id: '/_authenticated/app/checkout/$id'
+      path: '/checkout/$id'
+      fullPath: '/app/checkout/$id'
+      preLoaderRoute: typeof AuthenticatedAppCheckoutIdRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
     '/_authenticated/app/chat/$id': {
       id: '/_authenticated/app/chat/$id'
       path: '/chat/$id'
@@ -379,23 +499,31 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedAppRouteChildren {
   AuthenticatedAppBuscarRoute: typeof AuthenticatedAppBuscarRoute
+  AuthenticatedAppCarteiraRoute: typeof AuthenticatedAppCarteiraRoute
   AuthenticatedAppConsultasRoute: typeof AuthenticatedAppConsultasRoute
   AuthenticatedAppDocumentosRoute: typeof AuthenticatedAppDocumentosRoute
+  AuthenticatedAppFavoritosRoute: typeof AuthenticatedAppFavoritosRoute
   AuthenticatedAppMensagensRoute: typeof AuthenticatedAppMensagensRoute
   AuthenticatedAppPerfilRoute: typeof AuthenticatedAppPerfilRoute
   AuthenticatedAppIndexRoute: typeof AuthenticatedAppIndexRoute
   AuthenticatedAppChatIdRoute: typeof AuthenticatedAppChatIdRoute
+  AuthenticatedAppCheckoutIdRoute: typeof AuthenticatedAppCheckoutIdRoute
+  AuthenticatedAppEmpresaIdRoute: typeof AuthenticatedAppEmpresaIdRoute
   AuthenticatedAppProfissionalIdRoute: typeof AuthenticatedAppProfissionalIdRoute
 }
 
 const AuthenticatedAppRouteChildren: AuthenticatedAppRouteChildren = {
   AuthenticatedAppBuscarRoute: AuthenticatedAppBuscarRoute,
+  AuthenticatedAppCarteiraRoute: AuthenticatedAppCarteiraRoute,
   AuthenticatedAppConsultasRoute: AuthenticatedAppConsultasRoute,
   AuthenticatedAppDocumentosRoute: AuthenticatedAppDocumentosRoute,
+  AuthenticatedAppFavoritosRoute: AuthenticatedAppFavoritosRoute,
   AuthenticatedAppMensagensRoute: AuthenticatedAppMensagensRoute,
   AuthenticatedAppPerfilRoute: AuthenticatedAppPerfilRoute,
   AuthenticatedAppIndexRoute: AuthenticatedAppIndexRoute,
   AuthenticatedAppChatIdRoute: AuthenticatedAppChatIdRoute,
+  AuthenticatedAppCheckoutIdRoute: AuthenticatedAppCheckoutIdRoute,
+  AuthenticatedAppEmpresaIdRoute: AuthenticatedAppEmpresaIdRoute,
   AuthenticatedAppProfissionalIdRoute: AuthenticatedAppProfissionalIdRoute,
 }
 
@@ -404,13 +532,17 @@ const AuthenticatedAppRouteWithChildren =
 
 interface AuthenticatedProRouteChildren {
   AuthenticatedProAgendaRoute: typeof AuthenticatedProAgendaRoute
+  AuthenticatedProFinanceiroRoute: typeof AuthenticatedProFinanceiroRoute
   AuthenticatedProPacientesRoute: typeof AuthenticatedProPacientesRoute
+  AuthenticatedProServicosRoute: typeof AuthenticatedProServicosRoute
   AuthenticatedProIndexRoute: typeof AuthenticatedProIndexRoute
 }
 
 const AuthenticatedProRouteChildren: AuthenticatedProRouteChildren = {
   AuthenticatedProAgendaRoute: AuthenticatedProAgendaRoute,
+  AuthenticatedProFinanceiroRoute: AuthenticatedProFinanceiroRoute,
   AuthenticatedProPacientesRoute: AuthenticatedProPacientesRoute,
+  AuthenticatedProServicosRoute: AuthenticatedProServicosRoute,
   AuthenticatedProIndexRoute: AuthenticatedProIndexRoute,
 }
 
@@ -443,13 +575,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

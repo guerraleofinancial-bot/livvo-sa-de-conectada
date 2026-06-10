@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
-import { ArrowLeft, MapPin, Star, Calendar, MessageSquare, Briefcase } from "lucide-react";
+import { ArrowLeft, MapPin, Star, Calendar, Clock, Heart, Briefcase } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
@@ -17,17 +17,16 @@ function ProfileDetail() {
   const navigate = useNavigate();
   const qc = useQueryClient();
   const [selectedSlot, setSelectedSlot] = useState<Date | null>(null);
+  const [serviceId, setServiceId] = useState<string | undefined>(undefined);
 
   const { data: pro } = useQuery({
     queryKey: ["pro", id],
-    queryFn: async () => {
-      const { data } = await supabase
-        .from("professionals")
-        .select("*, profiles:id(full_name, avatar_url, city, state), specialties(name)")
-        .eq("id", id)
-        .single();
-      return data;
-    },
+    queryFn: async () => (await supabase.from("professionals").select("*, profiles:id(full_name, avatar_url, city, state), specialties(name)").eq("id", id).single()).data,
+  });
+
+  const { data: services } = useQuery({
+    queryKey: ["pro-services", id],
+    queryFn: async () => (await supabase.from("services").select("*, categories(name)").eq("professional_id", id).eq("active", true)).data ?? [],
   });
 
   const { data: avail } = useQuery({
@@ -37,63 +36,58 @@ function ProfileDetail() {
 
   const { data: reviews } = useQuery({
     queryKey: ["reviews", id],
-    queryFn: async () => (await supabase.from("reviews").select("rating, comment, created_at").eq("professional_id", id).order("created_at", { ascending: false }).limit(3)).data ?? [],
+    queryFn: async () => (await supabase.from("reviews").select("rating, comment, created_at").eq("professional_id", id).eq("status", "publicada").order("created_at", { ascending: false }).limit(3)).data ?? [],
   });
 
-  // Build next 14 days of slots based on availability
+  const { data: fav } = useQuery({
+    queryKey: ["fav", id, user?.id],
+    enabled: !!user,
+    queryFn: async () => (await supabase.from("favorites").select("id").eq("patient_id", user!.id).eq("professional_id", id).maybeSingle()).data,
+  });
+
+  const toggleFav = useMutation({
+    mutationFn: async () => {
+      if (fav) await supabase.from("favorites").delete().eq("id", fav.id);
+      else await supabase.from("favorites").insert({ patient_id: user!.id, professional_id: id });
+    },
+    onSuccess: () => { toast.success(fav ? "Removido dos favoritos" : "Favoritado!"); qc.invalidateQueries({ queryKey: ["fav", id] }); qc.invalidateQueries({ queryKey: ["favorites"] }); },
+  });
+
   const slots: Date[] = [];
   if (avail && avail.length) {
     for (let d = 1; d <= 14; d++) {
-      const day = new Date();
-      day.setDate(day.getDate() + d);
+      const day = new Date(); day.setDate(day.getDate() + d);
       const dow = day.getDay();
-      const todays = avail.filter((a) => a.day_of_week === dow);
-      todays.forEach((a) => {
+      avail.filter((a) => a.day_of_week === dow).forEach((a) => {
         const [sh, sm] = a.start_time.split(":").map(Number);
         const [eh] = a.end_time.split(":").map(Number);
         for (let h = sh; h < eh; h++) {
-          const slot = new Date(day);
-          slot.setHours(h, sm || 0, 0, 0);
+          const slot = new Date(day); slot.setHours(h, sm || 0, 0, 0);
           slots.push(slot);
         }
       });
     }
   }
 
-  const book = useMutation({
-    mutationFn: async () => {
-      if (!user || !selectedSlot || !pro) throw new Error("Dados incompletos");
-      const { data: appt, error } = await supabase.from("appointments").insert({
-        patient_id: user.id,
-        professional_id: pro.id,
-        scheduled_at: selectedSlot.toISOString(),
-        duration_minutes: 30,
-        modality: pro.modality,
-        status: "agendada",
-        price: pro.consultation_price,
-      }).select().single();
-      if (error) throw error;
-      return appt;
-    },
-    onSuccess: (appt) => {
-      toast.success("Consulta agendada!", { description: "Você já pode conversar com o profissional." });
-      qc.invalidateQueries({ queryKey: ["next-appt"] });
-      navigate({ to: "/app/consultas" });
-      // Best-effort notification
-      void supabase.from("notifications").insert({ user_id: user!.id, title: "Consulta agendada", body: `Nova consulta em ${new Date(appt.scheduled_at).toLocaleString("pt-BR")}` });
-    },
-    onError: (e) => toast.error("Não foi possível agendar", { description: (e as Error).message }),
-  });
-
   if (!pro) return <div className="p-8 text-center text-sm text-muted-foreground">Carregando...</div>;
-  const p = pro as typeof pro & { profiles: { full_name?: string; avatar_url?: string; city?: string; state?: string } | null; specialties: { name?: string } | null };
+  const p = pro as typeof pro & { profiles: { full_name?: string; avatar_url?: string } | null; specialties: { name?: string } | null };
+
+  function goCheckout() {
+    if (!selectedSlot) return;
+    navigate({ to: "/app/checkout/$id", params: { id }, search: { professionalId: id, scheduledAt: selectedSlot.toISOString(), serviceId } });
+  }
 
   return (
-    <div className="pb-8">
+    <div className="pb-32">
       <div className="bg-primary text-primary-foreground px-5 pt-10 pb-6 rounded-b-3xl">
-        <Link to="/app/buscar" className="inline-flex size-9 items-center justify-center rounded-full bg-white/20 mb-5">
-          <ArrowLeft className="size-4" />
-        </Link>
+        <div className="flex justify-between items-center mb-5">
+          <Link to="/app/buscar" className="inline-flex size-9 items-center justify-center rounded-full bg-white/20">
+            <ArrowLeft className="size-4" />
+          </Link>
+          <button onClick={() => toggleFav.mutate()} className="size-9 rounded-full bg-white/20 grid place-items-center">
+            <Heart className={`size-4 ${fav ? "fill-current" : ""}`} />
+          </button>
+        </div>
         <div className="flex items-center gap-4">
           <div className="size-20 rounded-full bg-white/20 grid place-items-center text-2xl font-bold border-2 border-white/30 overflow-hidden">
             {p.profiles?.avatar_url ? <img src={p.profiles.avatar_url} className="size-full object-cover" alt="" /> : (p.profiles?.full_name ?? "?").charAt(0)}
@@ -109,12 +103,12 @@ function ProfileDetail() {
       <div className="px-5 pt-6 space-y-6">
         <div className="grid grid-cols-3 gap-2 text-center">
           <div className="rounded-xl bg-card border border-border p-3">
-            <p className="text-[10px] uppercase font-bold text-muted-foreground">Valor</p>
+            <p className="text-[10px] uppercase font-bold text-muted-foreground">A partir de</p>
             <p className="font-mono text-sm font-bold mt-1">R$ {Number(p.consultation_price).toFixed(0)}</p>
           </div>
           <div className="rounded-xl bg-card border border-border p-3">
             <p className="text-[10px] uppercase font-bold text-muted-foreground">Modalidade</p>
-            <p className="text-sm font-semibold mt-1 capitalize">{p.modality}</p>
+            <p className="text-sm font-semibold mt-1">Presencial</p>
           </div>
           <div className="rounded-xl bg-card border border-border p-3">
             <p className="text-[10px] uppercase font-bold text-muted-foreground">Registro</p>
@@ -136,6 +130,25 @@ function ProfileDetail() {
           </section>
         )}
 
+        {services && services.length > 0 && (
+          <section>
+            <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-3 flex items-center gap-2"><Briefcase className="size-3" /> Serviços</h2>
+            <div className="space-y-2">
+              {services.map((s) => (
+                <button key={s.id} onClick={() => setServiceId(serviceId === s.id ? undefined : s.id)} className={`w-full text-left p-3 rounded-xl border transition ${serviceId === s.id ? "border-primary bg-primary-soft" : "border-border bg-card"}`}>
+                  <div className="flex justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="text-sm font-semibold">{s.name}</p>
+                      <p className="text-[11px] text-muted-foreground flex items-center gap-1"><Clock className="size-3" /> {s.duration_minutes}min</p>
+                    </div>
+                    <p className="font-mono font-bold text-sm">R$ {Number(s.price).toFixed(0)}</p>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </section>
+        )}
+
         <section>
           <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-3 flex items-center gap-2"><Calendar className="size-3" /> Horários disponíveis</h2>
           {slots.length === 0 ? (
@@ -145,11 +158,7 @@ function ProfileDetail() {
               {slots.slice(0, 24).map((s, i) => {
                 const active = selectedSlot?.getTime() === s.getTime();
                 return (
-                  <button
-                    key={i}
-                    onClick={() => setSelectedSlot(s)}
-                    className={`p-3 rounded-xl border text-center text-xs font-semibold transition ${active ? "bg-primary text-primary-foreground border-primary" : "bg-card border-border hover:border-primary/30"}`}
-                  >
+                  <button key={i} onClick={() => setSelectedSlot(s)} className={`p-3 rounded-xl border text-center text-xs font-semibold transition ${active ? "bg-primary text-primary-foreground border-primary" : "bg-card border-border hover:border-primary/30"}`}>
                     <p className="font-bold">{s.toLocaleDateString("pt-BR", { day: "2-digit", month: "short" })}</p>
                     <p className="opacity-80 mt-0.5">{s.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}</p>
                   </button>
@@ -175,13 +184,8 @@ function ProfileDetail() {
       </div>
 
       <div className="fixed inset-x-0 bottom-20 z-30 px-5 max-w-md mx-auto">
-        <Button
-          disabled={!selectedSlot || book.isPending}
-          onClick={() => book.mutate()}
-          size="lg"
-          className="w-full rounded-2xl shadow-[var(--shadow-elevated)]"
-        >
-          {book.isPending ? "Agendando..." : selectedSlot ? `Agendar para ${selectedSlot.toLocaleDateString("pt-BR")} às ${selectedSlot.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}` : "Selecione um horário"}
+        <Button disabled={!selectedSlot} onClick={goCheckout} size="lg" className="w-full rounded-2xl shadow-[var(--shadow-elevated)]">
+          {selectedSlot ? `Continuar para pagamento` : "Selecione um horário"}
         </Button>
       </div>
     </div>

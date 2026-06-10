@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useState, useEffect } from "react";
-import { LogOut, FileText, ShieldCheck, Stethoscope, ChevronRight, User as UserIcon } from "lucide-react";
+import { LogOut, FileText, ShieldCheck, Stethoscope, ChevronRight, Wallet, Heart } from "lucide-react";
 import { toast } from "sonner";
 import { claimFirstAdmin } from "@/lib/livvo/admin.functions";
 import { useServerFn } from "@tanstack/react-start";
@@ -89,6 +89,16 @@ function Perfil() {
       </section>
 
       <section className="rounded-2xl bg-card border border-border divide-y divide-border">
+        <Link to="/app/carteira" className="flex items-center gap-3 p-4 hover:bg-muted/40 transition-colors">
+          <Wallet className="size-5 text-primary" />
+          <div className="flex-1"><p className="text-sm font-semibold">Carteira</p><p className="text-xs text-muted-foreground">Pagamentos e comprovantes</p></div>
+          <ChevronRight className="size-4 text-muted-foreground" />
+        </Link>
+        <Link to="/app/favoritos" className="flex items-center gap-3 p-4 hover:bg-muted/40 transition-colors">
+          <Heart className="size-5 text-destructive" />
+          <div className="flex-1"><p className="text-sm font-semibold">Favoritos</p><p className="text-xs text-muted-foreground">Profissionais e clínicas salvos</p></div>
+          <ChevronRight className="size-4 text-muted-foreground" />
+        </Link>
         <Link to="/app/documentos" className="flex items-center gap-3 p-4 hover:bg-muted/40 transition-colors">
           <FileText className="size-5 text-primary" />
           <div className="flex-1"><p className="text-sm font-semibold">Documentos de saúde</p><p className="text-xs text-muted-foreground">Exames e receitas</p></div>
