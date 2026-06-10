@@ -210,7 +210,8 @@ function PatientHome() {
                 </div>
               </div>
             </Link>
-          ))}
+            );
+          })}
           {pros && pros.length === 0 && (
             <div className="rounded-2xl border border-dashed border-border p-8 text-center text-sm text-muted-foreground">
               Nenhum profissional disponível ainda.
