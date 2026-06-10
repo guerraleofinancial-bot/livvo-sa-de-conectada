@@ -14,6 +14,7 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedAppRouteImport } from './routes/_authenticated/app'
 import { Route as AuthenticatedAppIndexRouteImport } from './routes/_authenticated/app.index'
+import { Route as AuthenticatedAppPerfilRouteImport } from './routes/_authenticated/app.perfil'
 import { Route as AuthenticatedAppMensagensRouteImport } from './routes/_authenticated/app.mensagens'
 import { Route as AuthenticatedAppConsultasRouteImport } from './routes/_authenticated/app.consultas'
 import { Route as AuthenticatedAppBuscarRouteImport } from './routes/_authenticated/app.buscar'
@@ -42,6 +43,11 @@ const AuthenticatedAppRoute = AuthenticatedAppRouteImport.update({
 const AuthenticatedAppIndexRoute = AuthenticatedAppIndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => AuthenticatedAppRoute,
+} as any)
+const AuthenticatedAppPerfilRoute = AuthenticatedAppPerfilRouteImport.update({
+  id: '/perfil',
+  path: '/perfil',
   getParentRoute: () => AuthenticatedAppRoute,
 } as any)
 const AuthenticatedAppMensagensRoute =
@@ -80,6 +86,7 @@ export interface FileRoutesByFullPath {
   '/app/buscar': typeof AuthenticatedAppBuscarRoute
   '/app/consultas': typeof AuthenticatedAppConsultasRoute
   '/app/mensagens': typeof AuthenticatedAppMensagensRoute
+  '/app/perfil': typeof AuthenticatedAppPerfilRoute
   '/app/': typeof AuthenticatedAppIndexRoute
   '/app/chat/$id': typeof AuthenticatedAppChatIdRoute
   '/app/profissional/$id': typeof AuthenticatedAppProfissionalIdRoute
@@ -90,6 +97,7 @@ export interface FileRoutesByTo {
   '/app/buscar': typeof AuthenticatedAppBuscarRoute
   '/app/consultas': typeof AuthenticatedAppConsultasRoute
   '/app/mensagens': typeof AuthenticatedAppMensagensRoute
+  '/app/perfil': typeof AuthenticatedAppPerfilRoute
   '/app': typeof AuthenticatedAppIndexRoute
   '/app/chat/$id': typeof AuthenticatedAppChatIdRoute
   '/app/profissional/$id': typeof AuthenticatedAppProfissionalIdRoute
@@ -103,6 +111,7 @@ export interface FileRoutesById {
   '/_authenticated/app/buscar': typeof AuthenticatedAppBuscarRoute
   '/_authenticated/app/consultas': typeof AuthenticatedAppConsultasRoute
   '/_authenticated/app/mensagens': typeof AuthenticatedAppMensagensRoute
+  '/_authenticated/app/perfil': typeof AuthenticatedAppPerfilRoute
   '/_authenticated/app/': typeof AuthenticatedAppIndexRoute
   '/_authenticated/app/chat/$id': typeof AuthenticatedAppChatIdRoute
   '/_authenticated/app/profissional/$id': typeof AuthenticatedAppProfissionalIdRoute
@@ -116,6 +125,7 @@ export interface FileRouteTypes {
     | '/app/buscar'
     | '/app/consultas'
     | '/app/mensagens'
+    | '/app/perfil'
     | '/app/'
     | '/app/chat/$id'
     | '/app/profissional/$id'
@@ -126,6 +136,7 @@ export interface FileRouteTypes {
     | '/app/buscar'
     | '/app/consultas'
     | '/app/mensagens'
+    | '/app/perfil'
     | '/app'
     | '/app/chat/$id'
     | '/app/profissional/$id'
@@ -138,6 +149,7 @@ export interface FileRouteTypes {
     | '/_authenticated/app/buscar'
     | '/_authenticated/app/consultas'
     | '/_authenticated/app/mensagens'
+    | '/_authenticated/app/perfil'
     | '/_authenticated/app/'
     | '/_authenticated/app/chat/$id'
     | '/_authenticated/app/profissional/$id'
@@ -186,6 +198,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAppIndexRouteImport
       parentRoute: typeof AuthenticatedAppRoute
     }
+    '/_authenticated/app/perfil': {
+      id: '/_authenticated/app/perfil'
+      path: '/perfil'
+      fullPath: '/app/perfil'
+      preLoaderRoute: typeof AuthenticatedAppPerfilRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
     '/_authenticated/app/mensagens': {
       id: '/_authenticated/app/mensagens'
       path: '/mensagens'
@@ -228,6 +247,7 @@ interface AuthenticatedAppRouteChildren {
   AuthenticatedAppBuscarRoute: typeof AuthenticatedAppBuscarRoute
   AuthenticatedAppConsultasRoute: typeof AuthenticatedAppConsultasRoute
   AuthenticatedAppMensagensRoute: typeof AuthenticatedAppMensagensRoute
+  AuthenticatedAppPerfilRoute: typeof AuthenticatedAppPerfilRoute
   AuthenticatedAppIndexRoute: typeof AuthenticatedAppIndexRoute
   AuthenticatedAppChatIdRoute: typeof AuthenticatedAppChatIdRoute
   AuthenticatedAppProfissionalIdRoute: typeof AuthenticatedAppProfissionalIdRoute
@@ -237,6 +257,7 @@ const AuthenticatedAppRouteChildren: AuthenticatedAppRouteChildren = {
   AuthenticatedAppBuscarRoute: AuthenticatedAppBuscarRoute,
   AuthenticatedAppConsultasRoute: AuthenticatedAppConsultasRoute,
   AuthenticatedAppMensagensRoute: AuthenticatedAppMensagensRoute,
+  AuthenticatedAppPerfilRoute: AuthenticatedAppPerfilRoute,
   AuthenticatedAppIndexRoute: AuthenticatedAppIndexRoute,
   AuthenticatedAppChatIdRoute: AuthenticatedAppChatIdRoute,
   AuthenticatedAppProfissionalIdRoute: AuthenticatedAppProfissionalIdRoute,
