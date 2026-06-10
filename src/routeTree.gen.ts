@@ -18,6 +18,7 @@ import { Route as AuthenticatedAppMensagensRouteImport } from './routes/_authent
 import { Route as AuthenticatedAppConsultasRouteImport } from './routes/_authenticated/app.consultas'
 import { Route as AuthenticatedAppBuscarRouteImport } from './routes/_authenticated/app.buscar'
 import { Route as AuthenticatedAppProfissionalIdRouteImport } from './routes/_authenticated/app.profissional.$id'
+import { Route as AuthenticatedAppChatIdRouteImport } from './routes/_authenticated/app.chat.$id'
 
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
@@ -66,6 +67,11 @@ const AuthenticatedAppProfissionalIdRoute =
     path: '/profissional/$id',
     getParentRoute: () => AuthenticatedAppRoute,
   } as any)
+const AuthenticatedAppChatIdRoute = AuthenticatedAppChatIdRouteImport.update({
+  id: '/chat/$id',
+  path: '/chat/$id',
+  getParentRoute: () => AuthenticatedAppRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -75,6 +81,7 @@ export interface FileRoutesByFullPath {
   '/app/consultas': typeof AuthenticatedAppConsultasRoute
   '/app/mensagens': typeof AuthenticatedAppMensagensRoute
   '/app/': typeof AuthenticatedAppIndexRoute
+  '/app/chat/$id': typeof AuthenticatedAppChatIdRoute
   '/app/profissional/$id': typeof AuthenticatedAppProfissionalIdRoute
 }
 export interface FileRoutesByTo {
@@ -84,6 +91,7 @@ export interface FileRoutesByTo {
   '/app/consultas': typeof AuthenticatedAppConsultasRoute
   '/app/mensagens': typeof AuthenticatedAppMensagensRoute
   '/app': typeof AuthenticatedAppIndexRoute
+  '/app/chat/$id': typeof AuthenticatedAppChatIdRoute
   '/app/profissional/$id': typeof AuthenticatedAppProfissionalIdRoute
 }
 export interface FileRoutesById {
@@ -96,6 +104,7 @@ export interface FileRoutesById {
   '/_authenticated/app/consultas': typeof AuthenticatedAppConsultasRoute
   '/_authenticated/app/mensagens': typeof AuthenticatedAppMensagensRoute
   '/_authenticated/app/': typeof AuthenticatedAppIndexRoute
+  '/_authenticated/app/chat/$id': typeof AuthenticatedAppChatIdRoute
   '/_authenticated/app/profissional/$id': typeof AuthenticatedAppProfissionalIdRoute
 }
 export interface FileRouteTypes {
@@ -108,6 +117,7 @@ export interface FileRouteTypes {
     | '/app/consultas'
     | '/app/mensagens'
     | '/app/'
+    | '/app/chat/$id'
     | '/app/profissional/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -117,6 +127,7 @@ export interface FileRouteTypes {
     | '/app/consultas'
     | '/app/mensagens'
     | '/app'
+    | '/app/chat/$id'
     | '/app/profissional/$id'
   id:
     | '__root__'
@@ -128,6 +139,7 @@ export interface FileRouteTypes {
     | '/_authenticated/app/consultas'
     | '/_authenticated/app/mensagens'
     | '/_authenticated/app/'
+    | '/_authenticated/app/chat/$id'
     | '/_authenticated/app/profissional/$id'
   fileRoutesById: FileRoutesById
 }
@@ -202,6 +214,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAppProfissionalIdRouteImport
       parentRoute: typeof AuthenticatedAppRoute
     }
+    '/_authenticated/app/chat/$id': {
+      id: '/_authenticated/app/chat/$id'
+      path: '/chat/$id'
+      fullPath: '/app/chat/$id'
+      preLoaderRoute: typeof AuthenticatedAppChatIdRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
   }
 }
 
@@ -210,6 +229,7 @@ interface AuthenticatedAppRouteChildren {
   AuthenticatedAppConsultasRoute: typeof AuthenticatedAppConsultasRoute
   AuthenticatedAppMensagensRoute: typeof AuthenticatedAppMensagensRoute
   AuthenticatedAppIndexRoute: typeof AuthenticatedAppIndexRoute
+  AuthenticatedAppChatIdRoute: typeof AuthenticatedAppChatIdRoute
   AuthenticatedAppProfissionalIdRoute: typeof AuthenticatedAppProfissionalIdRoute
 }
 
@@ -218,6 +238,7 @@ const AuthenticatedAppRouteChildren: AuthenticatedAppRouteChildren = {
   AuthenticatedAppConsultasRoute: AuthenticatedAppConsultasRoute,
   AuthenticatedAppMensagensRoute: AuthenticatedAppMensagensRoute,
   AuthenticatedAppIndexRoute: AuthenticatedAppIndexRoute,
+  AuthenticatedAppChatIdRoute: AuthenticatedAppChatIdRoute,
   AuthenticatedAppProfissionalIdRoute: AuthenticatedAppProfissionalIdRoute,
 }
 
