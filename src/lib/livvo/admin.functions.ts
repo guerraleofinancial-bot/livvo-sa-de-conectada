@@ -9,7 +9,7 @@ export const setProfessionalStatus = createServerFn({ method: "POST" })
     const { data: isAdmin } = await context.supabase.rpc("has_role", { _user_id: context.userId, _role: "admin" });
     if (!isAdmin) throw new Error("Forbidden");
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const patch: Record<string, unknown> = { status: data.status };
+    const patch: { status: typeof data.status; approved_at?: string; approved_by?: string } = { status: data.status };
     if (data.status === "aprovado") {
       patch.approved_at = new Date().toISOString();
       patch.approved_by = context.userId;
