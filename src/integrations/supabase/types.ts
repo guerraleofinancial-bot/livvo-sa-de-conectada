@@ -18,57 +18,246 @@ export type Database = {
         Row: {
           cancelled_at: string | null
           cancelled_by: string | null
+          commission_amount: number
           created_at: string
           duration_minutes: number
+          gross_amount: number
           id: string
           modality: Database["public"]["Enums"]["appointment_modality"]
+          net_amount: number
           notes: string | null
           patient_id: string
           patient_notes: string | null
+          payment_method: string | null
+          payment_status: string
           price: number
           professional_id: string
           professional_notes: string | null
           scheduled_at: string
+          service_id: string | null
           status: Database["public"]["Enums"]["appointment_status"]
           updated_at: string
         }
         Insert: {
           cancelled_at?: string | null
           cancelled_by?: string | null
+          commission_amount?: number
           created_at?: string
           duration_minutes?: number
+          gross_amount?: number
           id?: string
           modality?: Database["public"]["Enums"]["appointment_modality"]
+          net_amount?: number
           notes?: string | null
           patient_id: string
           patient_notes?: string | null
+          payment_method?: string | null
+          payment_status?: string
           price?: number
           professional_id: string
           professional_notes?: string | null
           scheduled_at: string
+          service_id?: string | null
           status?: Database["public"]["Enums"]["appointment_status"]
           updated_at?: string
         }
         Update: {
           cancelled_at?: string | null
           cancelled_by?: string | null
+          commission_amount?: number
           created_at?: string
           duration_minutes?: number
+          gross_amount?: number
           id?: string
           modality?: Database["public"]["Enums"]["appointment_modality"]
+          net_amount?: number
           notes?: string | null
           patient_id?: string
           patient_notes?: string | null
+          payment_method?: string | null
+          payment_status?: string
           price?: number
           professional_id?: string
           professional_notes?: string | null
           scheduled_at?: string
+          service_id?: string | null
           status?: Database["public"]["Enums"]["appointment_status"]
           updated_at?: string
         }
         Relationships: [
           {
             foreignKeyName: "appointments_professional_id_fkey"
+            columns: ["professional_id"]
+            isOneToOne: false
+            referencedRelation: "professionals"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "appointments_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "services"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      categories: {
+        Row: {
+          active: boolean
+          created_at: string
+          icon: string | null
+          id: string
+          name: string
+          slug: string
+          sort_order: number
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          icon?: string | null
+          id?: string
+          name: string
+          slug: string
+          sort_order?: number
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          icon?: string | null
+          id?: string
+          name?: string
+          slug?: string
+          sort_order?: number
+        }
+        Relationships: []
+      }
+      companies: {
+        Row: {
+          address_city: string | null
+          address_state: string | null
+          address_street: string | null
+          approved_at: string | null
+          approved_by: string | null
+          cnpj: string | null
+          created_at: string
+          description: string | null
+          email: string | null
+          id: string
+          legal_name: string
+          logo_url: string | null
+          owner_id: string
+          phone: string | null
+          status: Database["public"]["Enums"]["professional_status"]
+          trade_name: string | null
+          type: Database["public"]["Enums"]["company_type"]
+          updated_at: string
+        }
+        Insert: {
+          address_city?: string | null
+          address_state?: string | null
+          address_street?: string | null
+          approved_at?: string | null
+          approved_by?: string | null
+          cnpj?: string | null
+          created_at?: string
+          description?: string | null
+          email?: string | null
+          id?: string
+          legal_name: string
+          logo_url?: string | null
+          owner_id: string
+          phone?: string | null
+          status?: Database["public"]["Enums"]["professional_status"]
+          trade_name?: string | null
+          type?: Database["public"]["Enums"]["company_type"]
+          updated_at?: string
+        }
+        Update: {
+          address_city?: string | null
+          address_state?: string | null
+          address_street?: string | null
+          approved_at?: string | null
+          approved_by?: string | null
+          cnpj?: string | null
+          created_at?: string
+          description?: string | null
+          email?: string | null
+          id?: string
+          legal_name?: string
+          logo_url?: string | null
+          owner_id?: string
+          phone?: string | null
+          status?: Database["public"]["Enums"]["professional_status"]
+          trade_name?: string | null
+          type?: Database["public"]["Enums"]["company_type"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      company_members: {
+        Row: {
+          company_id: string
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["company_role"]
+          user_id: string
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["company_role"]
+          user_id: string
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["company_role"]
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "company_members_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      favorites: {
+        Row: {
+          company_id: string | null
+          created_at: string
+          id: string
+          patient_id: string
+          professional_id: string | null
+        }
+        Insert: {
+          company_id?: string | null
+          created_at?: string
+          id?: string
+          patient_id: string
+          professional_id?: string | null
+        }
+        Update: {
+          company_id?: string | null
+          created_at?: string
+          id?: string
+          patient_id?: string
+          professional_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "favorites_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "favorites_professional_id_fkey"
             columns: ["professional_id"]
             isOneToOne: false
             referencedRelation: "professionals"
@@ -212,6 +401,63 @@ export type Database = {
           },
         ]
       }
+      payouts: {
+        Row: {
+          amount: number
+          created_at: string
+          created_by: string | null
+          id: string
+          paid_at: string | null
+          provider_id: string
+          status: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          paid_at?: string | null
+          provider_id: string
+          status?: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          paid_at?: string | null
+          provider_id?: string
+          status?: string
+        }
+        Relationships: []
+      }
+      platform_settings: {
+        Row: {
+          cancellation_window_hours: number
+          commission_percent: number
+          id: number
+          refund_policy: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          cancellation_window_hours?: number
+          commission_percent?: number
+          id?: number
+          refund_policy?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          cancellation_window_hours?: number
+          commission_percent?: number
+          id?: number
+          refund_policy?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       professional_availability: {
         Row: {
           active: boolean
@@ -292,11 +538,14 @@ export type Database = {
           address_street: string | null
           approved_at: string | null
           approved_by: string | null
+          avatar_url: string | null
           bio: string | null
+          company_id: string | null
           consultation_price: number
           created_at: string
           id: string
           modality: Database["public"]["Enums"]["appointment_modality"]
+          phone: string | null
           professional_registry: string
           rating_average: number
           rating_count: number
@@ -311,11 +560,14 @@ export type Database = {
           address_street?: string | null
           approved_at?: string | null
           approved_by?: string | null
+          avatar_url?: string | null
           bio?: string | null
+          company_id?: string | null
           consultation_price?: number
           created_at?: string
           id: string
           modality?: Database["public"]["Enums"]["appointment_modality"]
+          phone?: string | null
           professional_registry: string
           rating_average?: number
           rating_count?: number
@@ -330,11 +582,14 @@ export type Database = {
           address_street?: string | null
           approved_at?: string | null
           approved_by?: string | null
+          avatar_url?: string | null
           bio?: string | null
+          company_id?: string | null
           consultation_price?: number
           created_at?: string
           id?: string
           modality?: Database["public"]["Enums"]["appointment_modality"]
+          phone?: string | null
           professional_registry?: string
           rating_average?: number
           rating_count?: number
@@ -344,6 +599,13 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "professionals_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "professionals_specialty_id_fkey"
             columns: ["specialty_id"]
@@ -407,6 +669,7 @@ export type Database = {
           patient_id: string
           professional_id: string
           rating: number
+          status: Database["public"]["Enums"]["review_status"]
         }
         Insert: {
           appointment_id: string
@@ -416,6 +679,7 @@ export type Database = {
           patient_id: string
           professional_id: string
           rating: number
+          status?: Database["public"]["Enums"]["review_status"]
         }
         Update: {
           appointment_id?: string
@@ -425,6 +689,7 @@ export type Database = {
           patient_id?: string
           professional_id?: string
           rating?: number
+          status?: Database["public"]["Enums"]["review_status"]
         }
         Relationships: [
           {
@@ -436,6 +701,70 @@ export type Database = {
           },
           {
             foreignKeyName: "reviews_professional_id_fkey"
+            columns: ["professional_id"]
+            isOneToOne: false
+            referencedRelation: "professionals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      services: {
+        Row: {
+          active: boolean
+          category_id: string | null
+          company_id: string | null
+          created_at: string
+          description: string | null
+          duration_minutes: number
+          id: string
+          name: string
+          price: number
+          professional_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          category_id?: string | null
+          company_id?: string | null
+          created_at?: string
+          description?: string | null
+          duration_minutes?: number
+          id?: string
+          name: string
+          price?: number
+          professional_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          category_id?: string | null
+          company_id?: string | null
+          created_at?: string
+          description?: string | null
+          duration_minutes?: number
+          id?: string
+          name?: string
+          price?: number
+          professional_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "services_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "services_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "services_professional_id_fkey"
             columns: ["professional_id"]
             isOneToOne: false
             referencedRelation: "professionals"
@@ -473,6 +802,65 @@ export type Database = {
         }
         Relationships: []
       }
+      support_messages: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          sender_id: string
+          ticket_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          sender_id: string
+          ticket_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          sender_id?: string
+          ticket_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "support_messages_ticket_id_fkey"
+            columns: ["ticket_id"]
+            isOneToOne: false
+            referencedRelation: "support_tickets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      support_tickets: {
+        Row: {
+          created_at: string
+          id: string
+          status: Database["public"]["Enums"]["ticket_status"]
+          subject: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          status?: Database["public"]["Enums"]["ticket_status"]
+          subject: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          status?: Database["public"]["Enums"]["ticket_status"]
+          subject?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -494,6 +882,47 @@ export type Database = {
         }
         Relationships: []
       }
+      wallet_transactions: {
+        Row: {
+          amount: number
+          appointment_id: string | null
+          created_at: string
+          description: string | null
+          id: string
+          kind: Database["public"]["Enums"]["tx_kind"]
+          payout_id: string | null
+          provider_id: string
+        }
+        Insert: {
+          amount: number
+          appointment_id?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          kind: Database["public"]["Enums"]["tx_kind"]
+          payout_id?: string | null
+          provider_id: string
+        }
+        Update: {
+          amount?: number
+          appointment_id?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          kind?: Database["public"]["Enums"]["tx_kind"]
+          payout_id?: string | null
+          provider_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wallet_transactions_appointment_id_fkey"
+            columns: ["appointment_id"]
+            isOneToOne: false
+            referencedRelation: "appointments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -506,6 +935,11 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_company_owner: {
+        Args: { _company: string; _user: string }
+        Returns: boolean
+      }
+      wallet_balance: { Args: { _provider: string }; Returns: number }
     }
     Enums: {
       app_role: "paciente" | "profissional" | "admin"
@@ -517,9 +951,19 @@ export type Database = {
         | "realizada"
         | "cancelada"
         | "nao_compareceu"
+      company_role: "owner" | "admin" | "profissional"
+      company_type:
+        | "clinica"
+        | "laboratorio"
+        | "diagnostico"
+        | "estetica"
+        | "outros"
       gender_type: "feminino" | "masculino" | "outro" | "prefiro_nao_dizer"
       payment_status: "pendente" | "pago" | "reembolsado" | "falhou"
       professional_status: "pendente" | "aprovado" | "rejeitado" | "suspenso"
+      review_status: "publicada" | "oculta" | "denunciada"
+      ticket_status: "aberto" | "em_andamento" | "resolvido" | "fechado"
+      tx_kind: "credito" | "comissao" | "repasse" | "reembolso" | "ajuste"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -657,9 +1101,20 @@ export const Constants = {
         "cancelada",
         "nao_compareceu",
       ],
+      company_role: ["owner", "admin", "profissional"],
+      company_type: [
+        "clinica",
+        "laboratorio",
+        "diagnostico",
+        "estetica",
+        "outros",
+      ],
       gender_type: ["feminino", "masculino", "outro", "prefiro_nao_dizer"],
       payment_status: ["pendente", "pago", "reembolsado", "falhou"],
       professional_status: ["pendente", "aprovado", "rejeitado", "suspenso"],
+      review_status: ["publicada", "oculta", "denunciada"],
+      ticket_status: ["aberto", "em_andamento", "resolvido", "fechado"],
+      tx_kind: ["credito", "comissao", "repasse", "reembolso", "ajuste"],
     },
   },
 } as const
