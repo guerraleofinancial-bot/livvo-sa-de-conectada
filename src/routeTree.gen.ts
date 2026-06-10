@@ -16,6 +16,7 @@ import { Route as AuthenticatedProRouteImport } from './routes/_authenticated/pr
 import { Route as AuthenticatedAppRouteImport } from './routes/_authenticated/app'
 import { Route as AuthenticatedProIndexRouteImport } from './routes/_authenticated/pro.index'
 import { Route as AuthenticatedAppIndexRouteImport } from './routes/_authenticated/app.index'
+import { Route as AuthenticatedProAgendaRouteImport } from './routes/_authenticated/pro.agenda'
 import { Route as AuthenticatedAppPerfilRouteImport } from './routes/_authenticated/app.perfil'
 import { Route as AuthenticatedAppMensagensRouteImport } from './routes/_authenticated/app.mensagens'
 import { Route as AuthenticatedAppDocumentosRouteImport } from './routes/_authenticated/app.documentos'
@@ -57,6 +58,11 @@ const AuthenticatedAppIndexRoute = AuthenticatedAppIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AuthenticatedAppRoute,
+} as any)
+const AuthenticatedProAgendaRoute = AuthenticatedProAgendaRouteImport.update({
+  id: '/agenda',
+  path: '/agenda',
+  getParentRoute: () => AuthenticatedProRoute,
 } as any)
 const AuthenticatedAppPerfilRoute = AuthenticatedAppPerfilRouteImport.update({
   id: '/perfil',
@@ -108,6 +114,7 @@ export interface FileRoutesByFullPath {
   '/app/documentos': typeof AuthenticatedAppDocumentosRoute
   '/app/mensagens': typeof AuthenticatedAppMensagensRoute
   '/app/perfil': typeof AuthenticatedAppPerfilRoute
+  '/pro/agenda': typeof AuthenticatedProAgendaRoute
   '/app/': typeof AuthenticatedAppIndexRoute
   '/pro/': typeof AuthenticatedProIndexRoute
   '/app/chat/$id': typeof AuthenticatedAppChatIdRoute
@@ -121,6 +128,7 @@ export interface FileRoutesByTo {
   '/app/documentos': typeof AuthenticatedAppDocumentosRoute
   '/app/mensagens': typeof AuthenticatedAppMensagensRoute
   '/app/perfil': typeof AuthenticatedAppPerfilRoute
+  '/pro/agenda': typeof AuthenticatedProAgendaRoute
   '/app': typeof AuthenticatedAppIndexRoute
   '/pro': typeof AuthenticatedProIndexRoute
   '/app/chat/$id': typeof AuthenticatedAppChatIdRoute
@@ -138,6 +146,7 @@ export interface FileRoutesById {
   '/_authenticated/app/documentos': typeof AuthenticatedAppDocumentosRoute
   '/_authenticated/app/mensagens': typeof AuthenticatedAppMensagensRoute
   '/_authenticated/app/perfil': typeof AuthenticatedAppPerfilRoute
+  '/_authenticated/pro/agenda': typeof AuthenticatedProAgendaRoute
   '/_authenticated/app/': typeof AuthenticatedAppIndexRoute
   '/_authenticated/pro/': typeof AuthenticatedProIndexRoute
   '/_authenticated/app/chat/$id': typeof AuthenticatedAppChatIdRoute
@@ -155,6 +164,7 @@ export interface FileRouteTypes {
     | '/app/documentos'
     | '/app/mensagens'
     | '/app/perfil'
+    | '/pro/agenda'
     | '/app/'
     | '/pro/'
     | '/app/chat/$id'
@@ -168,6 +178,7 @@ export interface FileRouteTypes {
     | '/app/documentos'
     | '/app/mensagens'
     | '/app/perfil'
+    | '/pro/agenda'
     | '/app'
     | '/pro'
     | '/app/chat/$id'
@@ -184,6 +195,7 @@ export interface FileRouteTypes {
     | '/_authenticated/app/documentos'
     | '/_authenticated/app/mensagens'
     | '/_authenticated/app/perfil'
+    | '/_authenticated/pro/agenda'
     | '/_authenticated/app/'
     | '/_authenticated/pro/'
     | '/_authenticated/app/chat/$id'
@@ -246,6 +258,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/app/'
       preLoaderRoute: typeof AuthenticatedAppIndexRouteImport
       parentRoute: typeof AuthenticatedAppRoute
+    }
+    '/_authenticated/pro/agenda': {
+      id: '/_authenticated/pro/agenda'
+      path: '/agenda'
+      fullPath: '/pro/agenda'
+      preLoaderRoute: typeof AuthenticatedProAgendaRouteImport
+      parentRoute: typeof AuthenticatedProRoute
     }
     '/_authenticated/app/perfil': {
       id: '/_authenticated/app/perfil'
@@ -325,10 +344,12 @@ const AuthenticatedAppRouteWithChildren =
   AuthenticatedAppRoute._addFileChildren(AuthenticatedAppRouteChildren)
 
 interface AuthenticatedProRouteChildren {
+  AuthenticatedProAgendaRoute: typeof AuthenticatedProAgendaRoute
   AuthenticatedProIndexRoute: typeof AuthenticatedProIndexRoute
 }
 
 const AuthenticatedProRouteChildren: AuthenticatedProRouteChildren = {
+  AuthenticatedProAgendaRoute: AuthenticatedProAgendaRoute,
   AuthenticatedProIndexRoute: AuthenticatedProIndexRoute,
 }
 
