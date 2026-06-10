@@ -15,6 +15,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedAppRouteImport } from './routes/_authenticated/app'
 import { Route as AuthenticatedAppIndexRouteImport } from './routes/_authenticated/app.index'
 import { Route as AuthenticatedAppBuscarRouteImport } from './routes/_authenticated/app.buscar'
+import { Route as AuthenticatedAppProfissionalIdRouteImport } from './routes/_authenticated/app.profissional.$id'
 
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
@@ -45,6 +46,12 @@ const AuthenticatedAppBuscarRoute = AuthenticatedAppBuscarRouteImport.update({
   path: '/buscar',
   getParentRoute: () => AuthenticatedAppRoute,
 } as any)
+const AuthenticatedAppProfissionalIdRoute =
+  AuthenticatedAppProfissionalIdRouteImport.update({
+    id: '/profissional/$id',
+    path: '/profissional/$id',
+    getParentRoute: () => AuthenticatedAppRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -52,12 +59,14 @@ export interface FileRoutesByFullPath {
   '/app': typeof AuthenticatedAppRouteWithChildren
   '/app/buscar': typeof AuthenticatedAppBuscarRoute
   '/app/': typeof AuthenticatedAppIndexRoute
+  '/app/profissional/$id': typeof AuthenticatedAppProfissionalIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/app/buscar': typeof AuthenticatedAppBuscarRoute
   '/app': typeof AuthenticatedAppIndexRoute
+  '/app/profissional/$id': typeof AuthenticatedAppProfissionalIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -67,12 +76,19 @@ export interface FileRoutesById {
   '/_authenticated/app': typeof AuthenticatedAppRouteWithChildren
   '/_authenticated/app/buscar': typeof AuthenticatedAppBuscarRoute
   '/_authenticated/app/': typeof AuthenticatedAppIndexRoute
+  '/_authenticated/app/profissional/$id': typeof AuthenticatedAppProfissionalIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/app' | '/app/buscar' | '/app/'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/app'
+    | '/app/buscar'
+    | '/app/'
+    | '/app/profissional/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/app/buscar' | '/app'
+  to: '/' | '/auth' | '/app/buscar' | '/app' | '/app/profissional/$id'
   id:
     | '__root__'
     | '/'
@@ -81,6 +97,7 @@ export interface FileRouteTypes {
     | '/_authenticated/app'
     | '/_authenticated/app/buscar'
     | '/_authenticated/app/'
+    | '/_authenticated/app/profissional/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -133,17 +150,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAppBuscarRouteImport
       parentRoute: typeof AuthenticatedAppRoute
     }
+    '/_authenticated/app/profissional/$id': {
+      id: '/_authenticated/app/profissional/$id'
+      path: '/profissional/$id'
+      fullPath: '/app/profissional/$id'
+      preLoaderRoute: typeof AuthenticatedAppProfissionalIdRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
   }
 }
 
 interface AuthenticatedAppRouteChildren {
   AuthenticatedAppBuscarRoute: typeof AuthenticatedAppBuscarRoute
   AuthenticatedAppIndexRoute: typeof AuthenticatedAppIndexRoute
+  AuthenticatedAppProfissionalIdRoute: typeof AuthenticatedAppProfissionalIdRoute
 }
 
 const AuthenticatedAppRouteChildren: AuthenticatedAppRouteChildren = {
   AuthenticatedAppBuscarRoute: AuthenticatedAppBuscarRoute,
   AuthenticatedAppIndexRoute: AuthenticatedAppIndexRoute,
+  AuthenticatedAppProfissionalIdRoute: AuthenticatedAppProfissionalIdRoute,
 }
 
 const AuthenticatedAppRouteWithChildren =
