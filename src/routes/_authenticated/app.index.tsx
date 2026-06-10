@@ -155,10 +155,10 @@ function PatientHome() {
               </div>
               <div className="flex items-center justify-between">
                 <div className="min-w-0">
-                  {/* @ts-expect-error nested join shape */}
-                  <p className="text-sm font-semibold truncate">{nextAppt.professionals?.profiles?.full_name}</p>
-                  {/* @ts-expect-error nested join shape */}
-                  <p className="text-xs opacity-80 truncate">{nextAppt.professionals?.specialties?.name}</p>
+                  
+                  <p className="text-sm font-semibold truncate">{(nextAppt as any).professionals?.profiles?.full_name}</p>
+                  
+                  <p className="text-xs opacity-80 truncate">{(nextAppt as any).professionals?.specialties?.name}</p>
                 </div>
                 <Link to="/app/consultas" className="px-4 py-2 bg-white text-primary text-xs font-bold rounded-xl">Ver</Link>
               </div>
@@ -184,15 +184,15 @@ function PatientHome() {
             >
               <div className="flex gap-4">
                 <div className="size-16 rounded-full bg-primary-soft shrink-0 grid place-items-center text-primary font-bold border border-border overflow-hidden">
-                  {/* @ts-expect-error nested join */}
+                  
                   {p.profiles?.avatar_url ? <img src={p.profiles.avatar_url} className="size-full object-cover" alt="" /> : (p.profiles as { full_name?: string } | null)?.full_name?.charAt(0)}
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex justify-between items-start gap-2">
                     <div className="min-w-0">
-                      {/* @ts-expect-error nested */}
+                      
                       <h3 className="text-sm font-semibold truncate">{p.profiles?.full_name}</h3>
-                      {/* @ts-expect-error nested */}
+                      
                       <p className="text-xs text-muted-foreground truncate">{p.specialties?.name}</p>
                     </div>
                     <div className="flex items-center gap-1 text-xs font-semibold text-amber-500 shrink-0">
