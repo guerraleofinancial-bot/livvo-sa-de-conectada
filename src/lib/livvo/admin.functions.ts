@@ -396,7 +396,7 @@ export const seedDemoData = createServerFn({ method: "POST" })
       ];
       for (const a of demoAppts) {
         const when = new Date(); when.setDate(when.getDate() + a.days); when.setHours(10, 0, 0, 0);
-        const { data: pctData } = await supabaseAdmin.rpc("effective_commission_percent", { _professional: proIds[a.proIdx], _company: null });
+        const { data: pctData } = await supabaseAdmin.rpc("effective_commission_percent", { _professional: proIds[a.proIdx], _company: proIds[a.proIdx] });
         const pct = Number(pctData ?? 15);
         const commission = Math.round((a.price * pct) / 100 * 100) / 100;
         const net = Math.round((a.price - commission) * 100) / 100;
