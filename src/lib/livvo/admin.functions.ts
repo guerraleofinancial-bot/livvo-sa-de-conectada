@@ -330,7 +330,7 @@ export const seedDemoData = createServerFn({ method: "POST" })
     ];
     for (const r of resourceSpecs) {
       const uid = unitByCompany[r.companyIdx]?.[r.unitIdx];
-      if (uid) await supabaseAdmin.from("resources").insert({ unit_id: uid, name: r.name, kind: r.kind, active: true });
+      if (uid) await supabaseAdmin.from("resources").insert({ unit_id: uid, name: r.name, kind: r.kind as "sala" | "sala_coleta" | "equipamento_ultrassom" | "equipamento_tomografia" | "equipamento_laser" | "outro", active: true });
     }
 
     // Services (incluindo pacotes)
