@@ -357,7 +357,7 @@ export const seedDemoData = createServerFn({ method: "POST" })
         professional_id: s.owner === "pro" ? proIds[s.ownerIdx] : null,
         company_id: s.owner === "company" ? companyIds[s.ownerIdx] : null,
         category_id: catSlug[s.cat] ?? null,
-        name: s.name, duration_minutes: s.dur, price: s.price, active: true, type: s.type,
+        name: s.name, duration_minutes: s.dur, price: s.price, active: true, type: s.type as "consulta" | "exame" | "procedimento" | "pacote",
       }).select().single();
       if (svc && s.type === "pacote" && "sessions" in s) {
         await supabaseAdmin.from("service_packages").insert({
