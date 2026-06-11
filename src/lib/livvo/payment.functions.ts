@@ -219,7 +219,7 @@ export const cancelAppointment = createServerFn({ method: "POST" })
         { provider_id: appt.professional_id, appointment_id: appt.id, kind: "reembolso", amount: -refundAmount, description: `Reembolso (${refundPct}%) ao paciente` },
         { provider_id: appt.professional_id, appointment_id: appt.id, kind: "ajuste", amount: commissionReversal, description: "Estorno proporcional de comissão" },
       ]);
-      await supabaseAdmin.from("payments").update({ status: refundPct === 100 ? "reembolsado" : "parcial" }).eq("appointment_id", appt.id);
+      await supabaseAdmin.from("payments").update({ status: "reembolsado" as const }).eq("appointment_id", appt.id);
     }
 
     if (appt.package_purchase_id) {
