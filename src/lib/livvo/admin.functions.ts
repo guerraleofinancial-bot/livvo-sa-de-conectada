@@ -384,7 +384,7 @@ export const seedDemoData = createServerFn({ method: "POST" })
     }
 
     if (patientId) {
-      const demoAppts: Array<{ proIdx: number; days: number; status: "realizada" | "confirmada" | "agendada" | "cancelada"; finStatus: "pago" | "realizado" | "liberado_repasse" | "repassado" | "reembolsado"; price: number }> = [
+      const demoAppts: Array<{ proIdx: number; days: number; status: "realizada" | "confirmada" | "agendada" | "cancelada"; finStatus: "agendado" | "pago" | "realizado" | "liberado_repasse" | "repassado" | "reembolsado"; price: number }> = [
         { proIdx: 0, days: -20, status: "realizada", finStatus: "repassado", price: 250 },
         { proIdx: 0, days: -10, status: "realizada", finStatus: "liberado_repasse", price: 250 },
         { proIdx: 2, days: -5, status: "realizada", finStatus: "realizado", price: 220 },
