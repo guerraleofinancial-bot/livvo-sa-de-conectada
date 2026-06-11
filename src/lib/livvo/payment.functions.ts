@@ -78,7 +78,7 @@ export const createPaidAppointment = createServerFn({ method: "POST" })
     const gross = Math.max(0, price - discount);
 
     // Effective commission
-    const { data: pctData } = await supabase.rpc("effective_commission_percent", { _professional: data.professionalId, _company: companyId });
+    const { data: pctData } = await supabase.rpc("effective_commission_percent", { _professional: data.professionalId, _company: companyId ?? (data.professionalId as string) });
     const pct = Number(pctData ?? 15);
     const commission = Math.round((gross * pct) / 100 * 100) / 100;
     const net = Math.round((gross - commission) * 100) / 100;
