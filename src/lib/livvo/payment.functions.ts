@@ -196,7 +196,7 @@ export const cancelAppointment = createServerFn({ method: "POST" })
       const { data: svc } = await supabase.from("services").select("company_id").eq("id", appt.service_id).single();
       companyId = svc?.company_id ?? null;
     }
-    const { data: pol } = await supabase.rpc("effective_cancellation_policy", { _professional: appt.professional_id, _company: companyId });
+    const { data: pol } = await supabase.rpc("effective_cancellation_policy", { _professional: appt.professional_id, _company: companyId ?? appt.professional_id });
     const policy = (pol ?? null) as null | { hours_before_full_refund: number; hours_before_partial_refund: number; partial_refund_percent: number; non_refundable_after_confirmation: boolean };
 
     const hoursToAppt = (new Date(appt.scheduled_at).getTime() - Date.now()) / 36e5;
