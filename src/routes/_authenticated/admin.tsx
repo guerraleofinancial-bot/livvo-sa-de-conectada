@@ -92,7 +92,7 @@ function AdminPanel() {
 
   const seedNow = useMutation({
     mutationFn: async () => seed(),
-    onSuccess: (r) => { toast.success(`Demo carregada: ${r.created} profissionais, ${r.companies} empresas, ${r.services} serviços`); qc.invalidateQueries(); },
+    onSuccess: (r) => { toast.success(`Demo: ${r.professionals} profissionais, ${r.companies} empresas, ${r.units} unidades, ${r.services} serviços`); qc.invalidateQueries(); },
     onError: (e) => toast.error((e as Error).message),
   });
 
