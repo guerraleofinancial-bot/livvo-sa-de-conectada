@@ -47,11 +47,12 @@ export const setUserSuspended = createServerFn({ method: "POST" })
 
 export const updatePlatformSettings = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d: { commission_percent?: number; cancellation_window_hours?: number; refund_policy?: string }) =>
+  .inputValidator((d: { commission_percent?: number; cancellation_window_hours?: number; refund_policy?: string; release_after_days?: number }) =>
     z.object({
       commission_percent: z.number().min(0).max(50).optional(),
       cancellation_window_hours: z.number().int().min(0).max(168).optional(),
       refund_policy: z.string().max(500).optional(),
+      release_after_days: z.number().int().min(0).max(60).optional(),
     }).parse(d),
   )
   .handler(async ({ data, context }) => {
@@ -60,6 +61,52 @@ export const updatePlatformSettings = createServerFn({ method: "POST" })
     const { error } = await supabaseAdmin.from("platform_settings")
       .update({ ...data, updated_at: new Date().toISOString(), updated_by: context.userId })
       .eq("id", 1);
+    if (error) throw error;
+    return { ok: true };
+  });
+
+export const setPartnerCommission = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: { target: "professional" | "company"; id: string; percent: number | null }) => d)
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const tbl = data.target === "professional" ? "professionals" : "companies";
+    const { error } = await supabaseAdmin.from(tbl).update({ commission_percent_override: data.percent }).eq("id", data.id);
+    if (error) throw error;
+    return { ok: true };
+  });
+
+export const setPartnerCancellationPolicy = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: { target: "professional" | "company"; id: string; policyId: string | null }) => d)
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const tbl = data.target === "professional" ? "professionals" : "companies";
+    const { error } = await supabaseAdmin.from(tbl).update({ cancellation_policy_id: data.policyId }).eq("id", data.id);
+    if (error) throw error;
+    return { ok: true };
+  });
+
+export const upsertCancellationPolicy = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: { id?: string; name: string; hours_before_full_refund: number; hours_before_partial_refund: number; partial_refund_percent: number; non_refundable_after_confirmation?: boolean }) => d)
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error } = await supabaseAdmin.from("cancellation_policies").upsert(data);
+    if (error) throw error;
+    return { ok: true };
+  });
+
+export const upsertCoupon = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: { id?: string; code: string; description?: string; type: "percent" | "fixed"; value: number; min_amount?: number; max_uses?: number; valid_from?: string; valid_until?: string; active?: boolean; company_id?: string | null }) => d)
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error } = await supabaseAdmin.from("coupons").upsert(data);
     if (error) throw error;
     return { ok: true };
   });
@@ -86,23 +133,74 @@ export const upsertCategory = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
-export const createPayoutForProvider = createServerFn({ method: "POST" })
+/** Marca como liberados todos os atendimentos 'realizado' com mais de N dias. */
+export const releaseCompletedAppointments = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    await assertAdmin(context);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: settings } = await supabaseAdmin.from("platform_settings").select("release_after_days").eq("id", 1).single();
+    const days = settings?.release_after_days ?? 2;
+    const cutoff = new Date(Date.now() - days * 86400000).toISOString();
+    const { data: list } = await supabaseAdmin.from("appointments").select("id")
+      .eq("financial_status", "realizado").lte("completed_at", cutoff);
+    if (!list?.length) return { released: 0 };
+    const ids = list.map((a) => a.id);
+    await supabaseAdmin.from("appointments").update({ financial_status: "liberado_repasse", released_at: new Date().toISOString() }).in("id", ids);
+    return { released: ids.length };
+  });
+
+/** Cria lote de repasse agrupando todos os 'liberado_repasse' do prestador. */
+export const createPayoutBatch = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: { providerId: string }) => d)
   .handler(async ({ data, context }) => {
     await assertAdmin(context);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { data: txs } = await supabaseAdmin.from("wallet_transactions").select("amount").eq("provider_id", data.providerId);
-    const balance = (txs ?? []).reduce((s, t) => s + Number(t.amount), 0);
-    if (balance <= 0) throw new Error("Sem saldo a repassar");
-    const { data: payout, error } = await supabaseAdmin.from("payouts").insert({
-      provider_id: data.providerId, amount: balance, status: "pago", paid_at: new Date().toISOString(), created_by: context.userId,
+    const { data: list } = await supabaseAdmin.from("appointments")
+      .select("id, net_amount").eq("professional_id", data.providerId).eq("financial_status", "liberado_repasse");
+    if (!list?.length) throw new Error("Sem itens a repassar");
+    const total = list.reduce((s, a) => s + Number(a.net_amount), 0);
+    const { data: batch, error } = await supabaseAdmin.from("payout_batches").insert({
+      provider_id: data.providerId, total_amount: total, status: "pendente", created_by: context.userId,
     }).select().single();
-    if (error) throw error;
+    if (error || !batch) throw error ?? new Error("Falha ao criar lote");
+    for (const a of list) {
+      const { data: item } = await supabaseAdmin.from("payout_items").insert({
+        batch_id: batch.id, appointment_id: a.id, amount: a.net_amount,
+      }).select().single();
+      if (item) await supabaseAdmin.from("appointments").update({ payout_item_id: item.id }).eq("id", a.id);
+    }
+    return { ok: true, batchId: batch.id, total };
+  });
+
+/** Marca lote como pago e registra no ledger. */
+export const markPayoutBatchPaid = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: { batchId: string; reference?: string }) => d)
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: batch } = await supabaseAdmin.from("payout_batches").select("*").eq("id", data.batchId).single();
+    if (!batch) throw new Error("Lote não encontrado");
+    if (batch.status !== "pendente") throw new Error("Lote não está pendente");
+    await supabaseAdmin.from("payout_batches").update({
+      status: "pago", paid_at: new Date().toISOString(), reference: data.reference ?? null,
+    }).eq("id", batch.id);
+    const { data: items } = await supabaseAdmin.from("payout_items").select("appointment_id").eq("batch_id", batch.id);
+    const apptIds = (items ?? []).map((i) => i.appointment_id);
+    if (apptIds.length) {
+      await supabaseAdmin.from("appointments").update({ financial_status: "repassado" }).in("id", apptIds);
+    }
     await supabaseAdmin.from("wallet_transactions").insert({
-      provider_id: data.providerId, payout_id: payout.id, kind: "repasse", amount: -balance, description: "Repasse Livvo",
+      provider_id: batch.provider_id, kind: "repasse", amount: -Number(batch.total_amount),
+      description: `Repasse lote ${batch.id.slice(0, 8)}`,
     });
-    return { ok: true, amount: balance };
+    await supabaseAdmin.from("notifications").insert({
+      user_id: batch.provider_id, title: "Repasse efetuado",
+      body: `R$ ${Number(batch.total_amount).toFixed(2)} foi repassado pela Livvo.`,
+    });
+    return { ok: true };
   });
 
 export const claimFirstAdmin = createServerFn({ method: "POST" })
@@ -128,14 +226,14 @@ export const seedDemoData = createServerFn({ method: "POST" })
     const catSlug = Object.fromEntries((cats ?? []).map((c) => [c.slug, c.id]));
 
     const pros = [
-      { email: "dra.helena@livvo.demo", name: "Dra. Helena Souza", reg: "CRM 123456", spec: "dermatologia", price: 250, city: "São Paulo", state: "SP", bio: "Dermatologista com 12 anos de experiência em pele clínica e estética." },
-      { email: "dr.ricardo@livvo.demo", name: "Dr. Ricardo Santos", reg: "CRM 234567", spec: "clinico-geral", price: 200, city: "São Paulo", state: "SP", bio: "Clínico geral — atendimento humanizado para toda a família." },
-      { email: "dra.beatriz@livvo.demo", name: "Dra. Beatriz Silva", reg: "CRM 345678", spec: "pediatria", price: 220, city: "Rio de Janeiro", state: "RJ", bio: "Pediatra com foco em desenvolvimento infantil." },
-      { email: "dr.lucas@livvo.demo", name: "Dr. Lucas Mendes", reg: "CRM 456789", spec: "cardiologia", price: 320, city: "Belo Horizonte", state: "MG", bio: "Cardiologista preventivo e check-up cardiovascular." },
-      { email: "dra.camila@livvo.demo", name: "Dra. Camila Lima", reg: "CRP 06/12345", spec: "psicologia", price: 180, city: "São Paulo", state: "SP", bio: "Psicóloga clínica — ansiedade e TCC." },
-      { email: "dr.marcos@livvo.demo", name: "Dr. Marcos Lins", reg: "CRM 567890", spec: "psiquiatria", price: 380, city: "Porto Alegre", state: "RS", bio: "Psiquiatra adulto." },
-      { email: "dr.bruno@livvo.demo", name: "Dr. Bruno Tavares", reg: "CRO 22345", spec: "odontologia", price: 180, city: "São Paulo", state: "SP", bio: "Dentista clínico geral e estética." },
-      { email: "carla.fisio@livvo.demo", name: "Carla Pereira", reg: "CREFITO 34567", spec: "fisioterapia", price: 150, city: "Curitiba", state: "PR", bio: "Fisioterapeuta ortopédica e RPG." },
+      { email: "dra.helena@livvo.demo", name: "Dra. Helena Souza", reg: "CRM 123456", spec: "dermatologia", price: 250, city: "São Luís", state: "MA", commission: 12, bio: "Dermatologista com 12 anos de experiência." },
+      { email: "dr.ricardo@livvo.demo", name: "Dr. Ricardo Santos", reg: "CRM 234567", spec: "clinico-geral", price: 200, city: "São Luís", state: "MA", commission: null, bio: "Clínico geral humanizado." },
+      { email: "dra.beatriz@livvo.demo", name: "Dra. Beatriz Silva", reg: "CRM 345678", spec: "pediatria", price: 220, city: "São Luís", state: "MA", commission: null, bio: "Pediatra focada em desenvolvimento infantil." },
+      { email: "dr.lucas@livvo.demo", name: "Dr. Lucas Mendes", reg: "CRM 456789", spec: "cardiologia", price: 320, city: "Belo Horizonte", state: "MG", commission: null, bio: "Cardiologista preventivo." },
+      { email: "dra.camila@livvo.demo", name: "Dra. Camila Lima", reg: "CRP 06/12345", spec: "psicologia", price: 180, city: "São Paulo", state: "SP", commission: 10, bio: "Psicóloga clínica (TCC)." },
+      { email: "dr.marcos@livvo.demo", name: "Dr. Marcos Lins", reg: "CRM 567890", spec: "psiquiatria", price: 380, city: "Porto Alegre", state: "RS", commission: null, bio: "Psiquiatra adulto." },
+      { email: "dr.bruno@livvo.demo", name: "Dr. Bruno Tavares", reg: "CRO 22345", spec: "odontologia", price: 180, city: "São Luís", state: "MA", commission: null, bio: "Dentista clínico e estética." },
+      { email: "carla.fisio@livvo.demo", name: "Carla Pereira", reg: "CREFITO 34567", spec: "fisioterapia", price: 150, city: "Curitiba", state: "PR", commission: null, bio: "Fisioterapeuta ortopédica." },
     ];
 
     const { data: existing } = await supabaseAdmin.auth.admin.listUsers();
@@ -156,6 +254,7 @@ export const seedDemoData = createServerFn({ method: "POST" })
       await supabaseAdmin.from("professionals").upsert({
         id: uid, specialty_id: bySlug[d.spec], professional_registry: d.reg, bio: d.bio,
         address_city: d.city, address_state: d.state, consultation_price: d.price,
+        commission_percent_override: d.commission,
         modality: "presencial", status: "aprovado", approved_at: new Date().toISOString(), approved_by: context.userId,
       });
       await supabaseAdmin.from("professional_availability").delete().eq("professional_id", uid);
@@ -166,14 +265,28 @@ export const seedDemoData = createServerFn({ method: "POST" })
     }
 
     const companies = [
-      { email: "clinica.vida@livvo.demo", name: "Clínica Vida & Saúde", type: "clinica" as const, city: "São Paulo", state: "SP", desc: "Clínica multiprofissional no centro de SP.", cnpj: "12.345.678/0001-90" },
-      { email: "lab.exata@livvo.demo", name: "Laboratório Exata Diagnósticos", type: "laboratorio" as const, city: "São Paulo", state: "SP", desc: "Exames laboratoriais com coleta domiciliar.", cnpj: "23.456.789/0001-01" },
-      { email: "centro.imagem@livvo.demo", name: "Centro de Imagem Núcleo", type: "diagnostico" as const, city: "Belo Horizonte", state: "MG", desc: "Ressonância, tomografia e ultrassom.", cnpj: "34.567.890/0001-12" },
-      { email: "estetica.bela@livvo.demo", name: "Bella Estética Avançada", type: "estetica" as const, city: "Rio de Janeiro", state: "RJ", desc: "Procedimentos estéticos com tecnologia de ponta.", cnpj: "45.678.901/0001-23" },
+      { email: "clinica.vida@livvo.demo", name: "Clínica Vida & Saúde", type: "clinica" as const, city: "São Luís", state: "MA", desc: "Clínica multiprofissional em São Luís.", cnpj: "12.345.678/0001-90", commission: 10,
+        units: [
+          { name: "Unidade Renascença", street: "Av. Colares Moreira", number: "1234", district: "Renascença", lat: -2.5, lng: -44.3 },
+          { name: "Unidade Cohama", street: "Av. Daniel de La Touche", number: "987", district: "Cohama", lat: -2.55, lng: -44.27 },
+          { name: "Unidade Calhau", street: "Av. dos Holandeses", number: "5000", district: "Calhau", lat: -2.49, lng: -44.24 },
+        ] },
+      { email: "lab.exata@livvo.demo", name: "Laboratório Exata Diagnósticos", type: "laboratorio" as const, city: "São Luís", state: "MA", desc: "Exames laboratoriais com coleta domiciliar.", cnpj: "23.456.789/0001-01", commission: 12,
+        units: [{ name: "Unidade Central", street: "Rua Grande", number: "200", district: "Centro", lat: -2.53, lng: -44.30 }] },
+      { email: "centro.imagem@livvo.demo", name: "Centro de Imagem Núcleo", type: "diagnostico" as const, city: "Belo Horizonte", state: "MG", desc: "Tomografia e ultrassom.", cnpj: "34.567.890/0001-12", commission: null,
+        units: [{ name: "Unidade Savassi", street: "Rua Pernambuco", number: "1500", district: "Savassi", lat: -19.94, lng: -43.93 }] },
+      { email: "estetica.bela@livvo.demo", name: "Bella Estética Avançada", type: "estetica" as const, city: "Rio de Janeiro", state: "RJ", desc: "Procedimentos estéticos avançados.", cnpj: "45.678.901/0001-23", commission: 20,
+        units: [
+          { name: "Unidade Ipanema", street: "Rua Visconde de Pirajá", number: "550", district: "Ipanema", lat: -22.98, lng: -43.20 },
+          { name: "Unidade Barra", street: "Av. das Américas", number: "4000", district: "Barra da Tijuca", lat: -23.00, lng: -43.36 },
+        ] },
     ];
 
     const companyIds: string[] = [];
-    for (const c of companies) {
+    const unitIds: string[] = []; // flatten
+    const unitByCompany: Record<number, string[]> = {};
+    for (let ci = 0; ci < companies.length; ci++) {
+      const c = companies[ci];
       let ownerId = userByEmail.get(c.email);
       if (!ownerId) {
         const { data: u } = await supabaseAdmin.auth.admin.createUser({
@@ -188,38 +301,78 @@ export const seedDemoData = createServerFn({ method: "POST" })
       const { data: comp } = await supabaseAdmin.from("companies").insert({
         owner_id: ownerId, legal_name: c.name, trade_name: c.name, cnpj: c.cnpj, type: c.type,
         description: c.desc, address_city: c.city, address_state: c.state,
+        commission_percent_override: c.commission,
         status: "aprovado", approved_at: new Date().toISOString(), approved_by: context.userId,
       }).select().single();
-      if (comp) companyIds.push(comp.id);
+      if (!comp) continue;
+      companyIds.push(comp.id);
+      unitByCompany[ci] = [];
+      for (const u of c.units) {
+        const { data: unit } = await supabaseAdmin.from("company_units").insert({
+          company_id: comp.id, name: u.name, address_street: u.street, address_number: u.number,
+          address_district: u.district, address_city: c.city, address_state: c.state,
+          latitude: u.lat, longitude: u.lng, phone: "(98) 3000-0000",
+          business_hours: { mon: "08:00-18:00", tue: "08:00-18:00", wed: "08:00-18:00", thu: "08:00-18:00", fri: "08:00-18:00", sat: "08:00-12:00" },
+          active: true,
+        }).select().single();
+        if (unit) { unitIds.push(unit.id); unitByCompany[ci].push(unit.id); }
+      }
     }
 
+    // Resources (na primeira unidade de cada empresa)
+    const resourceSpecs: Array<{ companyIdx: number; unitIdx: number; name: string; kind: string }> = [
+      { companyIdx: 0, unitIdx: 0, name: "Consultório 1", kind: "sala" },
+      { companyIdx: 0, unitIdx: 1, name: "Consultório 2", kind: "sala" },
+      { companyIdx: 1, unitIdx: 0, name: "Sala de coleta A", kind: "sala_coleta" },
+      { companyIdx: 2, unitIdx: 0, name: "Ultrassom GE", kind: "equipamento_ultrassom" },
+      { companyIdx: 2, unitIdx: 0, name: "Tomógrafo Siemens", kind: "equipamento_tomografia" },
+      { companyIdx: 3, unitIdx: 0, name: "Laser Cynosure", kind: "equipamento_laser" },
+    ];
+    for (const r of resourceSpecs) {
+      const uid = unitByCompany[r.companyIdx]?.[r.unitIdx];
+      if (uid) await supabaseAdmin.from("resources").insert({ unit_id: uid, name: r.name, kind: r.kind, active: true });
+    }
+
+    // Services (incluindo pacotes)
     const serviceSpecs = [
-      { owner: "pro" as const, ownerIdx: 0, name: "Consulta dermatológica", cat: "consulta", price: 250, dur: 40 },
-      { owner: "pro" as const, ownerIdx: 0, name: "Limpeza de pele profunda", cat: "estetica", price: 380, dur: 60 },
-      { owner: "pro" as const, ownerIdx: 2, name: "Consulta pediátrica", cat: "consulta", price: 220, dur: 30 },
-      { owner: "pro" as const, ownerIdx: 4, name: "Sessão de psicoterapia", cat: "terapia", price: 180, dur: 50 },
-      { owner: "pro" as const, ownerIdx: 6, name: "Limpeza e profilaxia", cat: "odontologia", price: 180, dur: 40 },
-      { owner: "pro" as const, ownerIdx: 6, name: "Clareamento dental", cat: "odontologia", price: 1200, dur: 60 },
-      { owner: "pro" as const, ownerIdx: 7, name: "Fisioterapia ortopédica", cat: "fisioterapia", price: 150, dur: 50 },
-      { owner: "company" as const, ownerIdx: 1, name: "Hemograma completo", cat: "exame", price: 70, dur: 15 },
-      { owner: "company" as const, ownerIdx: 1, name: "Painel lipídico", cat: "exame", price: 90, dur: 15 },
-      { owner: "company" as const, ownerIdx: 2, name: "Ressonância de joelho", cat: "exame", price: 850, dur: 45 },
-      { owner: "company" as const, ownerIdx: 2, name: "Ultrassom abdominal", cat: "exame", price: 320, dur: 30 },
-      { owner: "company" as const, ownerIdx: 3, name: "Criolipólise", cat: "estetica", price: 690, dur: 60 },
-      { owner: "company" as const, ownerIdx: 3, name: "Toxina botulínica", cat: "estetica", price: 1500, dur: 30 },
-      { owner: "company" as const, ownerIdx: 0, name: "Check-up executivo", cat: "consulta", price: 950, dur: 90 },
+      { owner: "pro" as const, ownerIdx: 0, name: "Consulta dermatológica", cat: "consulta", type: "consulta", price: 250, dur: 40 },
+      { owner: "pro" as const, ownerIdx: 0, name: "Limpeza de pele profunda", cat: "estetica", type: "procedimento", price: 380, dur: 60 },
+      { owner: "pro" as const, ownerIdx: 2, name: "Consulta pediátrica", cat: "consulta", type: "consulta", price: 220, dur: 30 },
+      { owner: "pro" as const, ownerIdx: 4, name: "Sessão de psicoterapia", cat: "terapia", type: "consulta", price: 180, dur: 50 },
+      { owner: "pro" as const, ownerIdx: 6, name: "Limpeza e profilaxia", cat: "odontologia", type: "procedimento", price: 180, dur: 40 },
+      { owner: "pro" as const, ownerIdx: 6, name: "Clareamento dental", cat: "odontologia", type: "procedimento", price: 1200, dur: 60 },
+      { owner: "pro" as const, ownerIdx: 7, name: "Fisioterapia ortopédica", cat: "fisioterapia", type: "consulta", price: 150, dur: 50 },
+      { owner: "pro" as const, ownerIdx: 7, name: "Pacote 10 sessões fisioterapia", cat: "fisioterapia", type: "pacote", price: 1200, dur: 50, sessions: 10, validity: 180 },
+      { owner: "company" as const, ownerIdx: 1, name: "Hemograma completo", cat: "exame", type: "exame", price: 70, dur: 15 },
+      { owner: "company" as const, ownerIdx: 1, name: "Painel lipídico", cat: "exame", type: "exame", price: 90, dur: 15 },
+      { owner: "company" as const, ownerIdx: 2, name: "Ressonância de joelho", cat: "exame", type: "exame", price: 850, dur: 45 },
+      { owner: "company" as const, ownerIdx: 2, name: "Ultrassom abdominal", cat: "exame", type: "exame", price: 320, dur: 30 },
+      { owner: "company" as const, ownerIdx: 3, name: "Criolipólise", cat: "estetica", type: "procedimento", price: 690, dur: 60 },
+      { owner: "company" as const, ownerIdx: 3, name: "Pacote 10 sessões depilação a laser", cat: "estetica", type: "pacote", price: 2400, dur: 30, sessions: 10, validity: 365 },
+      { owner: "company" as const, ownerIdx: 0, name: "Check-up executivo", cat: "consulta", type: "procedimento", price: 950, dur: 90 },
     ];
 
     for (const s of serviceSpecs) {
-      await supabaseAdmin.from("services").insert({
+      const { data: svc } = await supabaseAdmin.from("services").insert({
         professional_id: s.owner === "pro" ? proIds[s.ownerIdx] : null,
         company_id: s.owner === "company" ? companyIds[s.ownerIdx] : null,
         category_id: catSlug[s.cat] ?? null,
-        name: s.name, duration_minutes: s.dur, price: s.price, active: true,
-      });
+        name: s.name, duration_minutes: s.dur, price: s.price, active: true, type: s.type,
+      }).select().single();
+      if (svc && s.type === "pacote" && "sessions" in s) {
+        await supabaseAdmin.from("service_packages").insert({
+          service_id: svc.id, sessions_total: s.sessions!, validity_days: s.validity!,
+        });
+      }
     }
 
-    // Paciente demo + agendamentos
+    // Cupom demo
+    await supabaseAdmin.from("coupons").upsert({
+      code: "LIVVO10", description: "10% off na primeira consulta", type: "percent", value: 10,
+      min_amount: 100, max_uses: 1000, active: true,
+    }, { onConflict: "code" });
+
+    // Paciente demo + agendamentos com financial_status variado
     const patientEmail = "paciente.demo@livvo.demo";
     let patientId = userByEmail.get(patientEmail);
     if (!patientId) {
@@ -231,28 +384,32 @@ export const seedDemoData = createServerFn({ method: "POST" })
     }
 
     if (patientId) {
-      const { data: settings } = await supabaseAdmin.from("platform_settings").select("commission_percent").eq("id", 1).single();
-      const pct = Number(settings?.commission_percent ?? 15);
-      const demoAppts: Array<{ proIdx: number; days: number; status: "realizada" | "confirmada" | "agendada"; price: number }> = [
-        { proIdx: 0, days: -10, status: "realizada", price: 250 },
-        { proIdx: 2, days: -5, status: "realizada", price: 220 },
-        { proIdx: 4, days: -2, status: "realizada", price: 180 },
-        { proIdx: 0, days: 3, status: "confirmada", price: 250 },
-        { proIdx: 1, days: 5, status: "confirmada", price: 200 },
-        { proIdx: 3, days: 7, status: "agendada", price: 320 },
-        { proIdx: 6, days: 10, status: "agendada", price: 180 },
+      const demoAppts: Array<{ proIdx: number; days: number; status: "realizada" | "confirmada" | "agendada" | "cancelada"; finStatus: "pago" | "realizado" | "liberado_repasse" | "repassado" | "reembolsado"; price: number }> = [
+        { proIdx: 0, days: -20, status: "realizada", finStatus: "repassado", price: 250 },
+        { proIdx: 0, days: -10, status: "realizada", finStatus: "liberado_repasse", price: 250 },
+        { proIdx: 2, days: -5, status: "realizada", finStatus: "realizado", price: 220 },
+        { proIdx: 4, days: -8, status: "cancelada", finStatus: "reembolsado", price: 180 },
+        { proIdx: 0, days: 3, status: "confirmada", finStatus: "pago", price: 250 },
+        { proIdx: 1, days: 5, status: "confirmada", finStatus: "pago", price: 200 },
+        { proIdx: 3, days: 7, status: "agendada", finStatus: "agendado", price: 320 },
+        { proIdx: 6, days: 10, status: "agendada", finStatus: "pago", price: 180 },
       ];
       for (const a of demoAppts) {
         const when = new Date(); when.setDate(when.getDate() + a.days); when.setHours(10, 0, 0, 0);
-        const commission = Math.round(a.price * pct) / 100;
-        const net = a.price - commission;
+        const { data: pctData } = await supabaseAdmin.rpc("effective_commission_percent", { _professional: proIds[a.proIdx], _company: null });
+        const pct = Number(pctData ?? 15);
+        const commission = Math.round((a.price * pct) / 100 * 100) / 100;
+        const net = Math.round((a.price - commission) * 100) / 100;
         const { data: appt } = await supabaseAdmin.from("appointments").insert({
           patient_id: patientId, professional_id: proIds[a.proIdx], scheduled_at: when.toISOString(),
           duration_minutes: 30, modality: "presencial", status: a.status, price: a.price,
           gross_amount: a.price, commission_amount: commission, net_amount: net,
-          payment_status: "pago", payment_method: "mock_card",
+          payment_status: a.finStatus === "reembolsado" ? "reembolsado" : "pago", payment_method: "mock_card",
+          financial_status: a.finStatus,
+          completed_at: ["realizado", "liberado_repasse", "repassado"].includes(a.finStatus) ? when.toISOString() : null,
+          released_at: ["liberado_repasse", "repassado"].includes(a.finStatus) ? new Date().toISOString() : null,
         }).select().single();
-        if (appt) {
+        if (appt && a.finStatus !== "reembolsado") {
           await supabaseAdmin.from("payments").insert({
             appointment_id: appt.id, patient_id: patientId, amount: a.price, status: "pago", method: "mock_card", paid_at: new Date().toISOString(),
           });
@@ -260,6 +417,11 @@ export const seedDemoData = createServerFn({ method: "POST" })
             { provider_id: proIds[a.proIdx], appointment_id: appt.id, kind: "credito", amount: a.price, description: "Pagamento de consulta" },
             { provider_id: proIds[a.proIdx], appointment_id: appt.id, kind: "comissao", amount: -commission, description: `Comissão Livvo (${pct}%)` },
           ]);
+          if (a.finStatus === "repassado") {
+            await supabaseAdmin.from("wallet_transactions").insert({
+              provider_id: proIds[a.proIdx], appointment_id: appt.id, kind: "repasse", amount: -net, description: "Repasse Livvo",
+            });
+          }
           if (a.status === "realizada") {
             await supabaseAdmin.from("reviews").insert({
               appointment_id: appt.id, patient_id: patientId, professional_id: proIds[a.proIdx],
@@ -268,7 +430,17 @@ export const seedDemoData = createServerFn({ method: "POST" })
           }
         }
       }
+
+      // Pacote em uso (3/10 sessões consumidas) — pega o pacote de fisioterapia
+      const { data: pkgSvc } = await supabaseAdmin.from("services").select("id").eq("name", "Pacote 10 sessões fisioterapia").maybeSingle();
+      if (pkgSvc) {
+        await supabaseAdmin.from("package_purchases").insert({
+          patient_id: patientId, service_id: pkgSvc.id, professional_id: proIds[7],
+          sessions_total: 10, sessions_used: 3, amount_paid: 1200,
+          expires_at: new Date(Date.now() + 180 * 86400000).toISOString(),
+        });
+      }
     }
 
-    return { ok: true, created: proIds.length, companies: companyIds.length, services: serviceSpecs.length };
+    return { ok: true, professionals: proIds.length, companies: companyIds.length, units: unitIds.length, services: serviceSpecs.length };
   });
