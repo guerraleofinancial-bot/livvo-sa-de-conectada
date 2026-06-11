@@ -7,7 +7,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { Users, Stethoscope, Calendar, Wallet, ShieldCheck, CheckCircle2, XCircle, Ban, Database, LogOut, Building2, Percent, MessageSquareWarning, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { setProfessionalStatus, setCompanyStatus, setUserSuspended, seedDemoData, updatePlatformSettings, setReviewStatus, createPayoutForProvider } from "@/lib/livvo/admin.functions";
+import { setProfessionalStatus, setCompanyStatus, setUserSuspended, seedDemoData, updatePlatformSettings, setReviewStatus, createPayoutBatch, markPayoutBatchPaid } from "@/lib/livvo/admin.functions";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/admin")({
@@ -28,7 +28,8 @@ function AdminPanel() {
   const seed = useServerFn(seedDemoData);
   const updSettings = useServerFn(updatePlatformSettings);
   const setRev = useServerFn(setReviewStatus);
-  const createPayout = useServerFn(createPayoutForProvider);
+  const createBatch = useServerFn(createPayoutBatch);
+  const payBatch = useServerFn(markPayoutBatchPaid);
 
   const { data: stats } = useQuery({
     queryKey: ["admin-stats"],
@@ -91,7 +92,7 @@ function AdminPanel() {
 
   const seedNow = useMutation({
     mutationFn: async () => seed(),
-    onSuccess: (r) => { toast.success(`Demo carregada: ${r.created} profissionais, ${r.companies} empresas, ${r.services} serviços`); qc.invalidateQueries(); },
+    onSuccess: (r) => { toast.success(`Demo: ${r.professionals} profissionais, ${r.companies} empresas, ${r.units} unidades, ${r.services} serviços`); qc.invalidateQueries(); },
     onError: (e) => toast.error((e as Error).message),
   });
 
@@ -237,7 +238,7 @@ function AdminPanel() {
                     <p className="text-sm font-semibold truncate">{b.name}</p>
                     <p className="text-xs text-muted-foreground font-mono">R$ {b.balance.toFixed(2)} disponíveis</p>
                   </div>
-                  <Button size="sm" onClick={async () => { try { const r = await createPayout({ data: { providerId: b.id } }); toast.success(`Repasse de R$ ${r.amount.toFixed(2)}`); qc.invalidateQueries(); } catch (e) { toast.error((e as Error).message); } }}>
+                  <Button size="sm" onClick={async () => { try { const r = await createBatch({ data: { providerId: b.id } }); await payBatch({ data: { batchId: r.batchId } }); toast.success(`Repasse de R$ ${r.total.toFixed(2)} enviado`); qc.invalidateQueries(); } catch (e) { toast.error((e as Error).message); } }}>
                     <Send className="size-4 mr-1" /> Repassar
                   </Button>
                 </div>
