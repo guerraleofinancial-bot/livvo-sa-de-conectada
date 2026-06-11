@@ -29,7 +29,7 @@ export const upsertUnit = createServerFn({ method: "POST" })
       if (!isAdmin) throw new Error("Forbidden");
     }
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { data: row, error } = await supabaseAdmin.from("company_units").upsert(data).select().single();
+    const { data: row, error } = await supabaseAdmin.from("company_units").upsert(data as never).select().single();
     if (error) throw error;
     return row;
   });
