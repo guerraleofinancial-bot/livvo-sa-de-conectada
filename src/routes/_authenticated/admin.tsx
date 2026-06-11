@@ -28,7 +28,8 @@ function AdminPanel() {
   const seed = useServerFn(seedDemoData);
   const updSettings = useServerFn(updatePlatformSettings);
   const setRev = useServerFn(setReviewStatus);
-  const createPayout = useServerFn(createPayoutForProvider);
+  const createBatch = useServerFn(createPayoutBatch);
+  const payBatch = useServerFn(markPayoutBatchPaid);
 
   const { data: stats } = useQuery({
     queryKey: ["admin-stats"],
