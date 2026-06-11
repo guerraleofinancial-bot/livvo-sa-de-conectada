@@ -7,7 +7,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { Users, Stethoscope, Calendar, Wallet, ShieldCheck, CheckCircle2, XCircle, Ban, Database, LogOut, Building2, Percent, MessageSquareWarning, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { setProfessionalStatus, setCompanyStatus, setUserSuspended, seedDemoData, updatePlatformSettings, setReviewStatus, createPayoutForProvider } from "@/lib/livvo/admin.functions";
+import { setProfessionalStatus, setCompanyStatus, setUserSuspended, seedDemoData, updatePlatformSettings, setReviewStatus, createPayoutBatch, markPayoutBatchPaid } from "@/lib/livvo/admin.functions";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/admin")({
