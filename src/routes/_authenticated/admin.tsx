@@ -238,7 +238,7 @@ function AdminPanel() {
                     <p className="text-sm font-semibold truncate">{b.name}</p>
                     <p className="text-xs text-muted-foreground font-mono">R$ {b.balance.toFixed(2)} disponíveis</p>
                   </div>
-                  <Button size="sm" onClick={async () => { try { const r = await createPayout({ data: { providerId: b.id } }); toast.success(`Repasse de R$ ${r.amount.toFixed(2)}`); qc.invalidateQueries(); } catch (e) { toast.error((e as Error).message); } }}>
+                  <Button size="sm" onClick={async () => { try { const r = await createBatch({ data: { providerId: b.id } }); await payBatch({ data: { batchId: r.batchId } }); toast.success(`Repasse de R$ ${r.total.toFixed(2)} enviado`); qc.invalidateQueries(); } catch (e) { toast.error((e as Error).message); } }}>
                     <Send className="size-4 mr-1" /> Repassar
                   </Button>
                 </div>
