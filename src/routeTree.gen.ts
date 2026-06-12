@@ -20,6 +20,7 @@ import { Route as AuthenticatedProIndexRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedAppIndexRouteImport } from './routes/_authenticated/app.index'
 import { Route as AuthenticatedProServicosRouteImport } from './routes/_authenticated/pro.servicos'
 import { Route as AuthenticatedProPacientesRouteImport } from './routes/_authenticated/pro.pacientes'
+import { Route as AuthenticatedProImpulsionarRouteImport } from './routes/_authenticated/pro.impulsionar'
 import { Route as AuthenticatedProFinanceiroRouteImport } from './routes/_authenticated/pro.financeiro'
 import { Route as AuthenticatedProAgendaRouteImport } from './routes/_authenticated/pro.agenda'
 import { Route as AuthenticatedAppPerfilRouteImport } from './routes/_authenticated/app.perfil'
@@ -89,6 +90,12 @@ const AuthenticatedProPacientesRoute =
   AuthenticatedProPacientesRouteImport.update({
     id: '/pacientes',
     path: '/pacientes',
+    getParentRoute: () => AuthenticatedProRoute,
+  } as any)
+const AuthenticatedProImpulsionarRoute =
+  AuthenticatedProImpulsionarRouteImport.update({
+    id: '/impulsionar',
+    path: '/impulsionar',
     getParentRoute: () => AuthenticatedProRoute,
   } as any)
 const AuthenticatedProFinanceiroRoute =
@@ -182,6 +189,7 @@ export interface FileRoutesByFullPath {
   '/app/perfil': typeof AuthenticatedAppPerfilRoute
   '/pro/agenda': typeof AuthenticatedProAgendaRoute
   '/pro/financeiro': typeof AuthenticatedProFinanceiroRoute
+  '/pro/impulsionar': typeof AuthenticatedProImpulsionarRoute
   '/pro/pacientes': typeof AuthenticatedProPacientesRoute
   '/pro/servicos': typeof AuthenticatedProServicosRoute
   '/app/': typeof AuthenticatedAppIndexRoute
@@ -205,6 +213,7 @@ export interface FileRoutesByTo {
   '/app/perfil': typeof AuthenticatedAppPerfilRoute
   '/pro/agenda': typeof AuthenticatedProAgendaRoute
   '/pro/financeiro': typeof AuthenticatedProFinanceiroRoute
+  '/pro/impulsionar': typeof AuthenticatedProImpulsionarRoute
   '/pro/pacientes': typeof AuthenticatedProPacientesRoute
   '/pro/servicos': typeof AuthenticatedProServicosRoute
   '/app': typeof AuthenticatedAppIndexRoute
@@ -232,6 +241,7 @@ export interface FileRoutesById {
   '/_authenticated/app/perfil': typeof AuthenticatedAppPerfilRoute
   '/_authenticated/pro/agenda': typeof AuthenticatedProAgendaRoute
   '/_authenticated/pro/financeiro': typeof AuthenticatedProFinanceiroRoute
+  '/_authenticated/pro/impulsionar': typeof AuthenticatedProImpulsionarRoute
   '/_authenticated/pro/pacientes': typeof AuthenticatedProPacientesRoute
   '/_authenticated/pro/servicos': typeof AuthenticatedProServicosRoute
   '/_authenticated/app/': typeof AuthenticatedAppIndexRoute
@@ -259,6 +269,7 @@ export interface FileRouteTypes {
     | '/app/perfil'
     | '/pro/agenda'
     | '/pro/financeiro'
+    | '/pro/impulsionar'
     | '/pro/pacientes'
     | '/pro/servicos'
     | '/app/'
@@ -282,6 +293,7 @@ export interface FileRouteTypes {
     | '/app/perfil'
     | '/pro/agenda'
     | '/pro/financeiro'
+    | '/pro/impulsionar'
     | '/pro/pacientes'
     | '/pro/servicos'
     | '/app'
@@ -308,6 +320,7 @@ export interface FileRouteTypes {
     | '/_authenticated/app/perfil'
     | '/_authenticated/pro/agenda'
     | '/_authenticated/pro/financeiro'
+    | '/_authenticated/pro/impulsionar'
     | '/_authenticated/pro/pacientes'
     | '/_authenticated/pro/servicos'
     | '/_authenticated/app/'
@@ -401,6 +414,13 @@ declare module '@tanstack/react-router' {
       path: '/pacientes'
       fullPath: '/pro/pacientes'
       preLoaderRoute: typeof AuthenticatedProPacientesRouteImport
+      parentRoute: typeof AuthenticatedProRoute
+    }
+    '/_authenticated/pro/impulsionar': {
+      id: '/_authenticated/pro/impulsionar'
+      path: '/impulsionar'
+      fullPath: '/pro/impulsionar'
+      preLoaderRoute: typeof AuthenticatedProImpulsionarRouteImport
       parentRoute: typeof AuthenticatedProRoute
     }
     '/_authenticated/pro/financeiro': {
@@ -533,6 +553,7 @@ const AuthenticatedAppRouteWithChildren =
 interface AuthenticatedProRouteChildren {
   AuthenticatedProAgendaRoute: typeof AuthenticatedProAgendaRoute
   AuthenticatedProFinanceiroRoute: typeof AuthenticatedProFinanceiroRoute
+  AuthenticatedProImpulsionarRoute: typeof AuthenticatedProImpulsionarRoute
   AuthenticatedProPacientesRoute: typeof AuthenticatedProPacientesRoute
   AuthenticatedProServicosRoute: typeof AuthenticatedProServicosRoute
   AuthenticatedProIndexRoute: typeof AuthenticatedProIndexRoute
@@ -541,6 +562,7 @@ interface AuthenticatedProRouteChildren {
 const AuthenticatedProRouteChildren: AuthenticatedProRouteChildren = {
   AuthenticatedProAgendaRoute: AuthenticatedProAgendaRoute,
   AuthenticatedProFinanceiroRoute: AuthenticatedProFinanceiroRoute,
+  AuthenticatedProImpulsionarRoute: AuthenticatedProImpulsionarRoute,
   AuthenticatedProPacientesRoute: AuthenticatedProPacientesRoute,
   AuthenticatedProServicosRoute: AuthenticatedProServicosRoute,
   AuthenticatedProIndexRoute: AuthenticatedProIndexRoute,

@@ -1,10 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
+import { useEffect, useRef, useState } from "react";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
-import { Search as SearchIcon, ArrowLeft, MapPin, Star, Building2, SlidersHorizontal } from "lucide-react";
+import { Search as SearchIcon, ArrowLeft, MapPin, Star, Building2, SlidersHorizontal, Sparkles, Crown } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { trackAdEvent } from "@/lib/livvo/ads.functions";
 
 const searchSchema = z.object({
   specialty: z.string().optional(),
@@ -16,43 +18,74 @@ export const Route = createFileRoute("/_authenticated/app/buscar")({
   component: Buscar,
 });
 
+type Ranked = {
+  professional_id: string;
+  full_name: string;
+  avatar_url: string | null;
+  specialty_name: string | null;
+  specialty_slug: string | null;
+  address_city: string | null;
+  address_state: string | null;
+  consultation_price: number;
+  rating_average: number;
+  rating_count: number;
+  is_premium: boolean;
+  rank_group: number;
+  subscription_id: string | null;
+};
+
 function Buscar() {
   const { specialty: initialSpec, q: initialQ } = Route.useSearch();
   const [q, setQ] = useState(initialQ ?? "");
   const [specSlug, setSpecSlug] = useState<string | undefined>(initialSpec);
-  const [maxPrice, setMaxPrice] = useState<number>(2000);
-  const [minRating, setMinRating] = useState<number>(0);
   const [city, setCity] = useState("");
+  const [state, setState] = useState("");
   const [showFilters, setShowFilters] = useState(false);
+  const trackEvent = useServerFn(trackAdEvent);
 
   const { data: specs } = useQuery({
     queryKey: ["specialties"],
     queryFn: async () => (await supabase.from("specialties").select("*").order("name")).data ?? [],
   });
 
-  const { data: pros } = useQuery({
-    queryKey: ["search-pros", q, specSlug, maxPrice, minRating, city],
+  const { data: ranked } = useQuery<Ranked[]>({
+    queryKey: ["search-ranked", q, specSlug, city, state],
     queryFn: async () => {
-      let query = supabase
-        .from("professionals")
-        .select("id, consultation_price, rating_average, address_city, address_state, profiles:id(full_name, avatar_url), specialties!inner(name, slug)")
-        .eq("status", "aprovado")
-        .lte("consultation_price", maxPrice)
-        .gte("rating_average", minRating);
-      if (specSlug) query = query.eq("specialties.slug", specSlug);
-      if (city.trim()) query = query.ilike("address_city", `%${city}%`);
-      const { data } = await query.limit(30);
-      let rows = data ?? [];
-      if (q.trim()) {
-        const term = q.toLowerCase();
-        rows = rows.filter((r) => {
-          const p = r as typeof r & { profiles: { full_name?: string } | null };
-          return p.profiles?.full_name?.toLowerCase().includes(term);
-        });
-      }
-      return rows;
+      const { data, error } = await supabase.rpc("search_providers_ranked", {
+        _state: state.trim() || undefined,
+        _city: city.trim() || undefined,
+        _specialty_slug: specSlug ?? undefined,
+        _q: q.trim() || undefined,
+        _limit: 50,
+      });
+      if (error) throw error;
+      return (data ?? []) as Ranked[];
     },
   });
+
+  // Fire impressions once per (subscription_id, query) for sponsored rows
+  const fired = useRef(new Set<string>());
+  useEffect(() => {
+    (ranked ?? []).forEach((r) => {
+      if (r.rank_group < 4 && r.subscription_id && !fired.current.has(r.subscription_id)) {
+        fired.current.add(r.subscription_id);
+        trackEvent({ data: { subscriptionId: r.subscription_id, targetType: "professional", targetId: r.professional_id, kind: "impression", context: { q, city, state, specialty: specSlug } } }).catch(() => {});
+      }
+    });
+  }, [ranked, trackEvent, q, city, state, specSlug]);
+
+  function onSponsoredClick(r: Ranked) {
+    if (r.rank_group < 4 && r.subscription_id) {
+      trackEvent({ data: { subscriptionId: r.subscription_id, targetType: "professional", targetId: r.professional_id, kind: "click", context: { q, city, state, specialty: specSlug } } }).catch(() => {});
+    }
+  }
+
+  const groups: Array<{ title: string; rank: number; items: Ranked[]; sponsored: boolean }> = [
+    { title: "Patrocinado", rank: 1, items: (ranked ?? []).filter((r) => r.rank_group === 1), sponsored: true },
+    { title: "Em destaque na sua região", rank: 2, items: (ranked ?? []).filter((r) => r.rank_group === 2), sponsored: true },
+    { title: "Em destaque na categoria", rank: 3, items: (ranked ?? []).filter((r) => r.rank_group === 3), sponsored: true },
+    { title: "Profissionais", rank: 4, items: (ranked ?? []).filter((r) => r.rank_group === 4), sponsored: false },
+  ];
 
   const { data: companies } = useQuery({
     queryKey: ["search-companies", q, city],
@@ -81,17 +114,15 @@ function Buscar() {
 
       {showFilters && (
         <div className="rounded-2xl border border-border bg-card p-4 space-y-3 text-sm">
-          <div>
-            <label className="text-xs font-semibold text-muted-foreground">Cidade</label>
-            <Input value={city} onChange={(e) => setCity(e.target.value)} placeholder="Ex.: São Paulo" />
-          </div>
-          <div>
-            <label className="text-xs font-semibold text-muted-foreground">Preço máximo: R$ {maxPrice}</label>
-            <input type="range" min={50} max={2000} step={50} value={maxPrice} onChange={(e) => setMaxPrice(Number(e.target.value))} className="w-full accent-primary" />
-          </div>
-          <div>
-            <label className="text-xs font-semibold text-muted-foreground">Avaliação mínima: {minRating.toFixed(1)} ★</label>
-            <input type="range" min={0} max={5} step={0.5} value={minRating} onChange={(e) => setMinRating(Number(e.target.value))} className="w-full accent-primary" />
+          <div className="grid grid-cols-2 gap-2">
+            <div>
+              <label className="text-xs font-semibold text-muted-foreground">Estado</label>
+              <Input value={state} onChange={(e) => setState(e.target.value.toUpperCase())} placeholder="MA" maxLength={2} />
+            </div>
+            <div>
+              <label className="text-xs font-semibold text-muted-foreground">Cidade</label>
+              <Input value={city} onChange={(e) => setCity(e.target.value)} placeholder="São Luís" />
+            </div>
           </div>
         </div>
       )}
@@ -119,22 +150,36 @@ function Buscar() {
         </section>
       )}
 
-      <section>
-        <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2">Profissionais</h2>
-        <div className="space-y-3">
-          {(pros ?? []).map((row) => {
-            const p = row as typeof row & { profiles: { full_name?: string; avatar_url?: string } | null; specialties: { name?: string } | null };
-            return (
-              <Link key={p.id} to="/app/profissional/$id" params={{ id: p.id }} className="block p-4 bg-card border border-border rounded-2xl shadow-sm">
+      {groups.map((g) => g.items.length > 0 && (
+        <section key={g.rank}>
+          <h2 className="text-xs font-bold uppercase tracking-wider mb-2 flex items-center gap-1.5">
+            {g.sponsored && <Sparkles className="size-3 text-amber-500" />}
+            <span className={g.sponsored ? "text-amber-600" : "text-muted-foreground"}>{g.title}</span>
+          </h2>
+          <div className="space-y-3">
+            {g.items.map((p) => (
+              <Link
+                key={p.professional_id}
+                to="/app/profissional/$id"
+                params={{ id: p.professional_id }}
+                onClick={() => onSponsoredClick(p)}
+                className={`block p-4 rounded-2xl shadow-sm relative ${g.sponsored ? "bg-card border-2 border-amber-400/60" : "bg-card border border-border"}`}
+              >
+                {g.sponsored && (
+                  <span className="absolute -top-2 left-3 text-[9px] font-bold uppercase tracking-wider bg-amber-400 text-amber-950 px-2 py-0.5 rounded-full">Patrocinado</span>
+                )}
                 <div className="flex gap-4">
                   <div className="size-16 rounded-full bg-primary-soft shrink-0 grid place-items-center text-primary font-bold border border-border overflow-hidden">
-                    {p.profiles?.avatar_url ? <img src={p.profiles.avatar_url} className="size-full object-cover" alt="" /> : (p.profiles?.full_name ?? "?").charAt(0)}
+                    {p.avatar_url ? <img src={p.avatar_url} className="size-full object-cover" alt="" /> : (p.full_name ?? "?").charAt(0)}
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex justify-between items-start gap-2">
                       <div className="min-w-0">
-                        <h3 className="text-sm font-semibold truncate">{p.profiles?.full_name}</h3>
-                        <p className="text-xs text-muted-foreground truncate">{p.specialties?.name}</p>
+                        <h3 className="text-sm font-semibold truncate flex items-center gap-1.5">
+                          {p.full_name}
+                          {p.is_premium && <Crown className="size-3.5 text-primary" />}
+                        </h3>
+                        <p className="text-xs text-muted-foreground truncate">{p.specialty_name}</p>
                       </div>
                       <div className="flex items-center gap-1 text-xs font-semibold text-amber-500 shrink-0">
                         <Star className="size-3 fill-current" /> {Number(p.rating_average).toFixed(1)}
@@ -147,13 +192,14 @@ function Buscar() {
                   </div>
                 </div>
               </Link>
-            );
-          })}
-          {pros && pros.length === 0 && (
-            <div className="rounded-2xl border border-dashed border-border p-10 text-center text-sm text-muted-foreground">Nenhum profissional encontrado.</div>
-          )}
-        </div>
-      </section>
+            ))}
+          </div>
+        </section>
+      ))}
+
+      {ranked && ranked.length === 0 && (
+        <div className="rounded-2xl border border-dashed border-border p-10 text-center text-sm text-muted-foreground">Nenhum profissional encontrado.</div>
+      )}
     </div>
   );
 }

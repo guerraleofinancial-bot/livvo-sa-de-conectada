@@ -4,17 +4,18 @@ import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
-import { Users, Stethoscope, Calendar, Wallet, ShieldCheck, CheckCircle2, XCircle, Ban, Database, LogOut, Building2, Percent, MessageSquareWarning, Send } from "lucide-react";
+import { Users, Stethoscope, Calendar, Wallet, ShieldCheck, CheckCircle2, XCircle, Ban, Database, LogOut, Building2, Percent, MessageSquareWarning, Send, Sparkles, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { setProfessionalStatus, setCompanyStatus, setUserSuspended, seedDemoData, updatePlatformSettings, setReviewStatus, createPayoutBatch, markPayoutBatchPaid } from "@/lib/livvo/admin.functions";
+import { adminAdsRevenueReport, adminListSubscriptions, cancelSubscription } from "@/lib/livvo/ads.functions";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/admin")({
   component: AdminPanel,
 });
 
-type Tab = "overview" | "pros" | "companies" | "finance" | "reviews" | "users" | "settings";
+type Tab = "overview" | "pros" | "companies" | "finance" | "ads" | "reviews" | "users" | "settings";
 
 function AdminPanel() {
   const { isAdmin, loading } = useAuth();
@@ -30,6 +31,9 @@ function AdminPanel() {
   const setRev = useServerFn(setReviewStatus);
   const createBatch = useServerFn(createPayoutBatch);
   const payBatch = useServerFn(markPayoutBatchPaid);
+  const adsReport = useServerFn(adminAdsRevenueReport);
+  const listSubs = useServerFn(adminListSubscriptions);
+  const cancelSub = useServerFn(cancelSubscription);
 
   const { data: stats } = useQuery({
     queryKey: ["admin-stats"],
@@ -90,6 +94,16 @@ function AdminPanel() {
     },
   });
 
+  const [adsRange, setAdsRange] = useState<7 | 30 | 90>(30);
+  const { data: adsRevenue } = useQuery({
+    queryKey: ["ads-revenue", adsRange], enabled: isAdmin && tab === "ads",
+    queryFn: () => adsReport({ data: { days: adsRange } }),
+  });
+  const { data: adSubs } = useQuery({
+    queryKey: ["admin-ad-subs"], enabled: isAdmin && tab === "ads",
+    queryFn: () => listSubs(),
+  });
+
   const seedNow = useMutation({
     mutationFn: async () => seed(),
     onSuccess: (r) => { toast.success(`Demo: ${r.professionals} profissionais, ${r.companies} empresas, ${r.units} unidades, ${r.services} serviços`); qc.invalidateQueries(); },
@@ -115,6 +129,7 @@ function AdminPanel() {
     { id: "pros", label: "Profissionais", icon: Stethoscope },
     { id: "companies", label: "Empresas", icon: Building2 },
     { id: "finance", label: "Financeiro", icon: Wallet },
+    { id: "ads", label: "Anúncios & Receita", icon: Sparkles },
     { id: "reviews", label: "Avaliações", icon: MessageSquareWarning },
     { id: "users", label: "Usuários", icon: Users },
     { id: "settings", label: "Configurações", icon: Percent },
@@ -246,6 +261,58 @@ function AdminPanel() {
               {providerBalances && providerBalances.length === 0 && (
                 <p className="text-sm text-muted-foreground">Nenhum prestador com saldo a repassar.</p>
               )}
+            </div>
+          </section>
+        )}
+
+        {tab === "ads" && (
+          <section className="space-y-5">
+            <div className="flex items-center justify-between">
+              <h2 className="text-sm font-bold">Receita da plataforma · últimos {adsRange} dias</h2>
+              <div className="flex gap-1">
+                {[7, 30, 90].map((d) => (
+                  <button key={d} onClick={() => setAdsRange(d as 7 | 30 | 90)} className={`px-3 py-1 text-xs font-semibold rounded-full border ${adsRange === d ? "bg-primary text-primary-foreground border-primary" : "bg-card border-border text-muted-foreground"}`}>{d}d</button>
+                ))}
+              </div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <div className="rounded-2xl bg-card border border-border p-4">
+                <Percent className="size-4 text-primary mb-2" />
+                <p className="font-mono text-2xl font-bold">R$ {(adsRevenue?.commissions ?? 0).toFixed(0)}</p>
+                <p className="text-xs text-muted-foreground mt-1">Receita de comissões</p>
+              </div>
+              <div className="rounded-2xl bg-card border border-border p-4">
+                <Sparkles className="size-4 text-amber-500 mb-2" />
+                <p className="font-mono text-2xl font-bold">R$ {((adsRevenue?.adsCents ?? 0) / 100).toFixed(0)}</p>
+                <p className="text-xs text-muted-foreground mt-1">Receita de anúncios ({adsRevenue?.subsCount ?? 0} assinaturas)</p>
+              </div>
+              <div className="rounded-2xl bg-primary text-primary-foreground p-4">
+                <Wallet className="size-4 mb-2 opacity-90" />
+                <p className="font-mono text-2xl font-bold">R$ {(adsRevenue?.total ?? 0).toFixed(0)}</p>
+                <p className="text-xs opacity-80 mt-1">Receita total</p>
+              </div>
+            </div>
+            <h3 className="text-sm font-bold mt-6">Assinaturas ativas e recentes</h3>
+            <div className="space-y-2">
+              {(adSubs ?? []).map((s) => {
+                const r = s as typeof s & { featured_plans: { name: string; kind: string } | null; profiles: { full_name?: string } | null; companies: { legal_name?: string } | null };
+                const target = r.profiles?.full_name ?? r.companies?.legal_name ?? "—";
+                return (
+                  <div key={s.id} className="p-3 rounded-2xl bg-card border border-border flex items-center gap-3 flex-wrap">
+                    <Sparkles className="size-4 text-amber-500" />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold truncate">{target} <span className="text-xs text-muted-foreground">· {r.featured_plans?.name}</span></p>
+                      <p className="text-[10px] text-muted-foreground">Status {s.status} · expira {new Date(s.ends_at).toLocaleDateString("pt-BR")} · R$ {(s.amount_paid_cents / 100).toFixed(2)}</p>
+                    </div>
+                    {s.status === "ativo" && (
+                      <Button size="sm" variant="outline" onClick={async () => { await cancelSub({ data: { subscriptionId: s.id } }); toast.success("Cancelado"); qc.invalidateQueries({ queryKey: ["admin-ad-subs"] }); }}>
+                        <X className="size-4 mr-1" /> Cancelar
+                      </Button>
+                    )}
+                  </div>
+                );
+              })}
+              {adSubs && adSubs.length === 0 && <p className="text-sm text-muted-foreground">Nenhuma assinatura ainda.</p>}
             </div>
           </section>
         )}
