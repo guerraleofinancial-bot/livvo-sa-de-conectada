@@ -47,7 +47,8 @@ export const saveOnboardingStep = createServerFn({ method: "POST" })
     // required fields with safe defaults to allow upsert on first step
     if (!("professional_registry" in payload)) payload.professional_registry = payload.professional_registry ?? "";
     if (!("consultation_price" in payload)) payload.consultation_price = payload.consultation_price ?? 0;
-    const { error } = await supabaseAdmin.from("professionals").upsert(payload, { onConflict: "id" });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { error } = await supabaseAdmin.from("professionals").upsert(payload as any, { onConflict: "id" });
     if (error) throw error;
     return { ok: true };
   });
