@@ -128,7 +128,7 @@ export const createPaidAppointment = createServerFn({ method: "POST" })
       if (chargeResult.status === "recusado") throw new Error("Pagamento recusado pelo emissor");
     }
     const apptPaymentStatus = chargeResult ? (chargeResult.status === "aprovado" ? "pago" : chargeResult.status === "pendente" ? "pendente" : "pago") : "pago";
-    const apptFinStatus = chargeResult && chargeResult.status === "pendente" ? "aguardando_pagamento" : finStatus;
+    const apptFinStatus = chargeResult && chargeResult.status === "pendente" ? "agendado" : finStatus;
 
     const { data: appt, error: aErr } = await supabaseAdmin.from("appointments").insert({
       patient_id: userId,
