@@ -30,6 +30,7 @@ import { Route as AuthenticatedAppDocumentosRouteImport } from './routes/_authen
 import { Route as AuthenticatedAppConsultasRouteImport } from './routes/_authenticated/app.consultas'
 import { Route as AuthenticatedAppCarteiraRouteImport } from './routes/_authenticated/app.carteira'
 import { Route as AuthenticatedAppBuscarRouteImport } from './routes/_authenticated/app.buscar'
+import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments.webhook'
 import { Route as AuthenticatedAppProfissionalIdRouteImport } from './routes/_authenticated/app.profissional.$id'
 import { Route as AuthenticatedAppEmpresaIdRouteImport } from './routes/_authenticated/app.empresa.$id'
 import { Route as AuthenticatedAppCheckoutIdRouteImport } from './routes/_authenticated/app.checkout.$id'
@@ -149,6 +150,12 @@ const AuthenticatedAppBuscarRoute = AuthenticatedAppBuscarRouteImport.update({
   path: '/buscar',
   getParentRoute: () => AuthenticatedAppRoute,
 } as any)
+const ApiPublicPaymentsWebhookRoute =
+  ApiPublicPaymentsWebhookRouteImport.update({
+    id: '/api/public/payments/webhook',
+    path: '/api/public/payments/webhook',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const AuthenticatedAppProfissionalIdRoute =
   AuthenticatedAppProfissionalIdRouteImport.update({
     id: '/profissional/$id',
@@ -198,6 +205,7 @@ export interface FileRoutesByFullPath {
   '/app/checkout/$id': typeof AuthenticatedAppCheckoutIdRoute
   '/app/empresa/$id': typeof AuthenticatedAppEmpresaIdRoute
   '/app/profissional/$id': typeof AuthenticatedAppProfissionalIdRoute
+  '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -222,6 +230,7 @@ export interface FileRoutesByTo {
   '/app/checkout/$id': typeof AuthenticatedAppCheckoutIdRoute
   '/app/empresa/$id': typeof AuthenticatedAppEmpresaIdRoute
   '/app/profissional/$id': typeof AuthenticatedAppProfissionalIdRoute
+  '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -250,6 +259,7 @@ export interface FileRoutesById {
   '/_authenticated/app/checkout/$id': typeof AuthenticatedAppCheckoutIdRoute
   '/_authenticated/app/empresa/$id': typeof AuthenticatedAppEmpresaIdRoute
   '/_authenticated/app/profissional/$id': typeof AuthenticatedAppProfissionalIdRoute
+  '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -278,6 +288,7 @@ export interface FileRouteTypes {
     | '/app/checkout/$id'
     | '/app/empresa/$id'
     | '/app/profissional/$id'
+    | '/api/public/payments/webhook'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -302,6 +313,7 @@ export interface FileRouteTypes {
     | '/app/checkout/$id'
     | '/app/empresa/$id'
     | '/app/profissional/$id'
+    | '/api/public/payments/webhook'
   id:
     | '__root__'
     | '/'
@@ -329,12 +341,14 @@ export interface FileRouteTypes {
     | '/_authenticated/app/checkout/$id'
     | '/_authenticated/app/empresa/$id'
     | '/_authenticated/app/profissional/$id'
+    | '/api/public/payments/webhook'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
   AuthRoute: typeof AuthRoute
+  ApiPublicPaymentsWebhookRoute: typeof ApiPublicPaymentsWebhookRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -486,6 +500,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAppBuscarRouteImport
       parentRoute: typeof AuthenticatedAppRoute
     }
+    '/api/public/payments/webhook': {
+      id: '/api/public/payments/webhook'
+      path: '/api/public/payments/webhook'
+      fullPath: '/api/public/payments/webhook'
+      preLoaderRoute: typeof ApiPublicPaymentsWebhookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/app/profissional/$id': {
       id: '/_authenticated/app/profissional/$id'
       path: '/profissional/$id'
@@ -593,17 +614,8 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
   AuthRoute: AuthRoute,
+  ApiPublicPaymentsWebhookRoute: ApiPublicPaymentsWebhookRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

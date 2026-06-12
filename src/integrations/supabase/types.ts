@@ -69,6 +69,8 @@ export type Database = {
           discount_amount: number
           duration_minutes: number
           financial_status: Database["public"]["Enums"]["financial_status"]
+          gateway: string | null
+          gateway_transaction_id: string | null
           gross_amount: number
           id: string
           modality: Database["public"]["Enums"]["appointment_modality"]
@@ -101,6 +103,8 @@ export type Database = {
           discount_amount?: number
           duration_minutes?: number
           financial_status?: Database["public"]["Enums"]["financial_status"]
+          gateway?: string | null
+          gateway_transaction_id?: string | null
           gross_amount?: number
           id?: string
           modality?: Database["public"]["Enums"]["appointment_modality"]
@@ -133,6 +137,8 @@ export type Database = {
           discount_amount?: number
           duration_minutes?: number
           financial_status?: Database["public"]["Enums"]["financial_status"]
+          gateway?: string | null
+          gateway_transaction_id?: string | null
           gross_amount?: number
           id?: string
           modality?: Database["public"]["Enums"]["appointment_modality"]
@@ -1084,36 +1090,111 @@ export type Database = {
           },
         ]
       }
+      payment_webhook_events: {
+        Row: {
+          created_at: string
+          error: string | null
+          event_type: string | null
+          gateway: string
+          id: string
+          payload: Json
+          processed: boolean
+          processed_at: string | null
+          signature: string | null
+        }
+        Insert: {
+          created_at?: string
+          error?: string | null
+          event_type?: string | null
+          gateway: string
+          id?: string
+          payload: Json
+          processed?: boolean
+          processed_at?: string | null
+          signature?: string | null
+        }
+        Update: {
+          created_at?: string
+          error?: string | null
+          event_type?: string | null
+          gateway?: string
+          id?: string
+          payload?: Json
+          processed?: boolean
+          processed_at?: string | null
+          signature?: string | null
+        }
+        Relationships: []
+      }
       payments: {
         Row: {
           amount: number
           appointment_id: string
+          commission_amount: number | null
           created_at: string
+          gateway: string
+          gateway_payment_id: string | null
+          gateway_transaction_id: string | null
+          gross_amount: number | null
           id: string
           method: string | null
+          net_amount: number | null
           paid_at: string | null
           patient_id: string
+          payment_method: string | null
+          payout_status: string
+          recipient_id: string | null
+          refund_status: string | null
+          refunded_at: string | null
           status: Database["public"]["Enums"]["payment_status"]
+          updated_at: string
+          webhook_payload: Json | null
         }
         Insert: {
           amount: number
           appointment_id: string
+          commission_amount?: number | null
           created_at?: string
+          gateway?: string
+          gateway_payment_id?: string | null
+          gateway_transaction_id?: string | null
+          gross_amount?: number | null
           id?: string
           method?: string | null
+          net_amount?: number | null
           paid_at?: string | null
           patient_id: string
+          payment_method?: string | null
+          payout_status?: string
+          recipient_id?: string | null
+          refund_status?: string | null
+          refunded_at?: string | null
           status?: Database["public"]["Enums"]["payment_status"]
+          updated_at?: string
+          webhook_payload?: Json | null
         }
         Update: {
           amount?: number
           appointment_id?: string
+          commission_amount?: number | null
           created_at?: string
+          gateway?: string
+          gateway_payment_id?: string | null
+          gateway_transaction_id?: string | null
+          gross_amount?: number | null
           id?: string
           method?: string | null
+          net_amount?: number | null
           paid_at?: string | null
           patient_id?: string
+          payment_method?: string | null
+          payout_status?: string
+          recipient_id?: string | null
+          refund_status?: string | null
+          refunded_at?: string | null
           status?: Database["public"]["Enums"]["payment_status"]
+          updated_at?: string
+          webhook_payload?: Json | null
         }
         Relationships: [
           {
