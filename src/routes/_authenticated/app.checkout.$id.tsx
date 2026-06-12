@@ -25,6 +25,7 @@ function Checkout() {
   const navigate = useNavigate();
   const charge = useServerFn(createPaidAppointment);
   const [method, setMethod] = useState<"mock_card" | "mock_pix">("mock_card");
+  const [simulate, setSimulate] = useState<"approved" | "declined" | "pending">("approved");
   const [card, setCard] = useState("4242 4242 4242 4242");
   const [cvc, setCvc] = useState("123");
 
