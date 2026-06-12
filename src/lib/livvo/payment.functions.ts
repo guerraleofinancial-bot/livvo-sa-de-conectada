@@ -22,6 +22,7 @@ export const createPaidAppointment = createServerFn({ method: "POST" })
     packagePurchaseId?: string | null;
     paymentMethod: "mock_card" | "mock_pix" | "pacote";
     notes?: string;
+    simulate?: "approved" | "declined" | "pending";
   }) =>
     z.object({
       professionalId: z.string().uuid(),
@@ -33,6 +34,7 @@ export const createPaidAppointment = createServerFn({ method: "POST" })
       packagePurchaseId: z.string().uuid().nullable().optional(),
       paymentMethod: z.enum(["mock_card", "mock_pix", "pacote"]),
       notes: z.string().max(500).optional(),
+      simulate: z.enum(["approved", "declined", "pending"]).optional(),
     }).parse(d),
   )
   .handler(async ({ data, context }) => {
