@@ -1,97 +1,82 @@
-# Livvo Ads — Patrocínio e Destaque
+# Onboarding Profissional Premium — Evolução
 
-Nova fonte de receita: venda de visibilidade. Mantém o stack atual (TanStack Start + Lovable Cloud + Healthtech Refinado), pagamentos seguem mockados (prep para Paddle real depois).
+Manter o fluxo atual em `src/routes/_authenticated/onboarding-pro.tsx`, mas transformá-lo em wizard multi-step com barra de progresso, preview ao vivo e cobertura completa do cadastro de marketplace de saúde.
 
 ## 1. Banco de dados (1 migration)
 
-Novas tabelas em `public`:
+Estender `professionals` com colunas novas (todas nullable para não quebrar perfis atuais):
+- `display_name`, `cpf_cnpj`, `secondary_specialties` (UUID[]), `years_experience` (INT), `academic_formation`, `postgrad`, `certifications` (TEXT[]), `languages` (TEXT[]).
+- Contato: `whatsapp`, `phone`, `professional_email`, `instagram`, `website`.
+- Endereço: `address_zip`, `address_number`, `address_complement`, `address_district`.
+- Mídia: `cover_url`, `logo_url` (avatar_url já existe).
+- Onboarding: `onboarding_step` (INT 0..7), `onboarding_completed_at`, `zero_commission_start`, `zero_commission_end` (preenchidos no submit final = data aprovação + 90 dias; gravamos start=null/end=null até aprovação, função `approve_professional` calcula).
 
-- **featured_plans** — catálogo de planos vendáveis. Campos: `code` (slug único), `name`, `kind` (enum `premium`, `regional`, `category`, `perfil_premium`), `price_cents`, `duration_days`, `description`, `perks` (JSONB: galeria ampliada, vídeo, etc.), `active`.
-- **featured_subscriptions** — contratação ativa por prestador/empresa. Campos: `plan_id`, `professional_id` (nullable), `company_id` (nullable, XOR com professional_id), `status` (`ativo`, `pausado`, `expirado`, `cancelado`), `starts_at`, `ends_at`, `amount_paid_cents`, `auto_renew`, `payment_ref`.
-- **featured_regions** — escopos regionais de uma assinatura (N:1 com subscription). Campos: `subscription_id`, `state`, `city` (nullable = estado inteiro), `district` (nullable).
-- **featured_categories** — escopos por categoria. Campos: `subscription_id`, `specialty_id` (nullable), `company_type` (nullable: `clinica`, `laboratorio`, `estetica`, …).
-- **ad_impressions** — métricas leves. Campos: `subscription_id`, `professional_id`/`company_id`, `kind` (`impression`, `click`, `booking`), `viewer_id` (nullable), `context` (JSONB: query, city, specialty), `occurred_at`. Particionável depois.
-- **profiles_premium_assets** — extensão de perfil para quem tem `perfil_premium`. Campos: `professional_id`/`company_id`, `video_url`, `extra_photos` (TEXT[]), `highlight_cta_text`.
+Nova tabela **professional_documents**:
+- `professional_id`, `kind` (enum: `documento_pessoal`, `registro`, `comprovante_endereco`, `documento_empresa`), `file_url`, `status` (`pendente`, `em_analise`, `aprovado`, `rejeitado`), `reviewer_notes`, timestamps.
+- RLS: dono lê/insere; admin (has_role admin) lê/atualiza status. GRANTs autenticated + service_role.
 
-Alterações:
-- `professionals` e `companies`: ganham `is_premium` BOOL gerado por trigger a partir de subscription ativa do tipo `perfil_premium` (ou view materializada simples — usaremos view).
+Nova tabela **professional_business_hours** (semana padrão; complementa `professional_availability` que é por slot):
+- `professional_id`, `weekday` (0..6), `opens_at`, `closes_at`, `lunch_start`, `lunch_end`, `closed` BOOL.
+- UNIQUE(professional_id, weekday). RLS dono + leitura pública para perfis aprovados.
 
-Funções SQL:
-- `active_featured(_target_kind, _target_id)` → set de subscriptions ativas (now() entre starts_at e ends_at, status=ativo).
-- `search_providers_ranked(_state, _city, _specialty_slug, _q, _limit)` → retorna profissionais ordenados em 4 grupos (premium, regional, categoria, orgânico) com `rank_group` + tie-breakers (rating, distância se passar lat/lng, conversion_rate calculado das impressions).
-- `ads_revenue_summary(_from, _to)` → receita de anúncios no período.
+Storage bucket público `provider-media` (avatar, logo, cover, fotos de serviço) com policies: insert/update/delete pelo dono via path `{user_id}/...`.
 
-RLS + GRANTs em tudo. Plans: leitura `authenticated`. Subscriptions: leitura pelo dono ou admin; insert via server function (service role). Impressions: insert por server function, leitura pelo dono/admin.
+Storage bucket privado `provider-documents` (KYC); apenas dono e admin leem.
 
-Seed: 4 `featured_plans` (Premium Search R$ 299/30d, Regional R$ 149/30d, Categoria R$ 199/30d, Perfil Premium R$ 99/30d) + 2 assinaturas demo na seed atual para o ranking aparecer já.
+Trigger `update_updated_at_column` em professional_documents e business_hours.
 
 ## 2. Server functions
 
-Arquivo novo `src/lib/livvo/ads.functions.ts`:
-- `listFeaturedPlans()` — público (autenticado).
-- `subscribeToPlan({ planId, targetType, targetId, regions?, categories? })` — valida ownership, cria subscription, debita carteira/marca pago (mock), grava ledger entry `ad_purchase`.
-- `cancelSubscription(id)` — soft cancel.
-- `myActiveSubscriptions(targetType, targetId)`.
-- `trackAdEvent({ subscriptionId, kind, context })` — insert em `ad_impressions`.
-- `adsAnalyticsForProvider(targetType, targetId, range)` — impressões/cliques/agendamentos/conversão agregados.
-- Admin: `adminListSubscriptions`, `adminUpsertPlan`, `adminAdsRevenueReport` (chama `ads_revenue_summary`).
+Novo arquivo `src/lib/livvo/onboarding-pro.functions.ts`:
+- `saveOnboardingStep({ step, patch })` — upsert parcial em `professionals` + atualiza `onboarding_step`. Valida ownership (id = userId).
+- `setBusinessHours(hours[])` — replace semana inteira.
+- `uploadProviderDocument({ kind, file_url })` — insere doc com status `pendente`.
+- `submitOnboarding()` — marca `status='pendente'` e `onboarding_completed_at=now()`. Não ativa zero-commission ainda (só na aprovação).
+- `lookupCep(cep)` — proxy server-side para ViaCEP (`https://viacep.com.br/ws/{cep}/json/`), sem chave.
 
-Atualizar `payment.functions.ts`:
-- Quando `createPaidAppointment` resolve um profissional vindo de busca com `featured_subscription_id` no contexto, dispara `trackAdEvent` (`booking`).
+Atualizar `src/lib/livvo/admin.functions.ts`:
+- `approveProfessional(id)` — set `status='aprovado'`, `zero_commission_start=now()`, `zero_commission_end=now()+90d`.
 
-Atualizar `admin.functions.ts`:
-- `platformRevenueReport(range)` retorna `{ commissions, ads, total }`.
+Reusar `services.functions.ts` existente para cadastro de serviços (a tabela `services` já existe). Se faltar `upsertService`, adicionar no mesmo arquivo de onboarding.
 
-## 3. Busca com ranking patrocinado
+## 3. Wizard UI
 
-Refatorar `app.buscar.tsx`:
-- Substitui a query Supabase direta por chamada a `search_providers_ranked` (RPC).
-- Renderiza 4 seções visualmente:
-  1. **Patrocinado** com selo amarelo "Patrocinado" + borda destaque.
-  2. **Em destaque na sua região** (se houver e filtro de cidade casar).
-  3. **Em destaque em {categoria}** (se filtro de specialty casar).
-  4. **Resultados** (orgânicos).
-- Em cada card sponsored, dispara `trackAdEvent('impression')` on mount (debounced/uma vez por sessão+id) e `'click'` no Link.
-- Card premium: layout maior, foto destacada, selo Premium azul, CTA "Agendar agora".
+Reescrever `src/routes/_authenticated/onboarding-pro.tsx` como wizard com `<Tabs>` controlados + `<Progress>` no topo. 7 passos:
 
-## 4. Painel do prestador — Impulsionar Perfil
+1. **Identidade visual** — upload avatar, logo (opcional), capa. Preview em card mockando perfil público.
+2. **Identificação** — display_name, nome empresa (opcional, se preenche oferece vincular a `companies`), CPF/CNPJ (mask), registro profissional, especialidade principal (select), secundárias (multiselect chips).
+3. **Experiência** — bio (textarea), anos exp (number), formação, pós, certificações (input chips), idiomas (chips com presets PT/EN/ES/Libras).
+4. **Contato** — whatsapp, telefone, email, instagram, site. Inputs com mask e validação Zod.
+5. **Endereço** — CEP com autopreenchimento (debounce 600ms → `lookupCep`), rua, número, complemento, bairro, cidade, UF. Read-only após autopreencher exceto número/complemento.
+6. **Horários** — grid 7 linhas (dom-sáb), cada uma com switch "Fechado", time inputs abre/fecha + almoço opcional. Botão "Copiar para todos os dias úteis".
+7. **Serviços & Documentos** — Lista de serviços (CRUD inline com modal: nome, categoria enum, descrição, duração min, valor, foto opcional). Mínimo 1 serviço. Lista de uploads de documentos com status badge.
 
-Nova rota `src/routes/_authenticated/pro.impulsionar.tsx`:
-- KPIs do mês: impressões, cliques, agendamentos, taxa de conversão (cliques→agendamentos).
-- Lista de assinaturas ativas com data de expiração, botão pausar/cancelar.
-- Catálogo de planos disponíveis com CTA "Contratar".
-- Modal de contratação: escolhe escopo (regiões/categorias quando aplicável), confirma valor, simula pagamento.
-- Adicionar item "Impulsionar" no menu pro (em `pro.tsx` ou nav lateral).
+Footer fixo com "Voltar" / "Salvar e continuar" (chama `saveOnboardingStep` a cada avanço — permite retomar). Último passo mostra **card Comissão Zero 90 dias** com explicação, e botão "Enviar para análise" que chama `submitOnboarding`.
 
-## 5. Painel admin — Anúncios
+Componentes auxiliares novos em `src/components/livvo/onboarding/`:
+- `ImageUpload.tsx` — input file → upload em `provider-media` → retorna URL pública. Preview circular/retangular.
+- `LivePreviewCard.tsx` — mostra como o perfil aparecerá na busca.
+- `BusinessHoursGrid.tsx`.
+- `ServiceFormDialog.tsx`.
+- `DocumentUploadRow.tsx` — bucket `provider-documents`, status badge.
+- `StepProgress.tsx`.
 
-Aba nova em `admin.tsx` "Anúncios & Receita":
-- CRUD de `featured_plans` (nome, tipo, valor, duração, ativo).
-- Lista de assinaturas ativas com filtro por tipo/prestador, ação cancelar.
-- Card de receita: comissões vs anúncios vs total no período (seletor 7d/30d/90d).
-- Top 10 prestadores por gasto em anúncios.
+Validação por step com Zod; bloqueia "continuar" se inválido.
 
-## 6. Perfis Premium
+## 4. Painel admin — aprovação
 
-- `app.profissional.$id.tsx` e `app.empresa.$id.tsx`:
-  - Se `is_premium`, mostra selo Premium, hero ampliado, galeria extra de `profiles_premium_assets`, embed de vídeo (YouTube/MP4), CTA destacado.
-  - Não-premium fica com layout atual.
+Adicionar em `admin.tsx` aba "Profissionais pendentes": lista quem tem `status='pendente'` + documentos com link. Botões Aprovar/Rejeitar; aprovar chama `approveProfessional` (90d zero comissão dispara).
 
-## 7. UI / Design
+## 5. Out of scope (não vai nessa entrega)
 
-- Selo `<Badge variant="sponsored">` amarelo âmbar (token novo `--sponsored`), selo `<Badge variant="premium">` em gradient primary.
-- Cards sponsored: borda 1px com `--sponsored` + label superior pequena "Patrocinado".
-- Sem mudanças no design system geral.
+- Não recriar painel Impulsionar (já existe em `pro.impulsionar.tsx`).
+- Empresas/clínicas multi-unidade: estrutura já existe (`companies`, `company_units`); não vamos misturar com onboarding individual agora — fica um link "Cadastrar como clínica/laboratório" levando ao fluxo `companies` existente.
+- Não vamos refatorar a página pública do profissional para consumir os novos campos nesta entrega (só salvar — exibição segue depois).
 
-## 8. Memory
+## 6. Memória
 
-Salvar em `mem://features/ads` a regra de ordenação (4 grupos, tie-breakers) e que ads receita é segunda fonte oficial junto da comissão.
+Salvar `mem://features/onboarding-pro` com: wizard 7 passos, zero-commission 90d disparado na aprovação, buckets `provider-media` (público) e `provider-documents` (privado).
 
-## 9. Fora de escopo agora
+---
 
-- Bidding/leilão de posições (preço fixo por plano por enquanto).
-- Segmentação por horário/idade.
-- Integração real Paddle (mock continua).
-- Limites de impressão por dia (sem caps por ora).
-
-Confirma para eu executar tudo?
+Confirma para eu executar? Posso já fatiar em PRs menores se preferir começar só pela migration + wizard de UI sem os uploads/documentos.
