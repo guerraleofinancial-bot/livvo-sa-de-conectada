@@ -51,9 +51,10 @@ function Checkout() {
   const livvoFee = commission; // visível como "taxa de serviço" para o paciente? No, comissão é do prestador. Paciente paga só o preço.
 
   const pay = useMutation({
-    mutationFn: async () => charge({ data: { professionalId: params.professionalId, scheduledAt: params.scheduledAt, serviceId: params.serviceId ?? null, paymentMethod: method } }),
+    mutationFn: async () => charge({ data: { professionalId: params.professionalId, scheduledAt: params.scheduledAt, serviceId: params.serviceId ?? null, paymentMethod: method, simulate } }),
     onSuccess: () => {
-      toast.success("Pagamento aprovado!", { description: "Sua consulta foi confirmada." });
+      const msg = simulate === "pending" ? "Pagamento pendente" : "Pagamento aprovado!";
+      toast.success(msg, { description: simulate === "pending" ? "Aguardando confirmação." : "Sua consulta foi confirmada." });
       navigate({ to: "/app/consultas" });
     },
     onError: (e) => toast.error("Falha no pagamento", { description: (e as Error).message }),
