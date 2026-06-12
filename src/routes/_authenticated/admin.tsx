@@ -265,6 +265,58 @@ function AdminPanel() {
           </section>
         )}
 
+        {tab === "ads" && (
+          <section className="space-y-5">
+            <div className="flex items-center justify-between">
+              <h2 className="text-sm font-bold">Receita da plataforma · últimos {adsRange} dias</h2>
+              <div className="flex gap-1">
+                {[7, 30, 90].map((d) => (
+                  <button key={d} onClick={() => setAdsRange(d as 7 | 30 | 90)} className={`px-3 py-1 text-xs font-semibold rounded-full border ${adsRange === d ? "bg-primary text-primary-foreground border-primary" : "bg-card border-border text-muted-foreground"}`}>{d}d</button>
+                ))}
+              </div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <div className="rounded-2xl bg-card border border-border p-4">
+                <Percent className="size-4 text-primary mb-2" />
+                <p className="font-mono text-2xl font-bold">R$ {(adsRevenue?.commissions ?? 0).toFixed(0)}</p>
+                <p className="text-xs text-muted-foreground mt-1">Receita de comissões</p>
+              </div>
+              <div className="rounded-2xl bg-card border border-border p-4">
+                <Sparkles className="size-4 text-amber-500 mb-2" />
+                <p className="font-mono text-2xl font-bold">R$ {((adsRevenue?.adsCents ?? 0) / 100).toFixed(0)}</p>
+                <p className="text-xs text-muted-foreground mt-1">Receita de anúncios ({adsRevenue?.subsCount ?? 0} assinaturas)</p>
+              </div>
+              <div className="rounded-2xl bg-primary text-primary-foreground p-4">
+                <Wallet className="size-4 mb-2 opacity-90" />
+                <p className="font-mono text-2xl font-bold">R$ {(adsRevenue?.total ?? 0).toFixed(0)}</p>
+                <p className="text-xs opacity-80 mt-1">Receita total</p>
+              </div>
+            </div>
+            <h3 className="text-sm font-bold mt-6">Assinaturas ativas e recentes</h3>
+            <div className="space-y-2">
+              {(adSubs ?? []).map((s) => {
+                const r = s as typeof s & { featured_plans: { name: string; kind: string } | null; profiles: { full_name?: string } | null; companies: { legal_name?: string } | null };
+                const target = r.profiles?.full_name ?? r.companies?.legal_name ?? "—";
+                return (
+                  <div key={s.id} className="p-3 rounded-2xl bg-card border border-border flex items-center gap-3 flex-wrap">
+                    <Sparkles className="size-4 text-amber-500" />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold truncate">{target} <span className="text-xs text-muted-foreground">· {r.featured_plans?.name}</span></p>
+                      <p className="text-[10px] text-muted-foreground">Status {s.status} · expira {new Date(s.ends_at).toLocaleDateString("pt-BR")} · R$ {(s.amount_paid_cents / 100).toFixed(2)}</p>
+                    </div>
+                    {s.status === "ativo" && (
+                      <Button size="sm" variant="outline" onClick={async () => { await cancelSub({ data: { subscriptionId: s.id } }); toast.success("Cancelado"); qc.invalidateQueries({ queryKey: ["admin-ad-subs"] }); }}>
+                        <X className="size-4 mr-1" /> Cancelar
+                      </Button>
+                    )}
+                  </div>
+                );
+              })}
+              {adSubs && adSubs.length === 0 && <p className="text-sm text-muted-foreground">Nenhuma assinatura ainda.</p>}
+            </div>
+          </section>
+        )}
+
         {tab === "reviews" && (
           <section>
             <h2 className="text-sm font-bold mb-3">Moderação de avaliações</h2>
