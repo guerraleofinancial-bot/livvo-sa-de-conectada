@@ -30,7 +30,7 @@ function Onboarding() {
   const [city, setCity] = useState("");
   const [state, setState] = useState("");
   const [street, setStreet] = useState("");
-  const [modality, setModality] = useState<"presencial" | "telemedicina">("presencial");
+  const modality: "presencial" = "presencial";
 
   const submit = useMutation({
     mutationFn: async () => {
