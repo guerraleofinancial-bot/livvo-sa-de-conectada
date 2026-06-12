@@ -129,6 +129,7 @@ function AdminPanel() {
     { id: "pros", label: "Profissionais", icon: Stethoscope },
     { id: "companies", label: "Empresas", icon: Building2 },
     { id: "finance", label: "Financeiro", icon: Wallet },
+    { id: "ads", label: "Anúncios & Receita", icon: Sparkles },
     { id: "reviews", label: "Avaliações", icon: MessageSquareWarning },
     { id: "users", label: "Usuários", icon: Users },
     { id: "settings", label: "Configurações", icon: Percent },
