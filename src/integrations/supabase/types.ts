@@ -14,6 +14,50 @@ export type Database = {
   }
   public: {
     Tables: {
+      ad_impressions: {
+        Row: {
+          company_id: string | null
+          context: Json | null
+          id: number
+          kind: Database["public"]["Enums"]["ad_event_kind"]
+          occurred_at: string
+          professional_id: string | null
+          subscription_id: string | null
+          target_type: Database["public"]["Enums"]["ad_target_type"]
+          viewer_id: string | null
+        }
+        Insert: {
+          company_id?: string | null
+          context?: Json | null
+          id?: number
+          kind: Database["public"]["Enums"]["ad_event_kind"]
+          occurred_at?: string
+          professional_id?: string | null
+          subscription_id?: string | null
+          target_type: Database["public"]["Enums"]["ad_target_type"]
+          viewer_id?: string | null
+        }
+        Update: {
+          company_id?: string | null
+          context?: Json | null
+          id?: number
+          kind?: Database["public"]["Enums"]["ad_event_kind"]
+          occurred_at?: string
+          professional_id?: string | null
+          subscription_id?: string | null
+          target_type?: Database["public"]["Enums"]["ad_target_type"]
+          viewer_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ad_impressions_subscription_id_fkey"
+            columns: ["subscription_id"]
+            isOneToOne: false
+            referencedRelation: "featured_subscriptions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       appointments: {
         Row: {
           cancelled_at: string | null
@@ -695,6 +739,195 @@ export type Database = {
           },
         ]
       }
+      featured_categories: {
+        Row: {
+          company_type: Database["public"]["Enums"]["company_type"] | null
+          created_at: string
+          id: string
+          specialty_id: string | null
+          subscription_id: string
+        }
+        Insert: {
+          company_type?: Database["public"]["Enums"]["company_type"] | null
+          created_at?: string
+          id?: string
+          specialty_id?: string | null
+          subscription_id: string
+        }
+        Update: {
+          company_type?: Database["public"]["Enums"]["company_type"] | null
+          created_at?: string
+          id?: string
+          specialty_id?: string | null
+          subscription_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "featured_categories_specialty_id_fkey"
+            columns: ["specialty_id"]
+            isOneToOne: false
+            referencedRelation: "specialties"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "featured_categories_subscription_id_fkey"
+            columns: ["subscription_id"]
+            isOneToOne: false
+            referencedRelation: "featured_subscriptions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      featured_plans: {
+        Row: {
+          active: boolean
+          code: string
+          created_at: string
+          description: string | null
+          duration_days: number
+          id: string
+          kind: Database["public"]["Enums"]["featured_kind"]
+          name: string
+          perks: Json
+          price_cents: number
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          code: string
+          created_at?: string
+          description?: string | null
+          duration_days: number
+          id?: string
+          kind: Database["public"]["Enums"]["featured_kind"]
+          name: string
+          perks?: Json
+          price_cents: number
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          code?: string
+          created_at?: string
+          description?: string | null
+          duration_days?: number
+          id?: string
+          kind?: Database["public"]["Enums"]["featured_kind"]
+          name?: string
+          perks?: Json
+          price_cents?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      featured_regions: {
+        Row: {
+          city: string | null
+          created_at: string
+          district: string | null
+          id: string
+          state: string
+          subscription_id: string
+        }
+        Insert: {
+          city?: string | null
+          created_at?: string
+          district?: string | null
+          id?: string
+          state: string
+          subscription_id: string
+        }
+        Update: {
+          city?: string | null
+          created_at?: string
+          district?: string | null
+          id?: string
+          state?: string
+          subscription_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "featured_regions_subscription_id_fkey"
+            columns: ["subscription_id"]
+            isOneToOne: false
+            referencedRelation: "featured_subscriptions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      featured_subscriptions: {
+        Row: {
+          amount_paid_cents: number
+          auto_renew: boolean
+          company_id: string | null
+          created_at: string
+          created_by: string
+          ends_at: string
+          id: string
+          payment_ref: string | null
+          plan_id: string
+          professional_id: string | null
+          starts_at: string
+          status: Database["public"]["Enums"]["featured_status"]
+          target_type: Database["public"]["Enums"]["ad_target_type"]
+          updated_at: string
+        }
+        Insert: {
+          amount_paid_cents?: number
+          auto_renew?: boolean
+          company_id?: string | null
+          created_at?: string
+          created_by: string
+          ends_at: string
+          id?: string
+          payment_ref?: string | null
+          plan_id: string
+          professional_id?: string | null
+          starts_at?: string
+          status?: Database["public"]["Enums"]["featured_status"]
+          target_type: Database["public"]["Enums"]["ad_target_type"]
+          updated_at?: string
+        }
+        Update: {
+          amount_paid_cents?: number
+          auto_renew?: boolean
+          company_id?: string | null
+          created_at?: string
+          created_by?: string
+          ends_at?: string
+          id?: string
+          payment_ref?: string | null
+          plan_id?: string
+          professional_id?: string | null
+          starts_at?: string
+          status?: Database["public"]["Enums"]["featured_status"]
+          target_type?: Database["public"]["Enums"]["ad_target_type"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "featured_subscriptions_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "featured_subscriptions_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "featured_plans"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "featured_subscriptions_professional_id_fkey"
+            columns: ["professional_id"]
+            isOneToOne: false
+            referencedRelation: "professionals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       health_documents: {
         Row: {
           document_type: string
@@ -1269,6 +1502,57 @@ export type Database = {
         }
         Relationships: []
       }
+      profiles_premium_assets: {
+        Row: {
+          company_id: string | null
+          created_at: string
+          extra_photos: string[]
+          highlight_cta_text: string | null
+          id: string
+          professional_id: string | null
+          target_type: Database["public"]["Enums"]["ad_target_type"]
+          updated_at: string
+          video_url: string | null
+        }
+        Insert: {
+          company_id?: string | null
+          created_at?: string
+          extra_photos?: string[]
+          highlight_cta_text?: string | null
+          id?: string
+          professional_id?: string | null
+          target_type: Database["public"]["Enums"]["ad_target_type"]
+          updated_at?: string
+          video_url?: string | null
+        }
+        Update: {
+          company_id?: string | null
+          created_at?: string
+          extra_photos?: string[]
+          highlight_cta_text?: string | null
+          id?: string
+          professional_id?: string | null
+          target_type?: Database["public"]["Enums"]["ad_target_type"]
+          updated_at?: string
+          video_url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profiles_premium_assets_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: true
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "profiles_premium_assets_professional_id_fkey"
+            columns: ["professional_id"]
+            isOneToOne: true
+            referencedRelation: "professionals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       provider_payout_accounts: {
         Row: {
           bank_account: string | null
@@ -1771,6 +2055,13 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      ads_revenue_summary: {
+        Args: { _from: string; _to: string }
+        Returns: {
+          subscriptions_count: number
+          total_cents: number
+        }[]
+      }
       effective_cancellation_policy: {
         Args: { _company: string; _professional: string }
         Returns: {
@@ -1806,6 +2097,13 @@ export type Database = {
         Args: { _company: string; _user: string }
         Returns: boolean
       }
+      is_provider_premium: {
+        Args: {
+          _target_id: string
+          _target_type: Database["public"]["Enums"]["ad_target_type"]
+        }
+        Returns: boolean
+      }
       nearby_units: {
         Args: { _lat: number; _lng: number; _radius_km?: number }
         Returns: {
@@ -1819,10 +2117,36 @@ export type Database = {
           name: string
         }[]
       }
+      search_providers_ranked: {
+        Args: {
+          _city?: string
+          _limit?: number
+          _q?: string
+          _specialty_slug?: string
+          _state?: string
+        }
+        Returns: {
+          address_city: string
+          address_state: string
+          avatar_url: string
+          consultation_price: number
+          full_name: string
+          is_premium: boolean
+          professional_id: string
+          rank_group: number
+          rating_average: number
+          rating_count: number
+          specialty_name: string
+          specialty_slug: string
+          subscription_id: string
+        }[]
+      }
       wallet_balance: { Args: { _provider: string }; Returns: number }
       wallet_releasable: { Args: { _provider: string }; Returns: number }
     }
     Enums: {
+      ad_event_kind: "impression" | "click" | "booking"
+      ad_target_type: "professional" | "company"
       app_role: "paciente" | "profissional" | "admin"
       appointment_modality: "presencial" | "telemedicina"
       appointment_status:
@@ -1840,6 +2164,8 @@ export type Database = {
         | "estetica"
         | "outros"
       coupon_type: "percent" | "fixed"
+      featured_kind: "premium" | "regional" | "category" | "perfil_premium"
+      featured_status: "ativo" | "pausado" | "expirado" | "cancelado"
       financial_status:
         | "agendado"
         | "pago"
@@ -1989,6 +2315,8 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      ad_event_kind: ["impression", "click", "booking"],
+      ad_target_type: ["professional", "company"],
       app_role: ["paciente", "profissional", "admin"],
       appointment_modality: ["presencial", "telemedicina"],
       appointment_status: [
@@ -2008,6 +2336,8 @@ export const Constants = {
         "outros",
       ],
       coupon_type: ["percent", "fixed"],
+      featured_kind: ["premium", "regional", "category", "perfil_premium"],
+      featured_status: ["ativo", "pausado", "expirado", "cancelado"],
       financial_status: [
         "agendado",
         "pago",
