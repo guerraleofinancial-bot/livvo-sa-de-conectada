@@ -52,10 +52,10 @@ function Buscar() {
     queryKey: ["search-ranked", q, specSlug, city, state],
     queryFn: async () => {
       const { data, error } = await supabase.rpc("search_providers_ranked", {
-        _state: state.trim() ? state.trim() : null,
-        _city: city.trim() ? city.trim() : null,
-        _specialty_slug: specSlug ?? null,
-        _q: q.trim() ? q.trim() : null,
+        _state: state.trim() || undefined,
+        _city: city.trim() || undefined,
+        _specialty_slug: specSlug ?? undefined,
+        _q: q.trim() || undefined,
         _limit: 50,
       });
       if (error) throw error;
