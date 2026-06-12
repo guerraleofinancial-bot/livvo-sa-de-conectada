@@ -82,15 +82,12 @@ function Onboarding() {
             <Label>Bio</Label>
             <Textarea value={bio} onChange={(e) => setBio(e.target.value)} rows={3} placeholder="Conte sobre sua experiência..." />
           </div>
-          <div className="grid grid-cols-2 gap-3">
-            <div><Label>Valor (R$)</Label><Input type="number" value={price} onChange={(e) => setPrice(e.target.value)} /></div>
-            <div>
-              <Label>Modalidade</Label>
-              <select value={modality} onChange={(e) => setModality(e.target.value as "presencial" | "telemedicina")} className="w-full h-10 rounded-xl border border-border bg-card px-3 text-sm">
-                <option value="presencial">Presencial</option><option value="telemedicina">Telemedicina</option>
-              </select>
-            </div>
+          <div>
+            <Label>Valor da consulta (R$)</Label>
+            <Input type="number" value={price} onChange={(e) => setPrice(e.target.value)} />
+            <p className="mt-1 text-xs text-muted-foreground">Atendimentos presenciais. A Livvo é um marketplace de saúde presencial.</p>
           </div>
+
           <div><Label>Rua</Label><Input value={street} onChange={(e) => setStreet(e.target.value)} /></div>
           <div className="grid grid-cols-2 gap-3">
             <div><Label>Cidade</Label><Input value={city} onChange={(e) => setCity(e.target.value)} /></div>
