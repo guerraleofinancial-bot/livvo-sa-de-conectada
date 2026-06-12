@@ -40,7 +40,7 @@ export const Route = createFileRoute("/api/public/payments/webhook")({
             gateway: event.gateway,
             event_type: event.type,
             signature: headers["x-hub-signature"] ?? headers["x-signature"] ?? null,
-            payload: event.payload,
+            payload: event.payload as never,
             processed: false,
           });
         } catch (err) {
