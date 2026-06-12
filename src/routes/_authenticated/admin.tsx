@@ -94,6 +94,16 @@ function AdminPanel() {
     },
   });
 
+  const [adsRange, setAdsRange] = useState<7 | 30 | 90>(30);
+  const { data: adsRevenue } = useQuery({
+    queryKey: ["ads-revenue", adsRange], enabled: isAdmin && tab === "ads",
+    queryFn: () => adsReport({ data: { days: adsRange } }),
+  });
+  const { data: adSubs } = useQuery({
+    queryKey: ["admin-ad-subs"], enabled: isAdmin && tab === "ads",
+    queryFn: () => listSubs(),
+  });
+
   const seedNow = useMutation({
     mutationFn: async () => seed(),
     onSuccess: (r) => { toast.success(`Demo: ${r.professionals} profissionais, ${r.companies} empresas, ${r.units} unidades, ${r.services} serviços`); qc.invalidateQueries(); },
