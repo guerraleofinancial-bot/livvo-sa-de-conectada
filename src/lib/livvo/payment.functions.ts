@@ -113,6 +113,23 @@ export const createPaidAppointment = createServerFn({ method: "POST" })
     const finStatus = usingPackage ? "pago" : "pago";
     const payAmount = usingPackage ? 0 : gross;
 
+    // Roteia pelo PaymentProvider (mock hoje, Pagar.me amanhã).
+    const provider = getPaymentProvider();
+    let chargeResult: Awaited<ReturnType<typeof provider.createCharge>> | null = null;
+    if (!usingPackage) {
+      chargeResult = await provider.createCharge({
+        amount: payAmount,
+        method: data.paymentMethod as PaymentMethod,
+        customerId: userId,
+        recipientId: data.professionalId,
+        simulate: data.simulate,
+        metadata: { professionalId: data.professionalId, serviceId: data.serviceId ?? null },
+      });
+      if (chargeResult.status === "recusado") throw new Error("Pagamento recusado pelo emissor");
+    }
+    const apptPaymentStatus = chargeResult ? (chargeResult.status === "aprovado" ? "pago" : chargeResult.status === "pendente" ? "pendente" : "pago") : "pago";
+    const apptFinStatus = chargeResult && chargeResult.status === "pendente" ? "aguardando_pagamento" : finStatus;
+
     const { data: appt, error: aErr } = await supabaseAdmin.from("appointments").insert({
       patient_id: userId,
       professional_id: data.professionalId,
@@ -125,27 +142,44 @@ export const createPaidAppointment = createServerFn({ method: "POST" })
       scheduled_at: slotIso,
       duration_minutes: duration,
       modality: "presencial",
-      status: "confirmada",
+      status: chargeResult?.status === "pendente" ? "agendada" : "confirmada",
       price: payAmount,
       gross_amount: payAmount,
       commission_amount: usingPackage ? 0 : commission,
       net_amount: usingPackage ? 0 : net,
-      payment_status: "pago",
+      payment_status: apptPaymentStatus,
       payment_method: data.paymentMethod,
-      financial_status: finStatus,
+      financial_status: apptFinStatus,
+      gateway: chargeResult?.gateway ?? null,
+      gateway_transaction_id: chargeResult?.transactionId ?? null,
       patient_notes: data.notes ?? null,
     }).select().single();
     if (aErr || !appt) throw aErr ?? new Error("Falha ao agendar");
 
-    if (!usingPackage) {
+    if (!usingPackage && chargeResult) {
       await supabaseAdmin.from("payments").insert({
-        appointment_id: appt.id, patient_id: userId, amount: payAmount, status: "pago",
-        method: data.paymentMethod, paid_at: new Date().toISOString(),
+        appointment_id: appt.id,
+        patient_id: userId,
+        amount: payAmount,
+        status: chargeResult.status === "aprovado" ? "pago" : "pendente",
+        method: data.paymentMethod,
+        paid_at: chargeResult.status === "aprovado" ? new Date().toISOString() : null,
+        gateway: chargeResult.gateway,
+        gateway_transaction_id: chargeResult.transactionId,
+        gateway_payment_id: chargeResult.paymentId,
+        payment_method: data.paymentMethod,
+        gross_amount: payAmount,
+        commission_amount: commission,
+        net_amount: net,
+        recipient_id: data.professionalId,
+        payout_status: "pendente",
       });
-      await supabaseAdmin.from("wallet_transactions").insert([
-        { provider_id: data.professionalId, appointment_id: appt.id, kind: "credito", amount: payAmount, description: "Pagamento de consulta (bloqueado até liberação)" },
-        { provider_id: data.professionalId, appointment_id: appt.id, kind: "comissao", amount: -commission, description: `Comissão Livvo (${pct}%)` },
-      ]);
+      if (chargeResult.status === "aprovado") {
+        await supabaseAdmin.from("wallet_transactions").insert([
+          { provider_id: data.professionalId, appointment_id: appt.id, kind: "credito", amount: payAmount, description: "Pagamento de consulta (bloqueado até liberação)" },
+          { provider_id: data.professionalId, appointment_id: appt.id, kind: "comissao", amount: -commission, description: `Comissão Livvo (${pct}%)` },
+        ]);
+      }
     }
 
     if (couponId) {
