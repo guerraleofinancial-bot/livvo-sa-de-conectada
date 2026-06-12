@@ -31,6 +31,9 @@ function AdminPanel() {
   const setRev = useServerFn(setReviewStatus);
   const createBatch = useServerFn(createPayoutBatch);
   const payBatch = useServerFn(markPayoutBatchPaid);
+  const adsReport = useServerFn(adminAdsRevenueReport);
+  const listSubs = useServerFn(adminListSubscriptions);
+  const cancelSub = useServerFn(cancelSubscription);
 
   const { data: stats } = useQuery({
     queryKey: ["admin-stats"],
