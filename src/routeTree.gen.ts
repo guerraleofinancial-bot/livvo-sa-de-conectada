@@ -9,6 +9,10 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as PlanosEPrecosRouteImport } from './routes/planos-e-precos'
+import { Route as ParaParceirosRouteImport } from './routes/para-parceiros'
+import { Route as ParaEmpresasRouteImport } from './routes/para-empresas'
+import { Route as ComoFuncionaRouteImport } from './routes/como-funciona'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
@@ -36,6 +40,26 @@ import { Route as AuthenticatedAppEmpresaIdRouteImport } from './routes/_authent
 import { Route as AuthenticatedAppCheckoutIdRouteImport } from './routes/_authenticated/app.checkout.$id'
 import { Route as AuthenticatedAppChatIdRouteImport } from './routes/_authenticated/app.chat.$id'
 
+const PlanosEPrecosRoute = PlanosEPrecosRouteImport.update({
+  id: '/planos-e-precos',
+  path: '/planos-e-precos',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ParaParceirosRoute = ParaParceirosRouteImport.update({
+  id: '/para-parceiros',
+  path: '/para-parceiros',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ParaEmpresasRoute = ParaEmpresasRouteImport.update({
+  id: '/para-empresas',
+  path: '/para-empresas',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ComoFuncionaRoute = ComoFuncionaRouteImport.update({
+  id: '/como-funciona',
+  path: '/como-funciona',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
@@ -183,6 +207,10 @@ const AuthenticatedAppChatIdRoute = AuthenticatedAppChatIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/como-funciona': typeof ComoFuncionaRoute
+  '/para-empresas': typeof ParaEmpresasRoute
+  '/para-parceiros': typeof ParaParceirosRoute
+  '/planos-e-precos': typeof PlanosEPrecosRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/app': typeof AuthenticatedAppRouteWithChildren
   '/onboarding-pro': typeof AuthenticatedOnboardingProRoute
@@ -210,6 +238,10 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/como-funciona': typeof ComoFuncionaRoute
+  '/para-empresas': typeof ParaEmpresasRoute
+  '/para-parceiros': typeof ParaParceirosRoute
+  '/planos-e-precos': typeof PlanosEPrecosRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/onboarding-pro': typeof AuthenticatedOnboardingProRoute
   '/app/buscar': typeof AuthenticatedAppBuscarRoute
@@ -237,6 +269,10 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/auth': typeof AuthRoute
+  '/como-funciona': typeof ComoFuncionaRoute
+  '/para-empresas': typeof ParaEmpresasRoute
+  '/para-parceiros': typeof ParaParceirosRoute
+  '/planos-e-precos': typeof PlanosEPrecosRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/app': typeof AuthenticatedAppRouteWithChildren
   '/_authenticated/onboarding-pro': typeof AuthenticatedOnboardingProRoute
@@ -266,6 +302,10 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
+    | '/como-funciona'
+    | '/para-empresas'
+    | '/para-parceiros'
+    | '/planos-e-precos'
     | '/admin'
     | '/app'
     | '/onboarding-pro'
@@ -293,6 +333,10 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
+    | '/como-funciona'
+    | '/para-empresas'
+    | '/para-parceiros'
+    | '/planos-e-precos'
     | '/admin'
     | '/onboarding-pro'
     | '/app/buscar'
@@ -319,6 +363,10 @@ export interface FileRouteTypes {
     | '/'
     | '/_authenticated'
     | '/auth'
+    | '/como-funciona'
+    | '/para-empresas'
+    | '/para-parceiros'
+    | '/planos-e-precos'
     | '/_authenticated/admin'
     | '/_authenticated/app'
     | '/_authenticated/onboarding-pro'
@@ -348,11 +396,43 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
   AuthRoute: typeof AuthRoute
+  ComoFuncionaRoute: typeof ComoFuncionaRoute
+  ParaEmpresasRoute: typeof ParaEmpresasRoute
+  ParaParceirosRoute: typeof ParaParceirosRoute
+  PlanosEPrecosRoute: typeof PlanosEPrecosRoute
   ApiPublicPaymentsWebhookRoute: typeof ApiPublicPaymentsWebhookRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/planos-e-precos': {
+      id: '/planos-e-precos'
+      path: '/planos-e-precos'
+      fullPath: '/planos-e-precos'
+      preLoaderRoute: typeof PlanosEPrecosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/para-parceiros': {
+      id: '/para-parceiros'
+      path: '/para-parceiros'
+      fullPath: '/para-parceiros'
+      preLoaderRoute: typeof ParaParceirosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/para-empresas': {
+      id: '/para-empresas'
+      path: '/para-empresas'
+      fullPath: '/para-empresas'
+      preLoaderRoute: typeof ParaEmpresasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/como-funciona': {
+      id: '/como-funciona'
+      path: '/como-funciona'
+      fullPath: '/como-funciona'
+      preLoaderRoute: typeof ComoFuncionaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth': {
       id: '/auth'
       path: '/auth'
@@ -614,18 +694,12 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
   AuthRoute: AuthRoute,
+  ComoFuncionaRoute: ComoFuncionaRoute,
+  ParaEmpresasRoute: ParaEmpresasRoute,
+  ParaParceirosRoute: ParaParceirosRoute,
+  PlanosEPrecosRoute: PlanosEPrecosRoute,
   ApiPublicPaymentsWebhookRoute: ApiPublicPaymentsWebhookRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

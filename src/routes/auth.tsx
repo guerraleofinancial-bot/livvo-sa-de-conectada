@@ -106,9 +106,9 @@ function AuthPage() {
                       chosenRole === r ? "border-primary bg-primary-soft text-primary" : "border-border bg-card text-foreground hover:border-primary/30"
                     }`}
                   >
-                    {r === "paciente" ? "Paciente" : "Profissional"}
+                    {r === "paciente" ? "Paciente" : "Parceiro Livvo"}
                     <p className="mt-0.5 text-[10px] font-normal text-muted-foreground">
-                      {r === "paciente" ? "Buscar e agendar" : "Atender pacientes"}
+                      {r === "paciente" ? "Buscar e agendar" : "Receber pacientes"}
                     </p>
                   </button>
                 ))}

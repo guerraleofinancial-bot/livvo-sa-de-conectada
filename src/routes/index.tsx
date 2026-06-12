@@ -5,7 +5,6 @@ import {
   CalendarClock,
   CreditCard,
   BadgeCheck,
-  Sparkles,
   Stethoscope,
   Smile,
   Brain,
@@ -17,24 +16,24 @@ import {
   ArrowRight,
   Search,
   MapPin,
-  Star,
+  Sparkles,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { MarketingShell } from "@/components/livvo/marketing-shell";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Livvo — Agende consultas, exames e procedimentos presenciais" },
+      { title: "Livvo — Marketplace de saúde presencial: consultas, exames e procedimentos" },
       {
         name: "description",
         content:
-          "Marketplace de saúde presencial. Encontre, agende e pague consultas, exames e procedimentos com profissionais, clínicas e laboratórios da sua região.",
+          "Encontre, agende e pague consultas, exames e procedimentos presenciais com parceiros verificados da sua região.",
       },
-      { property: "og:title", content: "Livvo — Saúde presencial em um só lugar" },
+      { property: "og:title", content: "Livvo — Marketplace de saúde presencial" },
       {
         property: "og:description",
-        content:
-          "Agendamento online e pagamento seguro de consultas, exames e procedimentos presenciais.",
+        content: "Encontre, agende e pague consultas, exames e procedimentos em um só lugar.",
       },
       { property: "og:url", content: "https://livvo-conecta-saude.lovable.app/" },
       { property: "og:type", content: "website" },
@@ -64,68 +63,20 @@ const categories: { name: string; Icon: typeof Stethoscope }[] = [
   { name: "Fisioterapeutas", Icon: Activity },
   { name: "Clínicas", Icon: Building2 },
   { name: "Laboratórios", Icon: FlaskConical },
-  { name: "Centros de Diagnóstico", Icon: ScanLine },
+  { name: "Diagnóstico por Imagem", Icon: ScanLine },
   { name: "Estética e Bem-estar", Icon: Flower2 },
 ];
 
 const benefits = [
-  {
-    Icon: CalendarClock,
-    title: "Agendamento rápido",
-    desc: "Escolha horários disponíveis em tempo real.",
-  },
-  {
-    Icon: CreditCard,
-    title: "Pagamento seguro",
-    desc: "Pague diretamente pela plataforma.",
-  },
-  {
-    Icon: BadgeCheck,
-    title: "Profissionais verificados",
-    desc: "Perfis aprovados pela equipe Livvo.",
-  },
-  {
-    Icon: Sparkles,
-    title: "Tudo em um só lugar",
-    desc: "Consultas, exames e procedimentos na mesma plataforma.",
-  },
-];
-
-const stats = [
-  { v: "2.400+", l: "Profissionais cadastrados" },
-  { v: "320+", l: "Clínicas parceiras" },
-  { v: "85 mil", l: "Consultas realizadas" },
-  { v: "4.9", l: "Avaliação média" },
+  { Icon: CalendarClock, title: "Agendamento em tempo real", desc: "Veja horários disponíveis e confirme em segundos." },
+  { Icon: CreditCard, title: "Pagamento seguro", desc: "Pague direto na plataforma, sem surpresas." },
+  { Icon: BadgeCheck, title: "Parceiros verificados", desc: "Todo cadastro é aprovado pela equipe Livvo." },
+  { Icon: Sparkles, title: "Tudo em um só lugar", desc: "Consultas, exames, procedimentos e pacotes." },
 ];
 
 function Landing() {
   return (
-    <div className="min-h-screen bg-surface text-foreground">
-      {/* Nav */}
-      <header className="sticky top-0 z-50 border-b border-border/60 bg-surface/80 backdrop-blur-xl">
-        <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-5 py-3.5">
-          <Link to="/" className="flex min-w-0 items-center gap-2">
-            <div className="grid size-9 shrink-0 place-items-center rounded-xl bg-primary text-primary-foreground shadow-sm">
-              <HeartPulse className="size-5" />
-            </div>
-            <span className="truncate text-lg font-bold tracking-tight">Livvo</span>
-          </Link>
-          <nav className="hidden items-center gap-7 text-sm font-medium text-muted-foreground md:flex">
-            <a href="#categorias" className="hover:text-foreground">Serviços</a>
-            <a href="#beneficios" className="hover:text-foreground">Como funciona</a>
-            <a href="#parceiros" className="hover:text-foreground">Para clínicas</a>
-          </nav>
-          <div className="flex shrink-0 items-center gap-2">
-            <Link to="/auth" className="hidden sm:inline-flex">
-              <Button variant="ghost" size="sm">Entrar</Button>
-            </Link>
-            <Link to="/auth" search={{ mode: "signup" }}>
-              <Button size="sm" className="rounded-lg">Criar conta</Button>
-            </Link>
-          </div>
-        </div>
-      </header>
-
+    <MarketingShell>
       {/* Hero */}
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 -z-10 bg-[radial-gradient(60%_50%_at_50%_0%,hsl(215_85%_94%)_0%,transparent_70%)]" />
@@ -142,18 +93,17 @@ function Landing() {
                 em um só lugar.
               </h1>
               <p className="mt-5 max-w-xl text-base leading-relaxed text-muted-foreground md:text-lg">
-                Conectamos você aos melhores profissionais, clínicas e laboratórios da sua
-                região com agendamento online e pagamento seguro.
+                A Livvo conecta você a médicos, dentistas, clínicas, laboratórios e centros de diagnóstico
+                da sua região — com pagamento seguro e atendimento presencial.
               </p>
 
-              {/* Search bar */}
               <div className="mt-7 rounded-2xl border border-border bg-card p-2 shadow-[var(--shadow-elevated)]">
                 <div className="grid grid-cols-1 gap-2 sm:grid-cols-[1fr_1fr_auto]">
                   <label className="flex min-w-0 items-center gap-2 rounded-xl px-3 py-2.5">
                     <Search className="size-4 shrink-0 text-muted-foreground" />
                     <input
                       className="min-w-0 flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
-                      placeholder="Especialidade, exame ou profissional"
+                      placeholder="Especialidade, exame ou serviço"
                       aria-label="O que você procura"
                     />
                   </label>
@@ -165,32 +115,16 @@ function Landing() {
                       aria-label="Localização"
                     />
                   </label>
-                  <Link to="/auth" search={{ mode: "signup" }} className="contents">
-                    <Button size="lg" className="rounded-xl">
-                      Agendar agora
-                    </Button>
+                  <Link to="/auth" search={{ mode: "signup", role: "paciente" }} className="contents">
+                    <Button size="lg" className="rounded-xl">Buscar</Button>
                   </Link>
                 </div>
               </div>
 
-              <div className="mt-5 flex flex-wrap gap-3">
-                <Link to="/auth" search={{ mode: "signup", role: "profissional" }}>
-                  <Button size="lg" variant="outline" className="rounded-xl px-6">
-                    Sou profissional
-                  </Button>
-                </Link>
-              </div>
-
-              <div className="mt-7 flex flex-wrap items-center gap-x-6 gap-y-2 text-xs text-muted-foreground">
-                <div className="flex items-center gap-2">
-                  <ShieldCheck className="size-4 text-health" /> Pagamento seguro
-                </div>
-                <div className="flex items-center gap-2">
-                  <BadgeCheck className="size-4 text-health" /> Profissionais verificados
-                </div>
-                <div className="flex items-center gap-2">
-                  <Stethoscope className="size-4 text-health" /> Atendimentos presenciais
-                </div>
+              <div className="mt-5 flex flex-wrap items-center gap-x-6 gap-y-2 text-xs text-muted-foreground">
+                <div className="flex items-center gap-2"><ShieldCheck className="size-4 text-health" /> Pagamento seguro</div>
+                <div className="flex items-center gap-2"><BadgeCheck className="size-4 text-health" /> Parceiros verificados</div>
+                <div className="flex items-center gap-2"><Stethoscope className="size-4 text-health" /> Apenas presencial</div>
               </div>
             </div>
 
@@ -213,10 +147,7 @@ function Landing() {
                     { s: "Limpeza dental", p: "R$ 120" },
                     { s: "Ultrassom abdome", p: "R$ 180" },
                   ].map((s) => (
-                    <div
-                      key={s.s}
-                      className="flex items-center gap-3 rounded-2xl border border-border bg-card p-3"
-                    >
+                    <div key={s.s} className="flex items-center gap-3 rounded-2xl border border-border bg-card p-3">
                       <div className="grid size-10 shrink-0 place-items-center rounded-xl bg-primary-soft text-primary">
                         <HeartPulse className="size-5" />
                       </div>
@@ -239,18 +170,13 @@ function Landing() {
         <div className="mx-auto max-w-6xl px-5">
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div>
-              <h2 className="text-2xl font-bold tracking-tight md:text-3xl">
-                Serviços de saúde presenciais
-              </h2>
+              <h2 className="text-2xl font-bold tracking-tight md:text-3xl">O que você pode encontrar na Livvo</h2>
               <p className="mt-2 max-w-xl text-muted-foreground">
-                Encontre consultas, exames e procedimentos com profissionais, clínicas e
-                laboratórios da sua região.
+                Consultas, exames, procedimentos e pacotes de saúde presenciais.
               </p>
             </div>
-            <Link to="/auth" search={{ mode: "signup" }} className="hidden sm:inline-flex">
-              <Button variant="ghost" className="gap-1">
-                Explorar tudo <ArrowRight className="size-4" />
-              </Button>
+            <Link to="/auth" search={{ mode: "signup", role: "paciente" }} className="hidden sm:inline-flex">
+              <Button variant="ghost" className="gap-1">Explorar tudo <ArrowRight className="size-4" /></Button>
             </Link>
           </div>
 
@@ -259,7 +185,7 @@ function Landing() {
               <Link
                 key={name}
                 to="/auth"
-                search={{ mode: "signup" }}
+                search={{ mode: "signup", role: "paciente" }}
                 className="group flex items-center gap-3 rounded-2xl border border-border bg-card p-4 transition hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-[var(--shadow-elevated)]"
               >
                 <div className="grid size-11 shrink-0 place-items-center rounded-xl bg-primary-soft text-primary transition group-hover:bg-primary group-hover:text-primary-foreground">
@@ -276,19 +202,14 @@ function Landing() {
       <section id="beneficios" className="py-16 md:py-24">
         <div className="mx-auto max-w-6xl px-5">
           <div className="mx-auto max-w-2xl text-center">
-            <h2 className="text-3xl font-bold tracking-tight md:text-4xl">
-              Por que escolher a Livvo
-            </h2>
+            <h2 className="text-3xl font-bold tracking-tight md:text-4xl">Por que escolher a Livvo</h2>
             <p className="mt-3 text-muted-foreground">
-              Uma experiência simples, segura e completa — do agendamento ao pós-atendimento.
+              Uma experiência simples e segura — do agendamento ao atendimento.
             </p>
           </div>
           <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
             {benefits.map(({ Icon, title, desc }) => (
-              <div
-                key={title}
-                className="rounded-3xl border border-border bg-card p-6 shadow-[var(--shadow-card)]"
-              >
+              <div key={title} className="rounded-3xl border border-border bg-card p-6 shadow-[var(--shadow-card)]">
                 <div className="grid size-12 place-items-center rounded-2xl bg-primary-soft text-primary">
                   <Icon className="size-6" />
                 </div>
@@ -297,108 +218,91 @@ function Landing() {
               </div>
             ))}
           </div>
-        </div>
-      </section>
-
-      {/* Stats / credibility */}
-      <section className="border-y border-border/60 bg-card/40 py-12 md:py-16">
-        <div className="mx-auto max-w-6xl px-5">
-          <div className="grid grid-cols-2 gap-6 md:grid-cols-4">
-            {stats.map((s) => (
-              <div key={s.l} className="text-center">
-                <p className="font-mono text-3xl font-bold text-primary md:text-4xl">{s.v}</p>
-                <p className="mt-1 text-xs text-muted-foreground md:text-sm">{s.l}</p>
-              </div>
-            ))}
+          <div className="mt-10 text-center">
+            <Link to="/como-funciona">
+              <Button variant="outline" size="lg" className="rounded-xl">
+                Veja como funciona <ArrowRight className="ml-1 size-4" />
+              </Button>
+            </Link>
           </div>
-          <p className="mt-6 flex items-center justify-center gap-2 text-center text-xs text-muted-foreground">
-            <Star className="size-3.5 fill-current text-warning" /> Dados demonstrativos durante
-            a fase inicial da plataforma.
-          </p>
         </div>
       </section>
 
-      {/* For partners */}
-      <section
-        id="parceiros"
-        className="py-16 md:py-24"
-      >
+      {/* For partners — single consolidated block */}
+      <section className="border-t border-border/60 bg-card/40 py-16 md:py-24">
         <div className="mx-auto grid max-w-6xl gap-10 px-5 md:grid-cols-2 md:items-center">
           <div>
             <span className="inline-flex rounded-full bg-health-soft px-3 py-1 text-xs font-semibold text-health">
-              Para clínicas e profissionais
+              Para parceiros Livvo
             </span>
             <h2 className="mt-4 text-3xl font-bold tracking-tight md:text-4xl">
-              Receba novos pacientes todos os dias.
+              Receba pacientes da sua região todos os dias.
             </h2>
             <p className="mt-4 text-muted-foreground">
-              Cadastre sua clínica, laboratório ou consultório e faça parte da maior rede de
-              agendamentos de saúde da região.
+              Médicos, dentistas, psicólogos, clínicas, laboratórios e empresas de estética:
+              cadastre-se grátis e comece a atender em minutos.
             </p>
             <ul className="mt-6 space-y-3 text-sm">
               {[
-                "Agenda online com bloqueios e recursos físicos",
-                "Pagamento integrado e repasses automáticos",
-                "Perfil verificado com avaliações reais",
-                "Painel financeiro e relatórios em tempo real",
+                "90 dias sem comissão para novos parceiros",
+                "Agenda online integrada ao pagamento",
+                "Destaque patrocinado para atrair mais pacientes",
+                "Painel financeiro com repasses automáticos",
               ].map((i) => (
                 <li key={i} className="flex items-center gap-3">
-                  <span className="grid size-5 shrink-0 place-items-center rounded-full bg-health text-white">
-                    ✓
-                  </span>
+                  <span className="grid size-5 shrink-0 place-items-center rounded-full bg-health text-white">✓</span>
                   <span className="text-foreground">{i}</span>
                 </li>
               ))}
             </ul>
             <div className="mt-8 flex flex-wrap gap-3">
-              <Link to="/auth" search={{ mode: "signup", role: "profissional" }}>
-                <Button size="lg" className="rounded-xl">
-                  Cadastrar minha empresa
-                </Button>
+              <Link to="/para-parceiros">
+                <Button size="lg" className="rounded-xl">Para parceiros</Button>
               </Link>
-              <Link to="/auth" search={{ mode: "signup", role: "profissional" }}>
-                <Button size="lg" variant="ghost" className="rounded-xl">
-                  Sou profissional autônomo
-                </Button>
+              <Link to="/para-empresas">
+                <Button size="lg" variant="outline" className="rounded-xl">Para empresas</Button>
               </Link>
             </div>
           </div>
 
           <div className="rounded-3xl border border-border bg-card p-8 shadow-[var(--shadow-elevated)]">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-4">
               {[
-                { v: "247", l: "Agendamentos no mês" },
-                { v: "4.9", l: "Avaliação média" },
-                { v: "12", l: "Próximos atendimentos" },
-                { v: "R$ 18k", l: "Receita do mês" },
-              ].map((s) => (
-                <div key={s.l} className="rounded-2xl border border-border bg-surface p-4">
-                  <p className="font-mono text-2xl font-bold text-primary">{s.v}</p>
-                  <p className="mt-1 text-xs text-muted-foreground">{s.l}</p>
+                { t: "Cadastro gratuito", d: "Crie seu perfil em minutos." },
+                { t: "Sem comissão por 90 dias", d: "Receba 100% nos primeiros agendamentos." },
+                { t: "Destaque patrocinado", d: "Apareça primeiro nas buscas." },
+                { t: "Repasses automáticos", d: "Receba direto na sua conta." },
+              ].map((b) => (
+                <div key={b.t} className="flex items-start gap-3 rounded-2xl border border-border bg-surface p-4">
+                  <div className="grid size-9 shrink-0 place-items-center rounded-xl bg-primary-soft text-primary">
+                    <Sparkles className="size-4" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold">{b.t}</p>
+                    <p className="text-xs text-muted-foreground">{b.d}</p>
+                  </div>
                 </div>
               ))}
             </div>
-            <p className="mt-5 text-xs text-muted-foreground">
-              Métricas demonstrativas do painel do prestador.
-            </p>
+            <Link to="/planos-e-precos" className="mt-5 block">
+              <Button variant="ghost" className="w-full gap-1">
+                Ver planos e preços <ArrowRight className="size-4" />
+              </Button>
+            </Link>
           </div>
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="border-t border-border/60 bg-primary py-16 text-primary-foreground">
+      {/* Final CTA */}
+      <section className="bg-primary py-16 text-primary-foreground">
         <div className="mx-auto max-w-4xl px-5 text-center">
-          <h2 className="text-3xl font-bold tracking-tight md:text-4xl">
-            Sua próxima consulta começa aqui.
-          </h2>
+          <h2 className="text-3xl font-bold tracking-tight md:text-4xl">Comece agora pela Livvo.</h2>
           <p className="mx-auto mt-4 max-w-xl opacity-90">
-            Agende consultas, exames e procedimentos presenciais com pagamento seguro.
+            Pacientes encontram atendimento perto de casa. Parceiros recebem novos pacientes todos os dias.
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-3">
-            <Link to="/auth" search={{ mode: "signup" }}>
-              <Button size="lg" variant="secondary" className="rounded-xl">
-                Agendar agora
-              </Button>
+            <Link to="/auth" search={{ mode: "signup", role: "paciente" }}>
+              <Button size="lg" variant="secondary" className="rounded-xl">Sou paciente</Button>
             </Link>
             <Link to="/auth" search={{ mode: "signup", role: "profissional" }}>
               <Button
@@ -406,16 +310,12 @@ function Landing() {
                 variant="outline"
                 className="rounded-xl border-primary-foreground/40 bg-transparent text-primary-foreground hover:bg-primary-foreground hover:text-primary"
               >
-                Sou profissional
+                Sou parceiro
               </Button>
             </Link>
           </div>
         </div>
       </section>
-
-      <footer className="border-t border-border/60 py-8 text-center text-xs text-muted-foreground">
-        © {new Date().getFullYear()} Livvo Saúde Conectada · Marketplace de saúde presencial · LGPD
-      </footer>
-    </div>
+    </MarketingShell>
   );
 }
