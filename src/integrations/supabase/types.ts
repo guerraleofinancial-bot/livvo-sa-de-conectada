@@ -1344,87 +1344,241 @@ export type Database = {
           },
         ]
       }
+      professional_business_hours: {
+        Row: {
+          closed: boolean
+          closes_at: string | null
+          created_at: string
+          id: string
+          lunch_end: string | null
+          lunch_start: string | null
+          opens_at: string | null
+          professional_id: string
+          updated_at: string
+          weekday: number
+        }
+        Insert: {
+          closed?: boolean
+          closes_at?: string | null
+          created_at?: string
+          id?: string
+          lunch_end?: string | null
+          lunch_start?: string | null
+          opens_at?: string | null
+          professional_id: string
+          updated_at?: string
+          weekday: number
+        }
+        Update: {
+          closed?: boolean
+          closes_at?: string | null
+          created_at?: string
+          id?: string
+          lunch_end?: string | null
+          lunch_start?: string | null
+          opens_at?: string | null
+          professional_id?: string
+          updated_at?: string
+          weekday?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "professional_business_hours_professional_id_fkey"
+            columns: ["professional_id"]
+            isOneToOne: false
+            referencedRelation: "professionals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      professional_documents: {
+        Row: {
+          created_at: string
+          file_url: string
+          id: string
+          kind: Database["public"]["Enums"]["provider_document_kind"]
+          professional_id: string
+          reviewer_notes: string | null
+          status: Database["public"]["Enums"]["provider_document_status"]
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          file_url: string
+          id?: string
+          kind: Database["public"]["Enums"]["provider_document_kind"]
+          professional_id: string
+          reviewer_notes?: string | null
+          status?: Database["public"]["Enums"]["provider_document_status"]
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          file_url?: string
+          id?: string
+          kind?: Database["public"]["Enums"]["provider_document_kind"]
+          professional_id?: string
+          reviewer_notes?: string | null
+          status?: Database["public"]["Enums"]["provider_document_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "professional_documents_professional_id_fkey"
+            columns: ["professional_id"]
+            isOneToOne: false
+            referencedRelation: "professionals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       professionals: {
         Row: {
+          academic_formation: string | null
           address_city: string | null
+          address_complement: string | null
+          address_district: string | null
+          address_number: string | null
           address_state: string | null
           address_street: string | null
+          address_zip: string | null
           approved_at: string | null
           approved_by: string | null
           avatar_url: string | null
           bio: string | null
           cancellation_policy_id: string | null
+          certifications: string[]
           commission_percent_override: number | null
           company_id: string | null
           consultation_price: number
+          cover_url: string | null
+          cpf_cnpj: string | null
           created_at: string
           default_unit_id: string | null
+          display_name: string | null
           id: string
+          instagram: string | null
+          languages: string[]
           latitude: number | null
+          logo_url: string | null
           longitude: number | null
           modality: Database["public"]["Enums"]["appointment_modality"]
+          onboarding_completed_at: string | null
+          onboarding_step: number
           phone: string | null
+          postgrad: string | null
+          professional_email: string | null
           professional_registry: string
           rating_average: number
           rating_count: number
+          secondary_specialties: string[]
           specialty_id: string | null
           status: Database["public"]["Enums"]["professional_status"]
           total_appointments: number
           updated_at: string
+          website: string | null
+          whatsapp: string | null
+          years_experience: number | null
+          zero_commission_end: string | null
+          zero_commission_start: string | null
         }
         Insert: {
+          academic_formation?: string | null
           address_city?: string | null
+          address_complement?: string | null
+          address_district?: string | null
+          address_number?: string | null
           address_state?: string | null
           address_street?: string | null
+          address_zip?: string | null
           approved_at?: string | null
           approved_by?: string | null
           avatar_url?: string | null
           bio?: string | null
           cancellation_policy_id?: string | null
+          certifications?: string[]
           commission_percent_override?: number | null
           company_id?: string | null
           consultation_price?: number
+          cover_url?: string | null
+          cpf_cnpj?: string | null
           created_at?: string
           default_unit_id?: string | null
+          display_name?: string | null
           id: string
+          instagram?: string | null
+          languages?: string[]
           latitude?: number | null
+          logo_url?: string | null
           longitude?: number | null
           modality?: Database["public"]["Enums"]["appointment_modality"]
+          onboarding_completed_at?: string | null
+          onboarding_step?: number
           phone?: string | null
+          postgrad?: string | null
+          professional_email?: string | null
           professional_registry: string
           rating_average?: number
           rating_count?: number
+          secondary_specialties?: string[]
           specialty_id?: string | null
           status?: Database["public"]["Enums"]["professional_status"]
           total_appointments?: number
           updated_at?: string
+          website?: string | null
+          whatsapp?: string | null
+          years_experience?: number | null
+          zero_commission_end?: string | null
+          zero_commission_start?: string | null
         }
         Update: {
+          academic_formation?: string | null
           address_city?: string | null
+          address_complement?: string | null
+          address_district?: string | null
+          address_number?: string | null
           address_state?: string | null
           address_street?: string | null
+          address_zip?: string | null
           approved_at?: string | null
           approved_by?: string | null
           avatar_url?: string | null
           bio?: string | null
           cancellation_policy_id?: string | null
+          certifications?: string[]
           commission_percent_override?: number | null
           company_id?: string | null
           consultation_price?: number
+          cover_url?: string | null
+          cpf_cnpj?: string | null
           created_at?: string
           default_unit_id?: string | null
+          display_name?: string | null
           id?: string
+          instagram?: string | null
+          languages?: string[]
           latitude?: number | null
+          logo_url?: string | null
           longitude?: number | null
           modality?: Database["public"]["Enums"]["appointment_modality"]
+          onboarding_completed_at?: string | null
+          onboarding_step?: number
           phone?: string | null
+          postgrad?: string | null
+          professional_email?: string | null
           professional_registry?: string
           rating_average?: number
           rating_count?: number
+          secondary_specialties?: string[]
           specialty_id?: string | null
           status?: Database["public"]["Enums"]["professional_status"]
           total_appointments?: number
           updated_at?: string
+          website?: string | null
+          whatsapp?: string | null
+          years_experience?: number | null
+          zero_commission_end?: string | null
+          zero_commission_start?: string | null
         }
         Relationships: [
           {
@@ -2062,6 +2216,64 @@ export type Database = {
           total_cents: number
         }[]
       }
+      approve_professional: {
+        Args: { _id: string }
+        Returns: {
+          academic_formation: string | null
+          address_city: string | null
+          address_complement: string | null
+          address_district: string | null
+          address_number: string | null
+          address_state: string | null
+          address_street: string | null
+          address_zip: string | null
+          approved_at: string | null
+          approved_by: string | null
+          avatar_url: string | null
+          bio: string | null
+          cancellation_policy_id: string | null
+          certifications: string[]
+          commission_percent_override: number | null
+          company_id: string | null
+          consultation_price: number
+          cover_url: string | null
+          cpf_cnpj: string | null
+          created_at: string
+          default_unit_id: string | null
+          display_name: string | null
+          id: string
+          instagram: string | null
+          languages: string[]
+          latitude: number | null
+          logo_url: string | null
+          longitude: number | null
+          modality: Database["public"]["Enums"]["appointment_modality"]
+          onboarding_completed_at: string | null
+          onboarding_step: number
+          phone: string | null
+          postgrad: string | null
+          professional_email: string | null
+          professional_registry: string
+          rating_average: number
+          rating_count: number
+          secondary_specialties: string[]
+          specialty_id: string | null
+          status: Database["public"]["Enums"]["professional_status"]
+          total_appointments: number
+          updated_at: string
+          website: string | null
+          whatsapp: string | null
+          years_experience: number | null
+          zero_commission_end: string | null
+          zero_commission_start: string | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "professionals"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       effective_cancellation_policy: {
         Args: { _company: string; _professional: string }
         Returns: {
@@ -2177,6 +2389,16 @@ export type Database = {
       payment_status: "pendente" | "pago" | "reembolsado" | "falhou"
       payout_batch_status: "pendente" | "pago" | "cancelado"
       professional_status: "pendente" | "aprovado" | "rejeitado" | "suspenso"
+      provider_document_kind:
+        | "documento_pessoal"
+        | "registro"
+        | "comprovante_endereco"
+        | "documento_empresa"
+      provider_document_status:
+        | "pendente"
+        | "em_analise"
+        | "aprovado"
+        | "rejeitado"
       resource_kind:
         | "sala"
         | "equipamento_ultrassom"
@@ -2350,6 +2572,18 @@ export const Constants = {
       payment_status: ["pendente", "pago", "reembolsado", "falhou"],
       payout_batch_status: ["pendente", "pago", "cancelado"],
       professional_status: ["pendente", "aprovado", "rejeitado", "suspenso"],
+      provider_document_kind: [
+        "documento_pessoal",
+        "registro",
+        "comprovante_endereco",
+        "documento_empresa",
+      ],
+      provider_document_status: [
+        "pendente",
+        "em_analise",
+        "aprovado",
+        "rejeitado",
+      ],
       resource_kind: [
         "sala",
         "equipamento_ultrassom",
