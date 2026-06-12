@@ -213,7 +213,7 @@ function Onboarding() {
                   <div><Label>Nome profissional</Label><Input value={displayName} onChange={(e) => setDisplayName(e.target.value)} placeholder="Ex.: Dra. Helena Souza" /></div>
                   <div><Label>CPF ou CNPJ</Label><Input value={cpfCnpj} onChange={(e) => setCpfCnpj(e.target.value)} /></div>
                 </div>
-                <div><Label>Registro profissional</Label><Input value={registry} onChange={(e) => setRegistry(e.target.value)} placeholder="Ex.: CRM 123456/SP" /></div>
+                <div><Label>Registro profissional (CRM, CRO, CREFITO, CRP, CRN, CREFONO...)</Label><Input value={registry} onChange={(e) => setRegistry(e.target.value)} placeholder="Ex.: CRM 123456/SP ou CRO-SP 12345" /></div>
                 <div>
                   <Label>Especialidade principal</Label>
                   <select value={specId} onChange={(e) => setSpecId(e.target.value)} className="w-full h-10 rounded-xl border border-border bg-card px-3 text-sm">
