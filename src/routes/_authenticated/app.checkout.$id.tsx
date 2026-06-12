@@ -116,6 +116,20 @@ function Checkout() {
         )}
       </section>
 
+      <section className="rounded-3xl bg-card border border-dashed border-border p-5">
+        <p className="text-xs uppercase font-bold text-muted-foreground mb-2">Simulação (modo demo)</p>
+        <div className="grid grid-cols-3 gap-2">
+          {([
+            { v: "approved" as const, label: "Aprovado" },
+            { v: "pending" as const, label: "Pendente" },
+            { v: "declined" as const, label: "Recusado" },
+          ]).map((o) => (
+            <button key={o.v} onClick={() => setSimulate(o.v)} className={`px-3 py-2 rounded-xl border text-xs ${simulate === o.v ? "border-primary bg-primary-soft" : "border-border"}`}>{o.label}</button>
+          ))}
+        </div>
+        <p className="text-[10px] text-muted-foreground mt-2">Estes cenários simulam respostas do gateway (MockPaymentProvider). Em produção, virão do Pagar.me.</p>
+      </section>
+
       <div className="flex items-center gap-2 text-xs text-muted-foreground"><ShieldCheck className="size-4 text-health" /> Pagamento processado e protegido pela Livvo.</div>
 
       <div className="fixed inset-x-0 bottom-20 z-30 px-5 max-w-md mx-auto">
