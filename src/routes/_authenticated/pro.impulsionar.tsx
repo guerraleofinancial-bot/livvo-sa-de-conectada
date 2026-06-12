@@ -16,6 +16,7 @@ type Plan = { id: string; code: string; name: string; kind: "premium" | "regiona
 
 function Impulsionar() {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const qc = useQueryClient();
   const listPlans = useServerFn(listFeaturedPlans);
   const subscribe = useServerFn(subscribeToPlan);
