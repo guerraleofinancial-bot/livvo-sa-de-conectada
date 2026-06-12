@@ -22,8 +22,9 @@ const STATUS_LABEL: Record<string, string> = {
   rejeitado: "Rejeitado",
 };
 
+type DocKind = "documento_pessoal" | "registro" | "comprovante_endereco" | "documento_empresa";
 interface Props {
-  kind: keyof typeof KIND_LABEL;
+  kind: DocKind;
   existing?: { id: string; status: string; file_url: string } | null;
   onUploaded?: () => void;
 }
