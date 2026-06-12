@@ -116,7 +116,7 @@ export const trackAdEvent = createServerFn({ method: "POST" })
       company_id: data.targetType === "company" ? data.targetId : null,
       kind: data.kind,
       viewer_id: context.userId,
-      context: data.context ?? null,
+      context: (data.context ?? null) as never,
     });
     return { ok: true };
   });
