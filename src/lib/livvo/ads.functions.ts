@@ -59,6 +59,7 @@ export const subscribeToPlan = createServerFn({ method: "POST" })
   )
   .handler(async ({ data, context }) => {
     await assertOwnership(context, data.targetType, data.targetId);
+    await assertTargetExists(context, data.targetType, data.targetId);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: plan } = await supabaseAdmin.from("featured_plans").select("*").eq("id", data.planId).single();
     if (!plan || !plan.active) throw new Error("Plano indisponível");
