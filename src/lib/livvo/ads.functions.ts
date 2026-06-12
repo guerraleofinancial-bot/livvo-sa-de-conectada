@@ -19,6 +19,19 @@ async function assertOwnership(ctx: any, targetType: "professional" | "company",
   if (!data || data.owner_id !== ctx.userId) throw new Error("Forbidden");
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function assertTargetExists(ctx: any, targetType: "professional" | "company", targetId: string) {
+  const table = targetType === "professional" ? "professionals" : "companies";
+  const { data } = await ctx.supabase.from(table).select("id").eq("id", targetId).maybeSingle();
+  if (!data) {
+    throw new Error(
+      targetType === "professional"
+        ? "ONBOARDING_REQUIRED:Complete seu cadastro profissional antes de contratar um destaque."
+        : "ONBOARDING_REQUIRED:Cadastro de empresa não encontrado.",
+    );
+  }
+}
+
 export const listFeaturedPlans = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
@@ -46,6 +59,7 @@ export const subscribeToPlan = createServerFn({ method: "POST" })
   )
   .handler(async ({ data, context }) => {
     await assertOwnership(context, data.targetType, data.targetId);
+    await assertTargetExists(context, data.targetType, data.targetId);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: plan } = await supabaseAdmin.from("featured_plans").select("*").eq("id", data.planId).single();
     if (!plan || !plan.active) throw new Error("Plano indisponível");

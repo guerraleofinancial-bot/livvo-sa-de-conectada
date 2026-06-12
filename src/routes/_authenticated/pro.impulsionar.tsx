@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
@@ -16,6 +16,7 @@ type Plan = { id: string; code: string; name: string; kind: "premium" | "regiona
 
 function Impulsionar() {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const qc = useQueryClient();
   const listPlans = useServerFn(listFeaturedPlans);
   const subscribe = useServerFn(subscribeToPlan);
@@ -35,7 +36,16 @@ function Impulsionar() {
     mutationFn: async (input: { planId: string; regions?: { state: string; city?: string }[]; categories?: { specialtyId?: string }[] }) =>
       subscribe({ data: { ...target, ...input } }),
     onSuccess: () => { toast.success("Plano ativado!"); qc.invalidateQueries({ queryKey: ["ad-subs"] }); setPickPlan(null); },
-    onError: (e) => toast.error((e as Error).message),
+    onError: (e) => {
+      const msg = (e as Error).message ?? "";
+      if (msg.startsWith("ONBOARDING_REQUIRED:")) {
+        toast.error(msg.replace("ONBOARDING_REQUIRED:", ""));
+        setPickPlan(null);
+        navigate({ to: "/onboarding-pro" });
+        return;
+      }
+      toast.error(msg);
+    },
   });
 
   return (
