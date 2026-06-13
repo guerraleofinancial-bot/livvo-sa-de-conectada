@@ -126,12 +126,12 @@ function PatientHome() {
                 key={s.id}
                 to="/app/buscar"
                 search={{ specialty: s.slug }}
-                className="flex flex-col items-center gap-2 shrink-0 w-16"
+                className="flex flex-col items-center gap-2 shrink-0 w-20"
               >
                 <div className={`size-14 rounded-2xl border flex items-center justify-center ${tinted ? "bg-primary-soft border-primary/10 text-primary" : "bg-health-soft border-health/10 text-health"}`}>
                   <Icon className="size-6" />
                 </div>
-                <span className="text-[11px] font-medium text-center leading-tight">{s.name.split(" ")[0]}</span>
+                <span className="text-[11px] font-medium text-center leading-tight line-clamp-2 break-words">{s.name}</span>
               </Link>
             );
           })}
