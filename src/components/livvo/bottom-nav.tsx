@@ -1,5 +1,5 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Home, Search, Calendar, Heart, User, Wallet, Briefcase, Sparkles } from "lucide-react";
+import { Home, Search, Calendar, Heart, User, Wallet, Users, Sparkles } from "lucide-react";
 import type { ComponentType } from "react";
 
 type NavItem = { to: string; label: string; icon: ComponentType<{ className?: string; strokeWidth?: number }>; exact?: boolean };
@@ -15,7 +15,7 @@ const patientItems: NavItem[] = [
 const proItems: NavItem[] = [
   { to: "/pro", label: "Painel", icon: Home, exact: true },
   { to: "/pro/agenda", label: "Agenda", icon: Calendar },
-  { to: "/pro/servicos", label: "Serviços", icon: Briefcase },
+  { to: "/pro/crm", label: "CRM", icon: Users },
   { to: "/pro/impulsionar", label: "Impulsionar", icon: Sparkles },
   { to: "/pro/financeiro", label: "Financeiro", icon: Wallet },
 ];
