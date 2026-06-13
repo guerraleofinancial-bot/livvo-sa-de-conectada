@@ -16,3 +16,4 @@ Design: Healthtech Refinado, mobile-first, paleta primary azul + health verde + 
 - [Onboarding profissional](mem://features/onboarding-pro) — Steps, uploads, documentos, BusinessHoursGrid
 - [Nomenclatura](mem://preferences/nomenclatura) — Paciente/Parceiro/Administrador, regras híbridas, serviços
 - [MarketingShell](mem://preferences/marketing-shell) — Nav + footer compartilhados das páginas públicas
+- [CRM e Notificações](mem://features/crm) — Funil de pacientes, notas privadas/clínica, prefs de canais, automações (24h, review, retenção 90d), trigger crm_appointment_sync

@@ -48,7 +48,9 @@ export const Route = createFileRoute("/api/public/automation/run")({
   },
 });
 
-function renderJob(job: any): { title: string; body: string; link: string; event: string } {
+type JobRender = { title: string; body: string; link: string; event: "appointment_reminder" | "review_request" | "retention_campaign" };
+
+function renderJob(job: any): JobRender {
   switch (job.kind) {
     case "reminder_24h":
       return { title: "Lembrete de atendimento", body: "Você tem um atendimento amanhã.", link: "/app/consultas", event: "appointment_reminder" };

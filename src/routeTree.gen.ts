@@ -24,8 +24,10 @@ import { Route as AuthenticatedProIndexRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedAppIndexRouteImport } from './routes/_authenticated/app.index'
 import { Route as AuthenticatedProServicosRouteImport } from './routes/_authenticated/pro.servicos'
 import { Route as AuthenticatedProPacientesRouteImport } from './routes/_authenticated/pro.pacientes'
+import { Route as AuthenticatedProNotificacoesRouteImport } from './routes/_authenticated/pro.notificacoes'
 import { Route as AuthenticatedProImpulsionarRouteImport } from './routes/_authenticated/pro.impulsionar'
 import { Route as AuthenticatedProFinanceiroRouteImport } from './routes/_authenticated/pro.financeiro'
+import { Route as AuthenticatedProCrmRouteImport } from './routes/_authenticated/pro.crm'
 import { Route as AuthenticatedProAgendaRouteImport } from './routes/_authenticated/pro.agenda'
 import { Route as AuthenticatedAppPerfilRouteImport } from './routes/_authenticated/app.perfil'
 import { Route as AuthenticatedAppMensagensRouteImport } from './routes/_authenticated/app.mensagens'
@@ -35,6 +37,8 @@ import { Route as AuthenticatedAppConsultasRouteImport } from './routes/_authent
 import { Route as AuthenticatedAppCarteiraRouteImport } from './routes/_authenticated/app.carteira'
 import { Route as AuthenticatedAppBuscarRouteImport } from './routes/_authenticated/app.buscar'
 import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments.webhook'
+import { Route as ApiPublicAutomationRunRouteImport } from './routes/api/public/automation.run'
+import { Route as AuthenticatedProCrmIdRouteImport } from './routes/_authenticated/pro.crm.$id'
 import { Route as AuthenticatedAppProfissionalIdRouteImport } from './routes/_authenticated/app.profissional.$id'
 import { Route as AuthenticatedAppEmpresaIdRouteImport } from './routes/_authenticated/app.empresa.$id'
 import { Route as AuthenticatedAppCheckoutIdRouteImport } from './routes/_authenticated/app.checkout.$id'
@@ -117,6 +121,12 @@ const AuthenticatedProPacientesRoute =
     path: '/pacientes',
     getParentRoute: () => AuthenticatedProRoute,
   } as any)
+const AuthenticatedProNotificacoesRoute =
+  AuthenticatedProNotificacoesRouteImport.update({
+    id: '/notificacoes',
+    path: '/notificacoes',
+    getParentRoute: () => AuthenticatedProRoute,
+  } as any)
 const AuthenticatedProImpulsionarRoute =
   AuthenticatedProImpulsionarRouteImport.update({
     id: '/impulsionar',
@@ -129,6 +139,11 @@ const AuthenticatedProFinanceiroRoute =
     path: '/financeiro',
     getParentRoute: () => AuthenticatedProRoute,
   } as any)
+const AuthenticatedProCrmRoute = AuthenticatedProCrmRouteImport.update({
+  id: '/crm',
+  path: '/crm',
+  getParentRoute: () => AuthenticatedProRoute,
+} as any)
 const AuthenticatedProAgendaRoute = AuthenticatedProAgendaRouteImport.update({
   id: '/agenda',
   path: '/agenda',
@@ -180,6 +195,16 @@ const ApiPublicPaymentsWebhookRoute =
     path: '/api/public/payments/webhook',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicAutomationRunRoute = ApiPublicAutomationRunRouteImport.update({
+  id: '/api/public/automation/run',
+  path: '/api/public/automation/run',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedProCrmIdRoute = AuthenticatedProCrmIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => AuthenticatedProCrmRoute,
+} as any)
 const AuthenticatedAppProfissionalIdRoute =
   AuthenticatedAppProfissionalIdRouteImport.update({
     id: '/profissional/$id',
@@ -223,8 +248,10 @@ export interface FileRoutesByFullPath {
   '/app/mensagens': typeof AuthenticatedAppMensagensRoute
   '/app/perfil': typeof AuthenticatedAppPerfilRoute
   '/pro/agenda': typeof AuthenticatedProAgendaRoute
+  '/pro/crm': typeof AuthenticatedProCrmRouteWithChildren
   '/pro/financeiro': typeof AuthenticatedProFinanceiroRoute
   '/pro/impulsionar': typeof AuthenticatedProImpulsionarRoute
+  '/pro/notificacoes': typeof AuthenticatedProNotificacoesRoute
   '/pro/pacientes': typeof AuthenticatedProPacientesRoute
   '/pro/servicos': typeof AuthenticatedProServicosRoute
   '/app/': typeof AuthenticatedAppIndexRoute
@@ -233,6 +260,8 @@ export interface FileRoutesByFullPath {
   '/app/checkout/$id': typeof AuthenticatedAppCheckoutIdRoute
   '/app/empresa/$id': typeof AuthenticatedAppEmpresaIdRoute
   '/app/profissional/$id': typeof AuthenticatedAppProfissionalIdRoute
+  '/pro/crm/$id': typeof AuthenticatedProCrmIdRoute
+  '/api/public/automation/run': typeof ApiPublicAutomationRunRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
 }
 export interface FileRoutesByTo {
@@ -252,8 +281,10 @@ export interface FileRoutesByTo {
   '/app/mensagens': typeof AuthenticatedAppMensagensRoute
   '/app/perfil': typeof AuthenticatedAppPerfilRoute
   '/pro/agenda': typeof AuthenticatedProAgendaRoute
+  '/pro/crm': typeof AuthenticatedProCrmRouteWithChildren
   '/pro/financeiro': typeof AuthenticatedProFinanceiroRoute
   '/pro/impulsionar': typeof AuthenticatedProImpulsionarRoute
+  '/pro/notificacoes': typeof AuthenticatedProNotificacoesRoute
   '/pro/pacientes': typeof AuthenticatedProPacientesRoute
   '/pro/servicos': typeof AuthenticatedProServicosRoute
   '/app': typeof AuthenticatedAppIndexRoute
@@ -262,6 +293,8 @@ export interface FileRoutesByTo {
   '/app/checkout/$id': typeof AuthenticatedAppCheckoutIdRoute
   '/app/empresa/$id': typeof AuthenticatedAppEmpresaIdRoute
   '/app/profissional/$id': typeof AuthenticatedAppProfissionalIdRoute
+  '/pro/crm/$id': typeof AuthenticatedProCrmIdRoute
+  '/api/public/automation/run': typeof ApiPublicAutomationRunRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
 }
 export interface FileRoutesById {
@@ -285,8 +318,10 @@ export interface FileRoutesById {
   '/_authenticated/app/mensagens': typeof AuthenticatedAppMensagensRoute
   '/_authenticated/app/perfil': typeof AuthenticatedAppPerfilRoute
   '/_authenticated/pro/agenda': typeof AuthenticatedProAgendaRoute
+  '/_authenticated/pro/crm': typeof AuthenticatedProCrmRouteWithChildren
   '/_authenticated/pro/financeiro': typeof AuthenticatedProFinanceiroRoute
   '/_authenticated/pro/impulsionar': typeof AuthenticatedProImpulsionarRoute
+  '/_authenticated/pro/notificacoes': typeof AuthenticatedProNotificacoesRoute
   '/_authenticated/pro/pacientes': typeof AuthenticatedProPacientesRoute
   '/_authenticated/pro/servicos': typeof AuthenticatedProServicosRoute
   '/_authenticated/app/': typeof AuthenticatedAppIndexRoute
@@ -295,6 +330,8 @@ export interface FileRoutesById {
   '/_authenticated/app/checkout/$id': typeof AuthenticatedAppCheckoutIdRoute
   '/_authenticated/app/empresa/$id': typeof AuthenticatedAppEmpresaIdRoute
   '/_authenticated/app/profissional/$id': typeof AuthenticatedAppProfissionalIdRoute
+  '/_authenticated/pro/crm/$id': typeof AuthenticatedProCrmIdRoute
+  '/api/public/automation/run': typeof ApiPublicAutomationRunRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
 }
 export interface FileRouteTypes {
@@ -318,8 +355,10 @@ export interface FileRouteTypes {
     | '/app/mensagens'
     | '/app/perfil'
     | '/pro/agenda'
+    | '/pro/crm'
     | '/pro/financeiro'
     | '/pro/impulsionar'
+    | '/pro/notificacoes'
     | '/pro/pacientes'
     | '/pro/servicos'
     | '/app/'
@@ -328,6 +367,8 @@ export interface FileRouteTypes {
     | '/app/checkout/$id'
     | '/app/empresa/$id'
     | '/app/profissional/$id'
+    | '/pro/crm/$id'
+    | '/api/public/automation/run'
     | '/api/public/payments/webhook'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -347,8 +388,10 @@ export interface FileRouteTypes {
     | '/app/mensagens'
     | '/app/perfil'
     | '/pro/agenda'
+    | '/pro/crm'
     | '/pro/financeiro'
     | '/pro/impulsionar'
+    | '/pro/notificacoes'
     | '/pro/pacientes'
     | '/pro/servicos'
     | '/app'
@@ -357,6 +400,8 @@ export interface FileRouteTypes {
     | '/app/checkout/$id'
     | '/app/empresa/$id'
     | '/app/profissional/$id'
+    | '/pro/crm/$id'
+    | '/api/public/automation/run'
     | '/api/public/payments/webhook'
   id:
     | '__root__'
@@ -379,8 +424,10 @@ export interface FileRouteTypes {
     | '/_authenticated/app/mensagens'
     | '/_authenticated/app/perfil'
     | '/_authenticated/pro/agenda'
+    | '/_authenticated/pro/crm'
     | '/_authenticated/pro/financeiro'
     | '/_authenticated/pro/impulsionar'
+    | '/_authenticated/pro/notificacoes'
     | '/_authenticated/pro/pacientes'
     | '/_authenticated/pro/servicos'
     | '/_authenticated/app/'
@@ -389,6 +436,8 @@ export interface FileRouteTypes {
     | '/_authenticated/app/checkout/$id'
     | '/_authenticated/app/empresa/$id'
     | '/_authenticated/app/profissional/$id'
+    | '/_authenticated/pro/crm/$id'
+    | '/api/public/automation/run'
     | '/api/public/payments/webhook'
   fileRoutesById: FileRoutesById
 }
@@ -400,6 +449,7 @@ export interface RootRouteChildren {
   ParaEmpresasRoute: typeof ParaEmpresasRoute
   ParaParceirosRoute: typeof ParaParceirosRoute
   PlanosEPrecosRoute: typeof PlanosEPrecosRoute
+  ApiPublicAutomationRunRoute: typeof ApiPublicAutomationRunRoute
   ApiPublicPaymentsWebhookRoute: typeof ApiPublicPaymentsWebhookRoute
 }
 
@@ -510,6 +560,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedProPacientesRouteImport
       parentRoute: typeof AuthenticatedProRoute
     }
+    '/_authenticated/pro/notificacoes': {
+      id: '/_authenticated/pro/notificacoes'
+      path: '/notificacoes'
+      fullPath: '/pro/notificacoes'
+      preLoaderRoute: typeof AuthenticatedProNotificacoesRouteImport
+      parentRoute: typeof AuthenticatedProRoute
+    }
     '/_authenticated/pro/impulsionar': {
       id: '/_authenticated/pro/impulsionar'
       path: '/impulsionar'
@@ -522,6 +579,13 @@ declare module '@tanstack/react-router' {
       path: '/financeiro'
       fullPath: '/pro/financeiro'
       preLoaderRoute: typeof AuthenticatedProFinanceiroRouteImport
+      parentRoute: typeof AuthenticatedProRoute
+    }
+    '/_authenticated/pro/crm': {
+      id: '/_authenticated/pro/crm'
+      path: '/crm'
+      fullPath: '/pro/crm'
+      preLoaderRoute: typeof AuthenticatedProCrmRouteImport
       parentRoute: typeof AuthenticatedProRoute
     }
     '/_authenticated/pro/agenda': {
@@ -587,6 +651,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicPaymentsWebhookRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/automation/run': {
+      id: '/api/public/automation/run'
+      path: '/api/public/automation/run'
+      fullPath: '/api/public/automation/run'
+      preLoaderRoute: typeof ApiPublicAutomationRunRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/pro/crm/$id': {
+      id: '/_authenticated/pro/crm/$id'
+      path: '/$id'
+      fullPath: '/pro/crm/$id'
+      preLoaderRoute: typeof AuthenticatedProCrmIdRouteImport
+      parentRoute: typeof AuthenticatedProCrmRoute
+    }
     '/_authenticated/app/profissional/$id': {
       id: '/_authenticated/app/profissional/$id'
       path: '/profissional/$id'
@@ -651,10 +729,23 @@ const AuthenticatedAppRouteChildren: AuthenticatedAppRouteChildren = {
 const AuthenticatedAppRouteWithChildren =
   AuthenticatedAppRoute._addFileChildren(AuthenticatedAppRouteChildren)
 
+interface AuthenticatedProCrmRouteChildren {
+  AuthenticatedProCrmIdRoute: typeof AuthenticatedProCrmIdRoute
+}
+
+const AuthenticatedProCrmRouteChildren: AuthenticatedProCrmRouteChildren = {
+  AuthenticatedProCrmIdRoute: AuthenticatedProCrmIdRoute,
+}
+
+const AuthenticatedProCrmRouteWithChildren =
+  AuthenticatedProCrmRoute._addFileChildren(AuthenticatedProCrmRouteChildren)
+
 interface AuthenticatedProRouteChildren {
   AuthenticatedProAgendaRoute: typeof AuthenticatedProAgendaRoute
+  AuthenticatedProCrmRoute: typeof AuthenticatedProCrmRouteWithChildren
   AuthenticatedProFinanceiroRoute: typeof AuthenticatedProFinanceiroRoute
   AuthenticatedProImpulsionarRoute: typeof AuthenticatedProImpulsionarRoute
+  AuthenticatedProNotificacoesRoute: typeof AuthenticatedProNotificacoesRoute
   AuthenticatedProPacientesRoute: typeof AuthenticatedProPacientesRoute
   AuthenticatedProServicosRoute: typeof AuthenticatedProServicosRoute
   AuthenticatedProIndexRoute: typeof AuthenticatedProIndexRoute
@@ -662,8 +753,10 @@ interface AuthenticatedProRouteChildren {
 
 const AuthenticatedProRouteChildren: AuthenticatedProRouteChildren = {
   AuthenticatedProAgendaRoute: AuthenticatedProAgendaRoute,
+  AuthenticatedProCrmRoute: AuthenticatedProCrmRouteWithChildren,
   AuthenticatedProFinanceiroRoute: AuthenticatedProFinanceiroRoute,
   AuthenticatedProImpulsionarRoute: AuthenticatedProImpulsionarRoute,
+  AuthenticatedProNotificacoesRoute: AuthenticatedProNotificacoesRoute,
   AuthenticatedProPacientesRoute: AuthenticatedProPacientesRoute,
   AuthenticatedProServicosRoute: AuthenticatedProServicosRoute,
   AuthenticatedProIndexRoute: AuthenticatedProIndexRoute,
@@ -698,6 +791,7 @@ const rootRouteChildren: RootRouteChildren = {
   ParaEmpresasRoute: ParaEmpresasRoute,
   ParaParceirosRoute: ParaParceirosRoute,
   PlanosEPrecosRoute: PlanosEPrecosRoute,
+  ApiPublicAutomationRunRoute: ApiPublicAutomationRunRoute,
   ApiPublicPaymentsWebhookRoute: ApiPublicPaymentsWebhookRoute,
 }
 export const routeTree = rootRouteImport
