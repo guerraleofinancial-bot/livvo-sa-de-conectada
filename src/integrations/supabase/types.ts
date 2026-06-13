@@ -206,6 +206,66 @@ export type Database = {
           },
         ]
       }
+      automation_jobs: {
+        Row: {
+          appointment_id: string | null
+          attempts: number
+          created_at: string
+          id: string
+          kind: Database["public"]["Enums"]["automation_kind"]
+          last_error: string | null
+          patient_id: string | null
+          payload: Json
+          professional_id: string | null
+          run_at: string
+          status: Database["public"]["Enums"]["automation_status"]
+          updated_at: string
+        }
+        Insert: {
+          appointment_id?: string | null
+          attempts?: number
+          created_at?: string
+          id?: string
+          kind: Database["public"]["Enums"]["automation_kind"]
+          last_error?: string | null
+          patient_id?: string | null
+          payload?: Json
+          professional_id?: string | null
+          run_at: string
+          status?: Database["public"]["Enums"]["automation_status"]
+          updated_at?: string
+        }
+        Update: {
+          appointment_id?: string | null
+          attempts?: number
+          created_at?: string
+          id?: string
+          kind?: Database["public"]["Enums"]["automation_kind"]
+          last_error?: string | null
+          patient_id?: string | null
+          payload?: Json
+          professional_id?: string | null
+          run_at?: string
+          status?: Database["public"]["Enums"]["automation_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "automation_jobs_appointment_id_fkey"
+            columns: ["appointment_id"]
+            isOneToOne: false
+            referencedRelation: "appointments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "automation_jobs_professional_id_fkey"
+            columns: ["professional_id"]
+            isOneToOne: false
+            referencedRelation: "professionals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       campaigns: {
         Row: {
           active: boolean
@@ -706,6 +766,129 @@ export type Database = {
           },
         ]
       }
+      crm_patient_notes: {
+        Row: {
+          author_id: string
+          company_id: string | null
+          content: string
+          created_at: string
+          id: string
+          patient_id: string
+          professional_id: string
+          updated_at: string
+          visibility: Database["public"]["Enums"]["note_visibility"]
+        }
+        Insert: {
+          author_id: string
+          company_id?: string | null
+          content: string
+          created_at?: string
+          id?: string
+          patient_id: string
+          professional_id: string
+          updated_at?: string
+          visibility?: Database["public"]["Enums"]["note_visibility"]
+        }
+        Update: {
+          author_id?: string
+          company_id?: string | null
+          content?: string
+          created_at?: string
+          id?: string
+          patient_id?: string
+          professional_id?: string
+          updated_at?: string
+          visibility?: Database["public"]["Enums"]["note_visibility"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "crm_patient_notes_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "crm_patient_notes_professional_id_fkey"
+            columns: ["professional_id"]
+            isOneToOne: false
+            referencedRelation: "professionals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      crm_patient_relationships: {
+        Row: {
+          appointments_count: number
+          company_id: string | null
+          created_at: string
+          first_contact_at: string
+          id: string
+          last_appointment_at: string | null
+          next_appointment_at: string | null
+          patient_id: string
+          professional_id: string
+          status: Database["public"]["Enums"]["crm_status"]
+          status_changed_at: string
+          status_changed_by: string | null
+          status_overridden: boolean
+          status_suggested: Database["public"]["Enums"]["crm_status"]
+          total_revenue: number
+          updated_at: string
+        }
+        Insert: {
+          appointments_count?: number
+          company_id?: string | null
+          created_at?: string
+          first_contact_at?: string
+          id?: string
+          last_appointment_at?: string | null
+          next_appointment_at?: string | null
+          patient_id: string
+          professional_id: string
+          status?: Database["public"]["Enums"]["crm_status"]
+          status_changed_at?: string
+          status_changed_by?: string | null
+          status_overridden?: boolean
+          status_suggested?: Database["public"]["Enums"]["crm_status"]
+          total_revenue?: number
+          updated_at?: string
+        }
+        Update: {
+          appointments_count?: number
+          company_id?: string | null
+          created_at?: string
+          first_contact_at?: string
+          id?: string
+          last_appointment_at?: string | null
+          next_appointment_at?: string | null
+          patient_id?: string
+          professional_id?: string
+          status?: Database["public"]["Enums"]["crm_status"]
+          status_changed_at?: string
+          status_changed_by?: string | null
+          status_overridden?: boolean
+          status_suggested?: Database["public"]["Enums"]["crm_status"]
+          total_revenue?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "crm_patient_relationships_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "crm_patient_relationships_professional_id_fkey"
+            columns: ["professional_id"]
+            isOneToOne: false
+            referencedRelation: "professionals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       favorites: {
         Row: {
           company_id: string | null
@@ -999,12 +1182,47 @@ export type Database = {
           },
         ]
       }
+      notification_preferences: {
+        Row: {
+          created_at: string
+          email: boolean
+          events_muted: Database["public"]["Enums"]["notification_event"][]
+          in_app: boolean
+          updated_at: string
+          user_id: string
+          whatsapp: boolean
+          whatsapp_phone: string | null
+        }
+        Insert: {
+          created_at?: string
+          email?: boolean
+          events_muted?: Database["public"]["Enums"]["notification_event"][]
+          in_app?: boolean
+          updated_at?: string
+          user_id: string
+          whatsapp?: boolean
+          whatsapp_phone?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: boolean
+          events_muted?: Database["public"]["Enums"]["notification_event"][]
+          in_app?: boolean
+          updated_at?: string
+          user_id?: string
+          whatsapp?: boolean
+          whatsapp_phone?: string | null
+        }
+        Relationships: []
+      }
       notifications: {
         Row: {
           body: string | null
           created_at: string
+          event: Database["public"]["Enums"]["notification_event"] | null
           id: string
           link: string | null
+          metadata: Json
           read_at: string | null
           title: string
           user_id: string
@@ -1012,8 +1230,10 @@ export type Database = {
         Insert: {
           body?: string | null
           created_at?: string
+          event?: Database["public"]["Enums"]["notification_event"] | null
           id?: string
           link?: string | null
+          metadata?: Json
           read_at?: string | null
           title: string
           user_id: string
@@ -1021,8 +1241,10 @@ export type Database = {
         Update: {
           body?: string | null
           created_at?: string
+          event?: Database["public"]["Enums"]["notification_event"] | null
           id?: string
           link?: string | null
+          metadata?: Json
           read_at?: string | null
           title?: string
           user_id?: string
@@ -2355,6 +2577,44 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      crm_set_status: {
+        Args: {
+          _override?: boolean
+          _rel_id: string
+          _status: Database["public"]["Enums"]["crm_status"]
+        }
+        Returns: {
+          appointments_count: number
+          company_id: string | null
+          created_at: string
+          first_contact_at: string
+          id: string
+          last_appointment_at: string | null
+          next_appointment_at: string | null
+          patient_id: string
+          professional_id: string
+          status: Database["public"]["Enums"]["crm_status"]
+          status_changed_at: string
+          status_changed_by: string | null
+          status_overridden: boolean
+          status_suggested: Database["public"]["Enums"]["crm_status"]
+          total_revenue: number
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "crm_patient_relationships"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      derive_crm_status: {
+        Args: {
+          _scheduled_at: string
+          _status: Database["public"]["Enums"]["appointment_status"]
+        }
+        Returns: Database["public"]["Enums"]["crm_status"]
+      }
       effective_cancellation_policy: {
         Args: { _company: string; _professional: string }
         Returns: {
@@ -2410,6 +2670,17 @@ export type Database = {
           name: string
         }[]
       }
+      notify_user: {
+        Args: {
+          _body: string
+          _event: Database["public"]["Enums"]["notification_event"]
+          _link?: string
+          _metadata?: Json
+          _title: string
+          _user_id: string
+        }
+        Returns: string
+      }
       search_providers_ranked: {
         Args: {
           _city?: string
@@ -2449,6 +2720,8 @@ export type Database = {
         | "realizada"
         | "cancelada"
         | "nao_compareceu"
+      automation_kind: "reminder_24h" | "review_request" | "retention_90d"
+      automation_status: "queued" | "sent" | "failed" | "cancelled"
       company_role: "owner" | "admin" | "profissional"
       company_type:
         | "clinica"
@@ -2457,6 +2730,14 @@ export type Database = {
         | "estetica"
         | "outros"
       coupon_type: "percent" | "fixed"
+      crm_status:
+        | "novo_lead"
+        | "agendado"
+        | "confirmada"
+        | "atendido"
+        | "cancelado"
+        | "retorno_pendente"
+        | "inativo"
       featured_kind: "premium" | "regional" | "category" | "perfil_premium"
       featured_status: "ativo" | "pausado" | "expirado" | "cancelado"
       financial_status:
@@ -2467,6 +2748,18 @@ export type Database = {
         | "repassado"
         | "reembolsado"
       gender_type: "feminino" | "masculino" | "outro" | "prefiro_nao_dizer"
+      note_visibility: "private" | "clinic"
+      notification_channel: "in_app" | "email" | "whatsapp"
+      notification_event:
+        | "appointment_created"
+        | "appointment_confirmed"
+        | "appointment_cancelled"
+        | "appointment_rescheduled"
+        | "new_message"
+        | "new_review"
+        | "appointment_reminder"
+        | "review_request"
+        | "retention_campaign"
       payment_status: "pendente" | "pago" | "reembolsado" | "falhou"
       payout_batch_status: "pendente" | "pago" | "cancelado"
       professional_status: "pendente" | "aprovado" | "rejeitado" | "suspenso"
@@ -2630,6 +2923,8 @@ export const Constants = {
         "cancelada",
         "nao_compareceu",
       ],
+      automation_kind: ["reminder_24h", "review_request", "retention_90d"],
+      automation_status: ["queued", "sent", "failed", "cancelled"],
       company_role: ["owner", "admin", "profissional"],
       company_type: [
         "clinica",
@@ -2639,6 +2934,15 @@ export const Constants = {
         "outros",
       ],
       coupon_type: ["percent", "fixed"],
+      crm_status: [
+        "novo_lead",
+        "agendado",
+        "confirmada",
+        "atendido",
+        "cancelado",
+        "retorno_pendente",
+        "inativo",
+      ],
       featured_kind: ["premium", "regional", "category", "perfil_premium"],
       featured_status: ["ativo", "pausado", "expirado", "cancelado"],
       financial_status: [
@@ -2650,6 +2954,19 @@ export const Constants = {
         "reembolsado",
       ],
       gender_type: ["feminino", "masculino", "outro", "prefiro_nao_dizer"],
+      note_visibility: ["private", "clinic"],
+      notification_channel: ["in_app", "email", "whatsapp"],
+      notification_event: [
+        "appointment_created",
+        "appointment_confirmed",
+        "appointment_cancelled",
+        "appointment_rescheduled",
+        "new_message",
+        "new_review",
+        "appointment_reminder",
+        "review_request",
+        "retention_campaign",
+      ],
       payment_status: ["pendente", "pago", "reembolsado", "falhou"],
       payout_batch_status: ["pendente", "pago", "cancelado"],
       professional_status: ["pendente", "aprovado", "rejeitado", "suspenso"],
