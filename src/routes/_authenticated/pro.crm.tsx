@@ -42,6 +42,8 @@ function CrmPage() {
   const [q, setQ] = useState("");
   const [view, setView] = useState<"list" | "kanban">("list");
   const [filter, setFilter] = useState<CrmStatus | "">("");
+  const [openNew, setOpenNew] = useState(false);
+  const [openImport, setOpenImport] = useState(false);
   const navigate = useNavigate();
 
   const rows = useMemo(() => {
