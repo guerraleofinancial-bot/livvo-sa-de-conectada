@@ -93,7 +93,7 @@ function QuoteEditor() {
           <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded-full bg-muted">{data.status}</span>
         </div>
         <h1 className="text-xl font-bold">{title || "Orçamento"}</h1>
-        <p className="text-xs text-muted-foreground mt-1">Para: {(data.patient as { full_name?: string })?.full_name}</p>
+        <p className="text-xs text-muted-foreground mt-1">Para: {((data as unknown as { patient?: { full_name?: string } }).patient)?.full_name}</p>
       </header>
 
       {!readOnly && (
