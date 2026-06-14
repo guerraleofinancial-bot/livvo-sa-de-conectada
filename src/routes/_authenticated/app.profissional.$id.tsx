@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { ArrowLeft, MapPin, Star, Calendar, Clock, Heart, Briefcase } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { VerifiedBadge } from "@/components/livvo/VerifiedBadge";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/app/profissional/$id")({
