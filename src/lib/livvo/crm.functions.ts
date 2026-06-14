@@ -13,16 +13,27 @@ const OriginEnum = z.enum([
   "importado", "perfil_publico", "campanha", "outros",
 ]);
 
+async function attachPatients(supabase: any, rels: any[]) {
+  const ids = Array.from(new Set(rels.map((r) => r.patient_id).filter(Boolean)));
+  if (!ids.length) return rels.map((r) => ({ ...r, patient: null }));
+  const { data: profiles } = await supabase
+    .from("profiles")
+    .select("id, full_name, avatar_url, phone, email, city, date_of_birth")
+    .in("id", ids);
+  const map = new Map((profiles ?? []).map((p: any) => [p.id, p]));
+  return rels.map((r) => ({ ...r, patient: map.get(r.patient_id) ?? null }));
+}
+
 export const listCrmPatients = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     const { data, error } = await context.supabase
       .from("crm_patient_relationships")
-      .select("*, patient:patient_id(id, full_name, avatar_url, phone, email, city, date_of_birth)")
+      .select("*")
       .eq("professional_id", context.userId)
       .order("updated_at", { ascending: false });
     if (error) throw error;
-    return data ?? [];
+    return await attachPatients(context.supabase, data ?? []);
   });
 
 export const getCrmPatient = createServerFn({ method: "POST" })
@@ -31,9 +42,10 @@ export const getCrmPatient = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     const { data: rel, error } = await context.supabase
       .from("crm_patient_relationships")
-      .select("*, patient:patient_id(id, full_name, avatar_url, phone, email, city, date_of_birth)")
+      .select("*")
       .eq("id", data.relationshipId).single();
     if (error) throw error;
+    const [withPatient] = await attachPatients(context.supabase, [rel]);
 
     const [appts, notes, quotes] = await Promise.all([
       context.supabase.from("appointments")
@@ -50,8 +62,9 @@ export const getCrmPatient = createServerFn({ method: "POST" })
         .or(`professional_id.eq.${rel.professional_id},assigned_user_id.eq.${rel.professional_id}`)
         .order("created_at", { ascending: false }),
     ]);
-    return { relationship: rel, appointments: appts.data ?? [], notes: notes.data ?? [], quotes: quotes.data ?? [] };
+    return { relationship: withPatient, appointments: appts.data ?? [], notes: notes.data ?? [], quotes: quotes.data ?? [] };
   });
+
 
 export const updateCrmStatus = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
