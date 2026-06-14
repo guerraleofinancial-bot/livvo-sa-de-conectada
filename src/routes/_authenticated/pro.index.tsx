@@ -5,6 +5,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { getCrmDashboard } from "@/lib/livvo/crm.functions";
 import { Calendar, Users, Star, Wallet, Clock, FileText, TrendingUp, UserCheck, UserX } from "lucide-react";
+import { useState } from "react";
+import { NewPatientDialog } from "@/components/livvo/new-patient-dialog";
+import { ImportPatientsDialog, NewPatientButtons } from "@/components/livvo/import-patients-dialog";
 
 export const Route = createFileRoute("/_authenticated/pro/")({
   component: ProHome,
@@ -13,6 +16,8 @@ export const Route = createFileRoute("/_authenticated/pro/")({
 function ProHome() {
   const { user } = useAuth();
   const dashFn = useServerFn(getCrmDashboard);
+  const [openNew, setOpenNew] = useState(false);
+  const [openImport, setOpenImport] = useState(false);
 
   const { data: pro } = useQuery({
     queryKey: ["me-pro", user?.id],
@@ -50,10 +55,12 @@ function ProHome() {
       </header>
 
       <section>
-        <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center justify-between mb-3 gap-3 flex-wrap">
           <h2 className="text-sm font-bold">Visão comercial · últimos 30 dias</h2>
-          <Link to="/pro/crm" className="text-xs font-semibold text-primary">CRM</Link>
+          <NewPatientButtons onNew={() => setOpenNew(true)} onImport={() => setOpenImport(true)} />
         </div>
+        <NewPatientDialog open={openNew} onOpenChange={setOpenNew} />
+        <ImportPatientsDialog open={openImport} onOpenChange={setOpenImport} />
         <div className="grid grid-cols-2 gap-3">
           {[
             { icon: Users, label: "Leads", value: dash?.leads ?? 0, tone: "primary" },

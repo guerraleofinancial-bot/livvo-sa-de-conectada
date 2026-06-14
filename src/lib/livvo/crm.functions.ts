@@ -16,11 +16,15 @@ const OriginEnum = z.enum([
 async function attachPatients(supabase: any, rels: any[]) {
   const ids = Array.from(new Set(rels.map((r) => r.patient_id).filter(Boolean)));
   if (!ids.length) return rels.map((r) => ({ ...r, patient: null }));
-  const { data: profiles } = await supabase
-    .from("profiles")
-    .select("id, full_name, avatar_url, phone, email, city, date_of_birth")
-    .in("id", ids);
-  const map = new Map((profiles ?? []).map((p: any) => [p.id, p]));
+  const [{ data: profiles }, { data: contacts }] = await Promise.all([
+    supabase.from("profiles")
+      .select("id, full_name, avatar_url, phone, email, city, date_of_birth").in("id", ids),
+    supabase.from("crm_contacts")
+      .select("id, full_name, phone, whatsapp, email, city, date_of_birth, sex, insurance, claimed_user_id").in("id", ids),
+  ]);
+  const map = new Map<string, any>();
+  (profiles ?? []).forEach((p: any) => map.set(p.id, { ...p, kind: "user" }));
+  (contacts ?? []).forEach((c: any) => { if (!map.has(c.id)) map.set(c.id, { ...c, avatar_url: null, kind: "contact" }); });
   return rels.map((r) => ({ ...r, patient: map.get(r.patient_id) ?? null }));
 }
 

@@ -766,6 +766,93 @@ export type Database = {
           },
         ]
       }
+      crm_contacts: {
+        Row: {
+          city: string | null
+          claimed_at: string | null
+          claimed_user_id: string | null
+          company_id: string | null
+          created_at: string
+          created_by: string | null
+          date_of_birth: string | null
+          email: string | null
+          full_name: string
+          id: string
+          insurance: string | null
+          notes: string | null
+          origin: Database["public"]["Enums"]["patient_origin"]
+          origin_detail: string | null
+          phone: string
+          professional_id: string
+          responsible_user_id: string | null
+          sex: string | null
+          source: string
+          updated_at: string
+          whatsapp: string | null
+        }
+        Insert: {
+          city?: string | null
+          claimed_at?: string | null
+          claimed_user_id?: string | null
+          company_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          date_of_birth?: string | null
+          email?: string | null
+          full_name: string
+          id?: string
+          insurance?: string | null
+          notes?: string | null
+          origin?: Database["public"]["Enums"]["patient_origin"]
+          origin_detail?: string | null
+          phone: string
+          professional_id: string
+          responsible_user_id?: string | null
+          sex?: string | null
+          source?: string
+          updated_at?: string
+          whatsapp?: string | null
+        }
+        Update: {
+          city?: string | null
+          claimed_at?: string | null
+          claimed_user_id?: string | null
+          company_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          date_of_birth?: string | null
+          email?: string | null
+          full_name?: string
+          id?: string
+          insurance?: string | null
+          notes?: string | null
+          origin?: Database["public"]["Enums"]["patient_origin"]
+          origin_detail?: string | null
+          phone?: string
+          professional_id?: string
+          responsible_user_id?: string | null
+          sex?: string | null
+          source?: string
+          updated_at?: string
+          whatsapp?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "crm_contacts_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "crm_contacts_professional_id_fkey"
+            columns: ["professional_id"]
+            isOneToOne: false
+            referencedRelation: "professionals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       crm_patient_notes: {
         Row: {
           author_id: string
@@ -2740,6 +2827,7 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      claim_contact_match: { Args: { _user: string }; Returns: number }
       crm_dashboard: {
         Args: { _from: string; _pro: string; _to: string }
         Returns: Json
