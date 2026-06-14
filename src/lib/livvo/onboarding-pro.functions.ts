@@ -2,12 +2,18 @@ import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { z } from "zod";
 
+const councilEnum = z.enum(["CRM","CRO","CRP","CRF","CRBM","COREN","CRN","CREFITO","CREFONO","OUTRO"]);
+
 const patchSchema = z.object({
   display_name: z.string().nullish(),
   cpf_cnpj: z.string().nullish(),
   specialty_id: z.string().uuid().nullish(),
   secondary_specialties: z.array(z.string().uuid()).optional(),
   professional_registry: z.string().nullish(),
+  council: councilEnum.nullish(),
+  council_number: z.string().nullish(),
+  council_state: z.string().max(2).nullish(),
+  council_document_url: z.string().nullish(),
   bio: z.string().nullish(),
   years_experience: z.number().int().min(0).max(80).nullish(),
   academic_formation: z.string().nullish(),
