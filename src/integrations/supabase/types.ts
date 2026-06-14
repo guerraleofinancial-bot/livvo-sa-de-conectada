@@ -820,14 +820,18 @@ export type Database = {
       crm_patient_relationships: {
         Row: {
           appointments_count: number
+          assigned_user_id: string | null
           company_id: string | null
           created_at: string
           first_contact_at: string
           id: string
           last_appointment_at: string | null
           next_appointment_at: string | null
+          origin: Database["public"]["Enums"]["patient_origin"]
+          origin_detail: string | null
           patient_id: string
           professional_id: string
+          quick_note: string | null
           status: Database["public"]["Enums"]["crm_status"]
           status_changed_at: string
           status_changed_by: string | null
@@ -838,14 +842,18 @@ export type Database = {
         }
         Insert: {
           appointments_count?: number
+          assigned_user_id?: string | null
           company_id?: string | null
           created_at?: string
           first_contact_at?: string
           id?: string
           last_appointment_at?: string | null
           next_appointment_at?: string | null
+          origin?: Database["public"]["Enums"]["patient_origin"]
+          origin_detail?: string | null
           patient_id: string
           professional_id: string
+          quick_note?: string | null
           status?: Database["public"]["Enums"]["crm_status"]
           status_changed_at?: string
           status_changed_by?: string | null
@@ -856,14 +864,18 @@ export type Database = {
         }
         Update: {
           appointments_count?: number
+          assigned_user_id?: string | null
           company_id?: string | null
           created_at?: string
           first_contact_at?: string
           id?: string
           last_appointment_at?: string | null
           next_appointment_at?: string | null
+          origin?: Database["public"]["Enums"]["patient_origin"]
+          origin_detail?: string | null
           patient_id?: string
           professional_id?: string
+          quick_note?: string | null
           status?: Database["public"]["Enums"]["crm_status"]
           status_changed_at?: string
           status_changed_by?: string | null
@@ -2052,6 +2064,157 @@ export type Database = {
         }
         Relationships: []
       }
+      quote_items: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+          position: number
+          quantity: number
+          quote_id: string
+          service_id: string | null
+          total: number
+          unit_price: number
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+          position?: number
+          quantity?: number
+          quote_id: string
+          service_id?: string | null
+          total?: number
+          unit_price?: number
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+          position?: number
+          quantity?: number
+          quote_id?: string
+          service_id?: string | null
+          total?: number
+          unit_price?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quote_items_quote_id_fkey"
+            columns: ["quote_id"]
+            isOneToOne: false
+            referencedRelation: "quotes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quote_items_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "services"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quotes: {
+        Row: {
+          assigned_user_id: string | null
+          author_id: string
+          company_id: string | null
+          converted_appointment_id: string | null
+          created_at: string
+          decided_at: string | null
+          decision_reason: string | null
+          discount: number
+          id: string
+          internal_notes: string | null
+          notes: string | null
+          patient_id: string
+          professional_id: string | null
+          sent_at: string | null
+          share_token: string | null
+          status: Database["public"]["Enums"]["quote_status"]
+          subtotal: number
+          title: string
+          total: number
+          updated_at: string
+          valid_until: string | null
+          viewed_at: string | null
+        }
+        Insert: {
+          assigned_user_id?: string | null
+          author_id: string
+          company_id?: string | null
+          converted_appointment_id?: string | null
+          created_at?: string
+          decided_at?: string | null
+          decision_reason?: string | null
+          discount?: number
+          id?: string
+          internal_notes?: string | null
+          notes?: string | null
+          patient_id: string
+          professional_id?: string | null
+          sent_at?: string | null
+          share_token?: string | null
+          status?: Database["public"]["Enums"]["quote_status"]
+          subtotal?: number
+          title?: string
+          total?: number
+          updated_at?: string
+          valid_until?: string | null
+          viewed_at?: string | null
+        }
+        Update: {
+          assigned_user_id?: string | null
+          author_id?: string
+          company_id?: string | null
+          converted_appointment_id?: string | null
+          created_at?: string
+          decided_at?: string | null
+          decision_reason?: string | null
+          discount?: number
+          id?: string
+          internal_notes?: string | null
+          notes?: string | null
+          patient_id?: string
+          professional_id?: string | null
+          sent_at?: string | null
+          share_token?: string | null
+          status?: Database["public"]["Enums"]["quote_status"]
+          subtotal?: number
+          title?: string
+          total?: number
+          updated_at?: string
+          valid_until?: string | null
+          viewed_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quotes_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quotes_converted_appointment_id_fkey"
+            columns: ["converted_appointment_id"]
+            isOneToOne: false
+            referencedRelation: "appointments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quotes_professional_id_fkey"
+            columns: ["professional_id"]
+            isOneToOne: false
+            referencedRelation: "professionals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       resource_blocked_slots: {
         Row: {
           created_at: string
@@ -2577,6 +2740,10 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      crm_dashboard: {
+        Args: { _from: string; _pro: string; _to: string }
+        Returns: Json
+      }
       crm_set_status: {
         Args: {
           _override?: boolean
@@ -2585,14 +2752,18 @@ export type Database = {
         }
         Returns: {
           appointments_count: number
+          assigned_user_id: string | null
           company_id: string | null
           created_at: string
           first_contact_at: string
           id: string
           last_appointment_at: string | null
           next_appointment_at: string | null
+          origin: Database["public"]["Enums"]["patient_origin"]
+          origin_detail: string | null
           patient_id: string
           professional_id: string
+          quick_note: string | null
           status: Database["public"]["Enums"]["crm_status"]
           status_changed_at: string
           status_changed_by: string | null
@@ -2647,6 +2818,10 @@ export type Database = {
         Returns: boolean
       }
       is_company_owner: {
+        Args: { _company: string; _user: string }
+        Returns: boolean
+      }
+      is_company_staff: {
         Args: { _company: string; _user: string }
         Returns: boolean
       }
