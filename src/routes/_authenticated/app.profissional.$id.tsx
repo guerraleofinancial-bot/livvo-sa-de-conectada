@@ -96,6 +96,7 @@ function ProfileDetail() {
           <div className="min-w-0">
             <h1 className="text-xl font-bold truncate">{p.profiles?.full_name}</h1>
             <p className="text-sm opacity-90">{p.specialties?.name}</p>
+            {p.council_verified_at && <div className="mt-1.5"><VerifiedBadge council={p.council} number={p.council_number} uf={p.council_state} size="md" className="bg-white/15 text-white border-white/30" /></div>}
             <p className="text-xs opacity-75 mt-1 flex items-center gap-1"><Star className="size-3 fill-current" /> {Number(p.rating_average).toFixed(1)} · {p.rating_count} avaliações</p>
           </div>
         </div>
