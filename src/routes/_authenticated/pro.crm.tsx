@@ -5,6 +5,8 @@ import { listCrmPatients } from "@/lib/livvo/crm.functions";
 import { Users, Calendar, ChevronRight, LayoutGrid, List, FileText } from "lucide-react";
 import { useState, useMemo } from "react";
 import { Input } from "@/components/ui/input";
+import { NewPatientDialog } from "@/components/livvo/new-patient-dialog";
+import { ImportPatientsDialog, NewPatientButtons } from "@/components/livvo/import-patients-dialog";
 
 export const Route = createFileRoute("/_authenticated/pro/crm")({
   component: CrmPage,
