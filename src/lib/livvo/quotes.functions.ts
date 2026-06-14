@@ -18,13 +18,19 @@ export const listProQuotes = createServerFn({ method: "GET" })
   .handler(async ({ context }) => {
     const { data, error } = await context.supabase
       .from("quotes")
-      .select("id, status, title, total, valid_until, created_at, sent_at, patient:patient_id(id, full_name, avatar_url)")
+      .select("id, status, title, total, valid_until, created_at, sent_at, patient_id")
       .or(`professional_id.eq.${context.userId},assigned_user_id.eq.${context.userId}`)
       .order("created_at", { ascending: false })
       .limit(200);
     if (error) throw error;
-    return data ?? [];
+    const ids = Array.from(new Set((data ?? []).map((r: any) => r.patient_id).filter(Boolean)));
+    const { data: profiles } = ids.length
+      ? await context.supabase.from("profiles").select("id, full_name, avatar_url").in("id", ids)
+      : { data: [] as any[] };
+    const map = new Map((profiles ?? []).map((p: any) => [p.id, p]));
+    return (data ?? []).map((r: any) => ({ ...r, patient: map.get(r.patient_id) ?? null }));
   });
+
 
 export const listPatientQuotes = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
@@ -45,9 +51,13 @@ export const getQuote = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     const { data: q, error } = await context.supabase
       .from("quotes")
-      .select("*, patient:patient_id(id, full_name, avatar_url, email, phone), items:quote_items(*)")
+      .select("*, items:quote_items(*)")
       .eq("id", data.id).single();
     if (error) throw error;
+    const { data: patient } = q.patient_id
+      ? await context.supabase.from("profiles").select("id, full_name, avatar_url, email, phone").eq("id", q.patient_id).maybeSingle()
+      : { data: null };
+    (q as any).patient = patient ?? null;
     // mark as viewed if patient is viewing
     if (q.patient_id === context.userId && q.status === "enviado") {
       await context.supabase.from("quotes").update({ status: "visualizado" }).eq("id", q.id);
@@ -55,6 +65,7 @@ export const getQuote = createServerFn({ method: "POST" })
     }
     return q;
   });
+
 
 export const createQuote = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
