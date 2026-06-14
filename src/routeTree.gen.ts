@@ -24,12 +24,14 @@ import { Route as AuthenticatedProIndexRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedAppIndexRouteImport } from './routes/_authenticated/app.index'
 import { Route as AuthenticatedProServicosRouteImport } from './routes/_authenticated/pro.servicos'
 import { Route as AuthenticatedProPacientesRouteImport } from './routes/_authenticated/pro.pacientes'
+import { Route as AuthenticatedProOrcamentosRouteImport } from './routes/_authenticated/pro.orcamentos'
 import { Route as AuthenticatedProNotificacoesRouteImport } from './routes/_authenticated/pro.notificacoes'
 import { Route as AuthenticatedProImpulsionarRouteImport } from './routes/_authenticated/pro.impulsionar'
 import { Route as AuthenticatedProFinanceiroRouteImport } from './routes/_authenticated/pro.financeiro'
 import { Route as AuthenticatedProCrmRouteImport } from './routes/_authenticated/pro.crm'
 import { Route as AuthenticatedProAgendaRouteImport } from './routes/_authenticated/pro.agenda'
 import { Route as AuthenticatedAppPerfilRouteImport } from './routes/_authenticated/app.perfil'
+import { Route as AuthenticatedAppOrcamentosRouteImport } from './routes/_authenticated/app.orcamentos'
 import { Route as AuthenticatedAppMensagensRouteImport } from './routes/_authenticated/app.mensagens'
 import { Route as AuthenticatedAppFavoritosRouteImport } from './routes/_authenticated/app.favoritos'
 import { Route as AuthenticatedAppDocumentosRouteImport } from './routes/_authenticated/app.documentos'
@@ -38,8 +40,10 @@ import { Route as AuthenticatedAppCarteiraRouteImport } from './routes/_authenti
 import { Route as AuthenticatedAppBuscarRouteImport } from './routes/_authenticated/app.buscar'
 import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments.webhook'
 import { Route as ApiPublicAutomationRunRouteImport } from './routes/api/public/automation.run'
+import { Route as AuthenticatedProOrcamentosIdRouteImport } from './routes/_authenticated/pro.orcamentos.$id'
 import { Route as AuthenticatedProCrmIdRouteImport } from './routes/_authenticated/pro.crm.$id'
 import { Route as AuthenticatedAppProfissionalIdRouteImport } from './routes/_authenticated/app.profissional.$id'
+import { Route as AuthenticatedAppOrcamentosIdRouteImport } from './routes/_authenticated/app.orcamentos.$id'
 import { Route as AuthenticatedAppEmpresaIdRouteImport } from './routes/_authenticated/app.empresa.$id'
 import { Route as AuthenticatedAppCheckoutIdRouteImport } from './routes/_authenticated/app.checkout.$id'
 import { Route as AuthenticatedAppChatIdRouteImport } from './routes/_authenticated/app.chat.$id'
@@ -121,6 +125,12 @@ const AuthenticatedProPacientesRoute =
     path: '/pacientes',
     getParentRoute: () => AuthenticatedProRoute,
   } as any)
+const AuthenticatedProOrcamentosRoute =
+  AuthenticatedProOrcamentosRouteImport.update({
+    id: '/orcamentos',
+    path: '/orcamentos',
+    getParentRoute: () => AuthenticatedProRoute,
+  } as any)
 const AuthenticatedProNotificacoesRoute =
   AuthenticatedProNotificacoesRouteImport.update({
     id: '/notificacoes',
@@ -154,6 +164,12 @@ const AuthenticatedAppPerfilRoute = AuthenticatedAppPerfilRouteImport.update({
   path: '/perfil',
   getParentRoute: () => AuthenticatedAppRoute,
 } as any)
+const AuthenticatedAppOrcamentosRoute =
+  AuthenticatedAppOrcamentosRouteImport.update({
+    id: '/orcamentos',
+    path: '/orcamentos',
+    getParentRoute: () => AuthenticatedAppRoute,
+  } as any)
 const AuthenticatedAppMensagensRoute =
   AuthenticatedAppMensagensRouteImport.update({
     id: '/mensagens',
@@ -200,6 +216,12 @@ const ApiPublicAutomationRunRoute = ApiPublicAutomationRunRouteImport.update({
   path: '/api/public/automation/run',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedProOrcamentosIdRoute =
+  AuthenticatedProOrcamentosIdRouteImport.update({
+    id: '/$id',
+    path: '/$id',
+    getParentRoute: () => AuthenticatedProOrcamentosRoute,
+  } as any)
 const AuthenticatedProCrmIdRoute = AuthenticatedProCrmIdRouteImport.update({
   id: '/$id',
   path: '/$id',
@@ -210,6 +232,12 @@ const AuthenticatedAppProfissionalIdRoute =
     id: '/profissional/$id',
     path: '/profissional/$id',
     getParentRoute: () => AuthenticatedAppRoute,
+  } as any)
+const AuthenticatedAppOrcamentosIdRoute =
+  AuthenticatedAppOrcamentosIdRouteImport.update({
+    id: '/$id',
+    path: '/$id',
+    getParentRoute: () => AuthenticatedAppOrcamentosRoute,
   } as any)
 const AuthenticatedAppEmpresaIdRoute =
   AuthenticatedAppEmpresaIdRouteImport.update({
@@ -246,12 +274,14 @@ export interface FileRoutesByFullPath {
   '/app/documentos': typeof AuthenticatedAppDocumentosRoute
   '/app/favoritos': typeof AuthenticatedAppFavoritosRoute
   '/app/mensagens': typeof AuthenticatedAppMensagensRoute
+  '/app/orcamentos': typeof AuthenticatedAppOrcamentosRouteWithChildren
   '/app/perfil': typeof AuthenticatedAppPerfilRoute
   '/pro/agenda': typeof AuthenticatedProAgendaRoute
   '/pro/crm': typeof AuthenticatedProCrmRouteWithChildren
   '/pro/financeiro': typeof AuthenticatedProFinanceiroRoute
   '/pro/impulsionar': typeof AuthenticatedProImpulsionarRoute
   '/pro/notificacoes': typeof AuthenticatedProNotificacoesRoute
+  '/pro/orcamentos': typeof AuthenticatedProOrcamentosRouteWithChildren
   '/pro/pacientes': typeof AuthenticatedProPacientesRoute
   '/pro/servicos': typeof AuthenticatedProServicosRoute
   '/app/': typeof AuthenticatedAppIndexRoute
@@ -259,8 +289,10 @@ export interface FileRoutesByFullPath {
   '/app/chat/$id': typeof AuthenticatedAppChatIdRoute
   '/app/checkout/$id': typeof AuthenticatedAppCheckoutIdRoute
   '/app/empresa/$id': typeof AuthenticatedAppEmpresaIdRoute
+  '/app/orcamentos/$id': typeof AuthenticatedAppOrcamentosIdRoute
   '/app/profissional/$id': typeof AuthenticatedAppProfissionalIdRoute
   '/pro/crm/$id': typeof AuthenticatedProCrmIdRoute
+  '/pro/orcamentos/$id': typeof AuthenticatedProOrcamentosIdRoute
   '/api/public/automation/run': typeof ApiPublicAutomationRunRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
 }
@@ -279,12 +311,14 @@ export interface FileRoutesByTo {
   '/app/documentos': typeof AuthenticatedAppDocumentosRoute
   '/app/favoritos': typeof AuthenticatedAppFavoritosRoute
   '/app/mensagens': typeof AuthenticatedAppMensagensRoute
+  '/app/orcamentos': typeof AuthenticatedAppOrcamentosRouteWithChildren
   '/app/perfil': typeof AuthenticatedAppPerfilRoute
   '/pro/agenda': typeof AuthenticatedProAgendaRoute
   '/pro/crm': typeof AuthenticatedProCrmRouteWithChildren
   '/pro/financeiro': typeof AuthenticatedProFinanceiroRoute
   '/pro/impulsionar': typeof AuthenticatedProImpulsionarRoute
   '/pro/notificacoes': typeof AuthenticatedProNotificacoesRoute
+  '/pro/orcamentos': typeof AuthenticatedProOrcamentosRouteWithChildren
   '/pro/pacientes': typeof AuthenticatedProPacientesRoute
   '/pro/servicos': typeof AuthenticatedProServicosRoute
   '/app': typeof AuthenticatedAppIndexRoute
@@ -292,8 +326,10 @@ export interface FileRoutesByTo {
   '/app/chat/$id': typeof AuthenticatedAppChatIdRoute
   '/app/checkout/$id': typeof AuthenticatedAppCheckoutIdRoute
   '/app/empresa/$id': typeof AuthenticatedAppEmpresaIdRoute
+  '/app/orcamentos/$id': typeof AuthenticatedAppOrcamentosIdRoute
   '/app/profissional/$id': typeof AuthenticatedAppProfissionalIdRoute
   '/pro/crm/$id': typeof AuthenticatedProCrmIdRoute
+  '/pro/orcamentos/$id': typeof AuthenticatedProOrcamentosIdRoute
   '/api/public/automation/run': typeof ApiPublicAutomationRunRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
 }
@@ -316,12 +352,14 @@ export interface FileRoutesById {
   '/_authenticated/app/documentos': typeof AuthenticatedAppDocumentosRoute
   '/_authenticated/app/favoritos': typeof AuthenticatedAppFavoritosRoute
   '/_authenticated/app/mensagens': typeof AuthenticatedAppMensagensRoute
+  '/_authenticated/app/orcamentos': typeof AuthenticatedAppOrcamentosRouteWithChildren
   '/_authenticated/app/perfil': typeof AuthenticatedAppPerfilRoute
   '/_authenticated/pro/agenda': typeof AuthenticatedProAgendaRoute
   '/_authenticated/pro/crm': typeof AuthenticatedProCrmRouteWithChildren
   '/_authenticated/pro/financeiro': typeof AuthenticatedProFinanceiroRoute
   '/_authenticated/pro/impulsionar': typeof AuthenticatedProImpulsionarRoute
   '/_authenticated/pro/notificacoes': typeof AuthenticatedProNotificacoesRoute
+  '/_authenticated/pro/orcamentos': typeof AuthenticatedProOrcamentosRouteWithChildren
   '/_authenticated/pro/pacientes': typeof AuthenticatedProPacientesRoute
   '/_authenticated/pro/servicos': typeof AuthenticatedProServicosRoute
   '/_authenticated/app/': typeof AuthenticatedAppIndexRoute
@@ -329,8 +367,10 @@ export interface FileRoutesById {
   '/_authenticated/app/chat/$id': typeof AuthenticatedAppChatIdRoute
   '/_authenticated/app/checkout/$id': typeof AuthenticatedAppCheckoutIdRoute
   '/_authenticated/app/empresa/$id': typeof AuthenticatedAppEmpresaIdRoute
+  '/_authenticated/app/orcamentos/$id': typeof AuthenticatedAppOrcamentosIdRoute
   '/_authenticated/app/profissional/$id': typeof AuthenticatedAppProfissionalIdRoute
   '/_authenticated/pro/crm/$id': typeof AuthenticatedProCrmIdRoute
+  '/_authenticated/pro/orcamentos/$id': typeof AuthenticatedProOrcamentosIdRoute
   '/api/public/automation/run': typeof ApiPublicAutomationRunRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
 }
@@ -353,12 +393,14 @@ export interface FileRouteTypes {
     | '/app/documentos'
     | '/app/favoritos'
     | '/app/mensagens'
+    | '/app/orcamentos'
     | '/app/perfil'
     | '/pro/agenda'
     | '/pro/crm'
     | '/pro/financeiro'
     | '/pro/impulsionar'
     | '/pro/notificacoes'
+    | '/pro/orcamentos'
     | '/pro/pacientes'
     | '/pro/servicos'
     | '/app/'
@@ -366,8 +408,10 @@ export interface FileRouteTypes {
     | '/app/chat/$id'
     | '/app/checkout/$id'
     | '/app/empresa/$id'
+    | '/app/orcamentos/$id'
     | '/app/profissional/$id'
     | '/pro/crm/$id'
+    | '/pro/orcamentos/$id'
     | '/api/public/automation/run'
     | '/api/public/payments/webhook'
   fileRoutesByTo: FileRoutesByTo
@@ -386,12 +430,14 @@ export interface FileRouteTypes {
     | '/app/documentos'
     | '/app/favoritos'
     | '/app/mensagens'
+    | '/app/orcamentos'
     | '/app/perfil'
     | '/pro/agenda'
     | '/pro/crm'
     | '/pro/financeiro'
     | '/pro/impulsionar'
     | '/pro/notificacoes'
+    | '/pro/orcamentos'
     | '/pro/pacientes'
     | '/pro/servicos'
     | '/app'
@@ -399,8 +445,10 @@ export interface FileRouteTypes {
     | '/app/chat/$id'
     | '/app/checkout/$id'
     | '/app/empresa/$id'
+    | '/app/orcamentos/$id'
     | '/app/profissional/$id'
     | '/pro/crm/$id'
+    | '/pro/orcamentos/$id'
     | '/api/public/automation/run'
     | '/api/public/payments/webhook'
   id:
@@ -422,12 +470,14 @@ export interface FileRouteTypes {
     | '/_authenticated/app/documentos'
     | '/_authenticated/app/favoritos'
     | '/_authenticated/app/mensagens'
+    | '/_authenticated/app/orcamentos'
     | '/_authenticated/app/perfil'
     | '/_authenticated/pro/agenda'
     | '/_authenticated/pro/crm'
     | '/_authenticated/pro/financeiro'
     | '/_authenticated/pro/impulsionar'
     | '/_authenticated/pro/notificacoes'
+    | '/_authenticated/pro/orcamentos'
     | '/_authenticated/pro/pacientes'
     | '/_authenticated/pro/servicos'
     | '/_authenticated/app/'
@@ -435,8 +485,10 @@ export interface FileRouteTypes {
     | '/_authenticated/app/chat/$id'
     | '/_authenticated/app/checkout/$id'
     | '/_authenticated/app/empresa/$id'
+    | '/_authenticated/app/orcamentos/$id'
     | '/_authenticated/app/profissional/$id'
     | '/_authenticated/pro/crm/$id'
+    | '/_authenticated/pro/orcamentos/$id'
     | '/api/public/automation/run'
     | '/api/public/payments/webhook'
   fileRoutesById: FileRoutesById
@@ -560,6 +612,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedProPacientesRouteImport
       parentRoute: typeof AuthenticatedProRoute
     }
+    '/_authenticated/pro/orcamentos': {
+      id: '/_authenticated/pro/orcamentos'
+      path: '/orcamentos'
+      fullPath: '/pro/orcamentos'
+      preLoaderRoute: typeof AuthenticatedProOrcamentosRouteImport
+      parentRoute: typeof AuthenticatedProRoute
+    }
     '/_authenticated/pro/notificacoes': {
       id: '/_authenticated/pro/notificacoes'
       path: '/notificacoes'
@@ -600,6 +659,13 @@ declare module '@tanstack/react-router' {
       path: '/perfil'
       fullPath: '/app/perfil'
       preLoaderRoute: typeof AuthenticatedAppPerfilRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
+    '/_authenticated/app/orcamentos': {
+      id: '/_authenticated/app/orcamentos'
+      path: '/orcamentos'
+      fullPath: '/app/orcamentos'
+      preLoaderRoute: typeof AuthenticatedAppOrcamentosRouteImport
       parentRoute: typeof AuthenticatedAppRoute
     }
     '/_authenticated/app/mensagens': {
@@ -658,6 +724,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicAutomationRunRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/pro/orcamentos/$id': {
+      id: '/_authenticated/pro/orcamentos/$id'
+      path: '/$id'
+      fullPath: '/pro/orcamentos/$id'
+      preLoaderRoute: typeof AuthenticatedProOrcamentosIdRouteImport
+      parentRoute: typeof AuthenticatedProOrcamentosRoute
+    }
     '/_authenticated/pro/crm/$id': {
       id: '/_authenticated/pro/crm/$id'
       path: '/$id'
@@ -671,6 +744,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/app/profissional/$id'
       preLoaderRoute: typeof AuthenticatedAppProfissionalIdRouteImport
       parentRoute: typeof AuthenticatedAppRoute
+    }
+    '/_authenticated/app/orcamentos/$id': {
+      id: '/_authenticated/app/orcamentos/$id'
+      path: '/$id'
+      fullPath: '/app/orcamentos/$id'
+      preLoaderRoute: typeof AuthenticatedAppOrcamentosIdRouteImport
+      parentRoute: typeof AuthenticatedAppOrcamentosRoute
     }
     '/_authenticated/app/empresa/$id': {
       id: '/_authenticated/app/empresa/$id'
@@ -696,6 +776,20 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AuthenticatedAppOrcamentosRouteChildren {
+  AuthenticatedAppOrcamentosIdRoute: typeof AuthenticatedAppOrcamentosIdRoute
+}
+
+const AuthenticatedAppOrcamentosRouteChildren: AuthenticatedAppOrcamentosRouteChildren =
+  {
+    AuthenticatedAppOrcamentosIdRoute: AuthenticatedAppOrcamentosIdRoute,
+  }
+
+const AuthenticatedAppOrcamentosRouteWithChildren =
+  AuthenticatedAppOrcamentosRoute._addFileChildren(
+    AuthenticatedAppOrcamentosRouteChildren,
+  )
+
 interface AuthenticatedAppRouteChildren {
   AuthenticatedAppBuscarRoute: typeof AuthenticatedAppBuscarRoute
   AuthenticatedAppCarteiraRoute: typeof AuthenticatedAppCarteiraRoute
@@ -703,6 +797,7 @@ interface AuthenticatedAppRouteChildren {
   AuthenticatedAppDocumentosRoute: typeof AuthenticatedAppDocumentosRoute
   AuthenticatedAppFavoritosRoute: typeof AuthenticatedAppFavoritosRoute
   AuthenticatedAppMensagensRoute: typeof AuthenticatedAppMensagensRoute
+  AuthenticatedAppOrcamentosRoute: typeof AuthenticatedAppOrcamentosRouteWithChildren
   AuthenticatedAppPerfilRoute: typeof AuthenticatedAppPerfilRoute
   AuthenticatedAppIndexRoute: typeof AuthenticatedAppIndexRoute
   AuthenticatedAppChatIdRoute: typeof AuthenticatedAppChatIdRoute
@@ -718,6 +813,7 @@ const AuthenticatedAppRouteChildren: AuthenticatedAppRouteChildren = {
   AuthenticatedAppDocumentosRoute: AuthenticatedAppDocumentosRoute,
   AuthenticatedAppFavoritosRoute: AuthenticatedAppFavoritosRoute,
   AuthenticatedAppMensagensRoute: AuthenticatedAppMensagensRoute,
+  AuthenticatedAppOrcamentosRoute: AuthenticatedAppOrcamentosRouteWithChildren,
   AuthenticatedAppPerfilRoute: AuthenticatedAppPerfilRoute,
   AuthenticatedAppIndexRoute: AuthenticatedAppIndexRoute,
   AuthenticatedAppChatIdRoute: AuthenticatedAppChatIdRoute,
@@ -740,12 +836,27 @@ const AuthenticatedProCrmRouteChildren: AuthenticatedProCrmRouteChildren = {
 const AuthenticatedProCrmRouteWithChildren =
   AuthenticatedProCrmRoute._addFileChildren(AuthenticatedProCrmRouteChildren)
 
+interface AuthenticatedProOrcamentosRouteChildren {
+  AuthenticatedProOrcamentosIdRoute: typeof AuthenticatedProOrcamentosIdRoute
+}
+
+const AuthenticatedProOrcamentosRouteChildren: AuthenticatedProOrcamentosRouteChildren =
+  {
+    AuthenticatedProOrcamentosIdRoute: AuthenticatedProOrcamentosIdRoute,
+  }
+
+const AuthenticatedProOrcamentosRouteWithChildren =
+  AuthenticatedProOrcamentosRoute._addFileChildren(
+    AuthenticatedProOrcamentosRouteChildren,
+  )
+
 interface AuthenticatedProRouteChildren {
   AuthenticatedProAgendaRoute: typeof AuthenticatedProAgendaRoute
   AuthenticatedProCrmRoute: typeof AuthenticatedProCrmRouteWithChildren
   AuthenticatedProFinanceiroRoute: typeof AuthenticatedProFinanceiroRoute
   AuthenticatedProImpulsionarRoute: typeof AuthenticatedProImpulsionarRoute
   AuthenticatedProNotificacoesRoute: typeof AuthenticatedProNotificacoesRoute
+  AuthenticatedProOrcamentosRoute: typeof AuthenticatedProOrcamentosRouteWithChildren
   AuthenticatedProPacientesRoute: typeof AuthenticatedProPacientesRoute
   AuthenticatedProServicosRoute: typeof AuthenticatedProServicosRoute
   AuthenticatedProIndexRoute: typeof AuthenticatedProIndexRoute
@@ -757,6 +868,7 @@ const AuthenticatedProRouteChildren: AuthenticatedProRouteChildren = {
   AuthenticatedProFinanceiroRoute: AuthenticatedProFinanceiroRoute,
   AuthenticatedProImpulsionarRoute: AuthenticatedProImpulsionarRoute,
   AuthenticatedProNotificacoesRoute: AuthenticatedProNotificacoesRoute,
+  AuthenticatedProOrcamentosRoute: AuthenticatedProOrcamentosRouteWithChildren,
   AuthenticatedProPacientesRoute: AuthenticatedProPacientesRoute,
   AuthenticatedProServicosRoute: AuthenticatedProServicosRoute,
   AuthenticatedProIndexRoute: AuthenticatedProIndexRoute,
