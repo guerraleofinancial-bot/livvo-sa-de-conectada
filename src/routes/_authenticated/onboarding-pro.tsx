@@ -105,6 +105,10 @@ function Onboarding() {
     setDisplayName(pro.display_name ?? "");
     setCpfCnpj(pro.cpf_cnpj ?? "");
     setRegistry(pro.professional_registry ?? "");
+    setCouncil(pro.council ?? "");
+    setCouncilNumber(pro.council_number ?? "");
+    setCouncilState(pro.council_state ?? "");
+    setCouncilDocUrl(pro.council_document_url ?? "");
     setSpecId(pro.specialty_id ?? "");
     setSecondarySpecs(pro.secondary_specialties ?? []);
     setBio(pro.bio ?? "");
