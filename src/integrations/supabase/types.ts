@@ -1853,11 +1853,18 @@ export type Database = {
           commission_percent_override: number | null
           company_id: string | null
           consultation_price: number
+          council: Database["public"]["Enums"]["professional_council"] | null
+          council_document_url: string | null
+          council_number: string | null
+          council_rejection_reason: string | null
+          council_state: string | null
+          council_verified_at: string | null
           cover_url: string | null
           cpf_cnpj: string | null
           created_at: string
           default_unit_id: string | null
           display_name: string | null
+          documents_expire_at: string | null
           id: string
           instagram: string | null
           languages: string[]
@@ -1902,11 +1909,18 @@ export type Database = {
           commission_percent_override?: number | null
           company_id?: string | null
           consultation_price?: number
+          council?: Database["public"]["Enums"]["professional_council"] | null
+          council_document_url?: string | null
+          council_number?: string | null
+          council_rejection_reason?: string | null
+          council_state?: string | null
+          council_verified_at?: string | null
           cover_url?: string | null
           cpf_cnpj?: string | null
           created_at?: string
           default_unit_id?: string | null
           display_name?: string | null
+          documents_expire_at?: string | null
           id: string
           instagram?: string | null
           languages?: string[]
@@ -1951,11 +1965,18 @@ export type Database = {
           commission_percent_override?: number | null
           company_id?: string | null
           consultation_price?: number
+          council?: Database["public"]["Enums"]["professional_council"] | null
+          council_document_url?: string | null
+          council_number?: string | null
+          council_rejection_reason?: string | null
+          council_state?: string | null
+          council_verified_at?: string | null
           cover_url?: string | null
           cpf_cnpj?: string | null
           created_at?: string
           default_unit_id?: string | null
           display_name?: string | null
+          documents_expire_at?: string | null
           id?: string
           instagram?: string | null
           languages?: string[]
@@ -2789,11 +2810,18 @@ export type Database = {
           commission_percent_override: number | null
           company_id: string | null
           consultation_price: number
+          council: Database["public"]["Enums"]["professional_council"] | null
+          council_document_url: string | null
+          council_number: string | null
+          council_rejection_reason: string | null
+          council_state: string | null
+          council_verified_at: string | null
           cover_url: string | null
           cpf_cnpj: string | null
           created_at: string
           default_unit_id: string | null
           display_name: string | null
+          documents_expire_at: string | null
           id: string
           instagram: string | null
           languages: string[]
@@ -2958,8 +2986,12 @@ export type Database = {
           address_state: string
           avatar_url: string
           consultation_price: number
+          council: Database["public"]["Enums"]["professional_council"]
+          council_number: string
+          council_state: string
           full_name: string
           is_premium: boolean
+          is_verified: boolean
           professional_id: string
           rank_group: number
           rating_average: number
@@ -2968,6 +3000,71 @@ export type Database = {
           specialty_slug: string
           subscription_id: string
         }[]
+      }
+      verify_professional_council: {
+        Args: { _approved: boolean; _id: string; _reason?: string }
+        Returns: {
+          academic_formation: string | null
+          address_city: string | null
+          address_complement: string | null
+          address_district: string | null
+          address_number: string | null
+          address_state: string | null
+          address_street: string | null
+          address_zip: string | null
+          approved_at: string | null
+          approved_by: string | null
+          avatar_url: string | null
+          bio: string | null
+          cancellation_policy_id: string | null
+          certifications: string[]
+          commission_percent_override: number | null
+          company_id: string | null
+          consultation_price: number
+          council: Database["public"]["Enums"]["professional_council"] | null
+          council_document_url: string | null
+          council_number: string | null
+          council_rejection_reason: string | null
+          council_state: string | null
+          council_verified_at: string | null
+          cover_url: string | null
+          cpf_cnpj: string | null
+          created_at: string
+          default_unit_id: string | null
+          display_name: string | null
+          documents_expire_at: string | null
+          id: string
+          instagram: string | null
+          languages: string[]
+          latitude: number | null
+          logo_url: string | null
+          longitude: number | null
+          modality: Database["public"]["Enums"]["appointment_modality"]
+          onboarding_completed_at: string | null
+          onboarding_step: number
+          phone: string | null
+          postgrad: string | null
+          professional_email: string | null
+          professional_registry: string
+          rating_average: number
+          rating_count: number
+          secondary_specialties: string[]
+          specialty_id: string | null
+          status: Database["public"]["Enums"]["professional_status"]
+          total_appointments: number
+          updated_at: string
+          website: string | null
+          whatsapp: string | null
+          years_experience: number | null
+          zero_commission_end: string | null
+          zero_commission_start: string | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "professionals"
+          isOneToOne: true
+          isSetofReturn: false
+        }
       }
       wallet_balance: { Args: { _provider: string }; Returns: number }
       wallet_releasable: { Args: { _provider: string }; Returns: number }
@@ -3044,7 +3141,24 @@ export type Database = {
         | "outros"
       payment_status: "pendente" | "pago" | "reembolsado" | "falhou"
       payout_batch_status: "pendente" | "pago" | "cancelado"
-      professional_status: "pendente" | "aprovado" | "rejeitado" | "suspenso"
+      professional_council:
+        | "CRM"
+        | "CRO"
+        | "CRP"
+        | "CRF"
+        | "CRBM"
+        | "COREN"
+        | "CRN"
+        | "CREFITO"
+        | "CREFONO"
+        | "OUTRO"
+      professional_status:
+        | "pendente"
+        | "aprovado"
+        | "rejeitado"
+        | "suspenso"
+        | "em_analise"
+        | "documentacao_vencida"
       provider_document_kind:
         | "documento_pessoal"
         | "registro"
@@ -3277,7 +3391,26 @@ export const Constants = {
       ],
       payment_status: ["pendente", "pago", "reembolsado", "falhou"],
       payout_batch_status: ["pendente", "pago", "cancelado"],
-      professional_status: ["pendente", "aprovado", "rejeitado", "suspenso"],
+      professional_council: [
+        "CRM",
+        "CRO",
+        "CRP",
+        "CRF",
+        "CRBM",
+        "COREN",
+        "CRN",
+        "CREFITO",
+        "CREFONO",
+        "OUTRO",
+      ],
+      professional_status: [
+        "pendente",
+        "aprovado",
+        "rejeitado",
+        "suspenso",
+        "em_analise",
+        "documentacao_vencida",
+      ],
       provider_document_kind: [
         "documento_pessoal",
         "registro",
