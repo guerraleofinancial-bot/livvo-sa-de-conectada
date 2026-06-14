@@ -8,6 +8,7 @@ import { Calendar, Users, Star, Wallet, Clock, FileText, TrendingUp, UserCheck, 
 import { useState } from "react";
 import { NewPatientDialog } from "@/components/livvo/new-patient-dialog";
 import { ImportPatientsDialog, NewPatientButtons } from "@/components/livvo/import-patients-dialog";
+import { ApprovalBanner } from "@/components/livvo/ApprovalBanner";
 
 export const Route = createFileRoute("/_authenticated/pro/")({
   component: ProHome,
@@ -46,13 +47,9 @@ function ProHome() {
         <p className="text-xs font-medium text-muted-foreground">Painel profissional</p>
         <h1 className="text-2xl font-bold tracking-tight">Olá, {p?.profiles?.full_name?.split(" ")[0] ?? ""}</h1>
         <p className="text-sm text-muted-foreground">{p?.specialties?.name}</p>
-        {p && p.status !== "aprovado" && (
-          <div className="mt-4 rounded-xl border border-warning/30 bg-warning/10 p-4 text-sm">
-            <p className="font-semibold text-warning-foreground">Cadastro {p.status === "pendente" ? "em análise" : p.status}</p>
-            <p className="text-xs text-muted-foreground mt-1">Seu perfil só aparecerá para pacientes após aprovação do administrador.</p>
-          </div>
-        )}
       </header>
+
+      <ApprovalBanner />
 
       <section>
         <div className="flex items-center justify-between mb-3 gap-3 flex-wrap">
