@@ -2905,6 +2905,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_approved_professional: { Args: { _user: string }; Returns: boolean }
       is_company_owner: {
         Args: { _company: string; _user: string }
         Returns: boolean
