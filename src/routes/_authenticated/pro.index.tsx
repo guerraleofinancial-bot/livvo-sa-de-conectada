@@ -5,6 +5,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { getCrmDashboard } from "@/lib/livvo/crm.functions";
 import { Calendar, Users, Star, Wallet, Clock, FileText, TrendingUp, UserCheck, UserX } from "lucide-react";
+import { useState } from "react";
+import { NewPatientDialog } from "@/components/livvo/new-patient-dialog";
+import { ImportPatientsDialog, NewPatientButtons } from "@/components/livvo/import-patients-dialog";
 
 export const Route = createFileRoute("/_authenticated/pro/")({
   component: ProHome,
