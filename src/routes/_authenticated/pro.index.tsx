@@ -16,6 +16,8 @@ export const Route = createFileRoute("/_authenticated/pro/")({
 function ProHome() {
   const { user } = useAuth();
   const dashFn = useServerFn(getCrmDashboard);
+  const [openNew, setOpenNew] = useState(false);
+  const [openImport, setOpenImport] = useState(false);
 
   const { data: pro } = useQuery({
     queryKey: ["me-pro", user?.id],
