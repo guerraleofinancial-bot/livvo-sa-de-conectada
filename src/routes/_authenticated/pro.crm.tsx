@@ -76,10 +76,15 @@ function CrmPage() {
           <h1 className="text-2xl font-bold tracking-tight">CRM de pacientes</h1>
           <p className="text-sm text-muted-foreground mt-1">{data?.length ?? 0} pacientes no seu funil</p>
         </div>
-        <Link to="/pro/orcamentos" className="shrink-0 inline-flex items-center gap-1.5 rounded-full bg-primary text-primary-foreground px-3 py-2 text-xs font-semibold">
+        <Link to="/pro/orcamentos" className="shrink-0 inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-3 py-2 text-xs font-semibold">
           <FileText className="size-3.5" /> Orçamentos
         </Link>
       </header>
+
+      <NewPatientButtons onNew={() => setOpenNew(true)} onImport={() => setOpenImport(true)} />
+      <NewPatientDialog open={openNew} onOpenChange={setOpenNew} />
+      <ImportPatientsDialog open={openImport} onOpenChange={setOpenImport} />
+
 
       <div className="flex items-center gap-2">
         <Input placeholder="Buscar paciente..." value={q} onChange={(e) => setQ(e.target.value)} className="rounded-xl flex-1" />
