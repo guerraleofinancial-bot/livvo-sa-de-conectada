@@ -68,6 +68,11 @@ function Onboarding() {
   const [displayName, setDisplayName] = useState("");
   const [cpfCnpj, setCpfCnpj] = useState("");
   const [registry, setRegistry] = useState("");
+  const [council, setCouncil] = useState<string>("");
+  const [councilNumber, setCouncilNumber] = useState("");
+  const [councilState, setCouncilState] = useState("");
+  const [councilDocUrl, setCouncilDocUrl] = useState<string>("");
+  const [councilUploading, setCouncilUploading] = useState(false);
   const [specId, setSpecId] = useState("");
   const [secondarySpecs, setSecondarySpecs] = useState<string[]>([]);
   const [bio, setBio] = useState("");
@@ -100,6 +105,10 @@ function Onboarding() {
     setDisplayName(pro.display_name ?? "");
     setCpfCnpj(pro.cpf_cnpj ?? "");
     setRegistry(pro.professional_registry ?? "");
+    setCouncil(pro.council ?? "");
+    setCouncilNumber(pro.council_number ?? "");
+    setCouncilState(pro.council_state ?? "");
+    setCouncilDocUrl(pro.council_document_url ?? "");
     setSpecId(pro.specialty_id ?? "");
     setSecondarySpecs(pro.secondary_specialties ?? []);
     setBio(pro.bio ?? "");
@@ -148,7 +157,7 @@ function Onboarding() {
   function buildPatch(forStep: Step) {
     const base: Record<string, unknown> = {};
     if (forStep >= 0) Object.assign(base, { avatar_url: avatar, logo_url: logo, cover_url: cover });
-    if (forStep >= 1) Object.assign(base, { display_name: displayName, cpf_cnpj: cpfCnpj, professional_registry: registry, specialty_id: specId || null, secondary_specialties: secondarySpecs });
+    if (forStep >= 1) Object.assign(base, { display_name: displayName, cpf_cnpj: cpfCnpj, professional_registry: registry, council: council || null, council_number: councilNumber, council_state: councilState, council_document_url: councilDocUrl || null, specialty_id: specId || null, secondary_specialties: secondarySpecs });
     if (forStep >= 2) Object.assign(base, { bio, years_experience: years ? Number(years) : null, academic_formation: formation, postgrad, certifications: certs, languages });
     if (forStep >= 3) Object.assign(base, { whatsapp, phone, professional_email: email || null, instagram, website });
     if (forStep >= 4) Object.assign(base, { address_zip: zip, address_street: street, address_number: number, address_complement: complement, address_district: district, address_city: city, address_state: stateUf });
@@ -158,7 +167,7 @@ function Onboarding() {
   async function next() {
     try {
       // step-specific minimal validation
-      if (step === 1 && (!registry || !specId)) { toast.error("Informe especialidade e registro"); return; }
+      if (step === 1 && (!specId || !council || !councilNumber || !councilState || !councilDocUrl)) { toast.error("Conselho, número, UF e documento são obrigatórios"); return; }
       await save({ data: { step: Math.min(6, step + 1), patch: buildPatch(step) } });
       if (step === 5) await saveHours({ data: { hours } });
       setStep((s) => Math.min(6, s + 1) as Step);
@@ -213,7 +222,51 @@ function Onboarding() {
                   <div><Label>Nome profissional</Label><Input value={displayName} onChange={(e) => setDisplayName(e.target.value)} placeholder="Ex.: Dra. Helena Souza" /></div>
                   <div><Label>CPF ou CNPJ</Label><Input value={cpfCnpj} onChange={(e) => setCpfCnpj(e.target.value)} /></div>
                 </div>
-                <div><Label>Registro profissional (CRM, CRO, CREFITO, CRP, CRN, CREFONO...)</Label><Input value={registry} onChange={(e) => setRegistry(e.target.value)} placeholder="Ex.: CRM 123456/SP ou CRO-SP 12345" /></div>
+                <div className="rounded-2xl border border-health/30 bg-health/5 p-4 space-y-3">
+                  <div className="flex items-center gap-2">
+                    <ShieldCheck className="size-4 text-health" />
+                    <p className="text-sm font-semibold">Validação documental do conselho</p>
+                  </div>
+                  <p className="text-xs text-muted-foreground -mt-1">Obrigatório para aparecer na busca, receber agendamentos e contratar Premium ou Destaques. A análise é feita pela equipe Livvo.</p>
+                  <div className="grid sm:grid-cols-[1fr_1fr_100px] gap-3">
+                    <div>
+                      <Label>Conselho</Label>
+                      <select value={council} onChange={(e) => setCouncil(e.target.value)} className="w-full h-10 rounded-xl border border-border bg-card px-3 text-sm">
+                        <option value="">Selecione...</option>
+                        {["CRM","CRO","CRP","CRF","CRBM","COREN","CRN","CREFITO","CREFONO","OUTRO"].map((c) => <option key={c} value={c}>{c}</option>)}
+                      </select>
+                    </div>
+                    <div><Label>Número</Label><Input value={councilNumber} onChange={(e) => setCouncilNumber(e.target.value)} placeholder="123456" /></div>
+                    <div><Label>UF</Label><Input maxLength={2} value={councilState} onChange={(e) => setCouncilState(e.target.value.toUpperCase())} placeholder="SP" /></div>
+                  </div>
+                  <div>
+                    <Label>Documento do conselho (frente)</Label>
+                    <div className="flex items-center gap-3 mt-1">
+                      <label className="inline-flex">
+                        <input type="file" className="hidden" accept="image/*,application/pdf" onChange={async (e) => {
+                          const file = e.target.files?.[0]; if (!file || !user) return;
+                          if (file.size > 12 * 1024 * 1024) { toast.error("Arquivo muito grande (máx 12MB)"); return; }
+                          setCouncilUploading(true);
+                          try {
+                            const ext = file.name.split(".").pop() ?? "bin";
+                            const path = `${user.id}/council/${Date.now()}.${ext}`;
+                            const { error } = await supabase.storage.from("provider-documents").upload(path, file, { upsert: true, contentType: file.type });
+                            if (error) throw error;
+                            setCouncilDocUrl(path);
+                            toast.success("Documento enviado");
+                          } catch (err) { toast.error("Falha", { description: (err as Error).message }); }
+                          finally { setCouncilUploading(false); }
+                        }} />
+                        <Button asChild size="sm" variant="outline"><span className="cursor-pointer">{councilUploading ? "Enviando..." : councilDocUrl ? "Substituir documento" : "Enviar documento"}</span></Button>
+                      </label>
+                      {councilDocUrl && <Badge variant="secondary">Documento anexado</Badge>}
+                    </div>
+                  </div>
+                  <div>
+                    <Label>Registro completo (texto livre, opcional)</Label>
+                    <Input value={registry} onChange={(e) => setRegistry(e.target.value)} placeholder="Ex.: CRM 123456/SP" />
+                  </div>
+                </div>
                 <div>
                   <Label>Especialidade principal</Label>
                   <select value={specId} onChange={(e) => setSpecId(e.target.value)} className="w-full h-10 rounded-xl border border-border bg-card px-3 text-sm">

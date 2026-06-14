@@ -8,6 +8,7 @@ import { Users, Stethoscope, Calendar, Wallet, ShieldCheck, CheckCircle2, XCircl
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { setProfessionalStatus, setCompanyStatus, setUserSuspended, seedDemoData, updatePlatformSettings, setReviewStatus, createPayoutBatch, markPayoutBatchPaid } from "@/lib/livvo/admin.functions";
+import { verifyProfessionalCouncil } from "@/lib/livvo/onboarding-pro.functions";
 import { adminAdsRevenueReport, adminListSubscriptions, cancelSubscription } from "@/lib/livvo/ads.functions";
 import { toast } from "sonner";
 
@@ -31,6 +32,7 @@ function AdminPanel() {
   const setRev = useServerFn(setReviewStatus);
   const createBatch = useServerFn(createPayoutBatch);
   const payBatch = useServerFn(markPayoutBatchPaid);
+  const verifyCouncil = useServerFn(verifyProfessionalCouncil);
   const adsReport = useServerFn(adminAdsRevenueReport);
   const listSubs = useServerFn(adminListSubscriptions);
   const cancelSub = useServerFn(cancelSubscription);
@@ -62,7 +64,7 @@ function AdminPanel() {
 
   const { data: pendingPros } = useQuery({
     queryKey: ["pending-pros"], enabled: isAdmin,
-    queryFn: async () => (await supabase.from("professionals").select("*, profiles:id(full_name, email), specialties(name)").eq("status", "pendente")).data ?? [],
+    queryFn: async () => (await supabase.from("professionals").select("*, profiles:id(full_name, email), specialties(name)").in("status", ["pendente","em_analise"])).data ?? [],
   });
   const { data: pendingCompanies } = useQuery({
     queryKey: ["pending-companies"], enabled: isAdmin,
@@ -202,15 +204,37 @@ function AdminPanel() {
             <h2 className="text-sm font-bold mb-3">Solicitações pendentes ({pendingPros?.length ?? 0})</h2>
             <div className="space-y-2">
               {(pendingPros ?? []).map((row) => {
-                const p = row as typeof row & { profiles: { full_name?: string; email?: string } | null; specialties: { name?: string } | null };
+                const p = row as typeof row & { profiles: { full_name?: string; email?: string } | null; specialties: { name?: string } | null; council?: string | null; council_number?: string | null; council_state?: string | null; council_document_url?: string | null; council_verified_at?: string | null };
+                const councilText = [p.council, p.council_number, p.council_state].filter(Boolean).join(" ");
                 return (
-                  <div key={p.id} className="p-4 rounded-2xl bg-card border border-border flex items-center gap-4 flex-wrap">
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold truncate">{p.profiles?.full_name}</p>
-                      <p className="text-xs text-muted-foreground truncate">{p.specialties?.name} · {p.professional_registry} · {p.profiles?.email}</p>
+                  <div key={p.id} className="p-4 rounded-2xl bg-card border border-border space-y-3">
+                    <div className="flex items-center gap-4 flex-wrap">
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-semibold truncate">{p.profiles?.full_name}</p>
+                        <p className="text-xs text-muted-foreground truncate">{p.specialties?.name} · {p.profiles?.email}</p>
+                      </div>
+                      <Button size="sm" variant="outline" className="text-destructive" onClick={async () => { const reason = prompt("Motivo da rejeição?") ?? ""; await setStatus({ data: { professionalId: p.id, status: "rejeitado" } }); toast.success("Rejeitado"); void reason; qc.invalidateQueries({ queryKey: ["pending-pros"] }); }}><XCircle className="size-4 mr-1" /> Rejeitar</Button>
+                      <Button size="sm" disabled={!p.council_verified_at} title={!p.council_verified_at ? "Verifique o conselho antes de aprovar" : ""} onClick={async () => { await setStatus({ data: { professionalId: p.id, status: "aprovado" } }); toast.success("Aprovado"); qc.invalidateQueries({ queryKey: ["pending-pros"] }); qc.invalidateQueries({ queryKey: ["admin-stats"] }); }}><CheckCircle2 className="size-4 mr-1" /> Aprovar</Button>
                     </div>
-                    <Button size="sm" variant="outline" className="text-destructive" onClick={async () => { await setStatus({ data: { professionalId: p.id, status: "rejeitado" } }); toast.success("Rejeitado"); qc.invalidateQueries({ queryKey: ["pending-pros"] }); }}><XCircle className="size-4 mr-1" /> Rejeitar</Button>
-                    <Button size="sm" onClick={async () => { await setStatus({ data: { professionalId: p.id, status: "aprovado" } }); toast.success("Aprovado"); qc.invalidateQueries({ queryKey: ["pending-pros"] }); qc.invalidateQueries({ queryKey: ["admin-stats"] }); }}><CheckCircle2 className="size-4 mr-1" /> Aprovar</Button>
+                    <div className="rounded-xl bg-muted/50 border border-border p-3 flex items-center gap-3 flex-wrap text-xs">
+                      <ShieldCheck className={`size-4 ${p.council_verified_at ? "text-health" : "text-warning"}`} />
+                      <div className="flex-1 min-w-0">
+                        <p className="font-semibold">Conselho: {councilText || <span className="text-muted-foreground">não informado</span>}</p>
+                        <p className="text-muted-foreground">Status: {p.council_verified_at ? "verificado" : "aguardando análise"}</p>
+                      </div>
+                      {p.council_document_url && (
+                        <Button size="sm" variant="outline" onClick={async () => {
+                          const { data } = await supabase.storage.from("provider-documents").createSignedUrl(p.council_document_url!, 60 * 10);
+                          if (data?.signedUrl) window.open(data.signedUrl, "_blank");
+                          else toast.error("Documento não encontrado");
+                        }}>Ver documento</Button>
+                      )}
+                      {!p.council_verified_at ? (
+                        <Button size="sm" disabled={!councilText || !p.council_document_url} onClick={async () => { await verifyCouncil({ data: { professionalId: p.id, approved: true } }); toast.success("Conselho verificado"); qc.invalidateQueries({ queryKey: ["pending-pros"] }); }}>Verificar conselho</Button>
+                      ) : (
+                        <Button size="sm" variant="outline" onClick={async () => { const reason = prompt("Motivo da revogação?") ?? ""; await verifyCouncil({ data: { professionalId: p.id, approved: false, reason } }); toast.success("Verificação revogada"); qc.invalidateQueries({ queryKey: ["pending-pros"] }); }}>Revogar</Button>
+                      )}
+                    </div>
                   </div>
                 );
               })}

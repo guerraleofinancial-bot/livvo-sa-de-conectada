@@ -6,6 +6,7 @@ import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { Search as SearchIcon, ArrowLeft, MapPin, Star, Building2, SlidersHorizontal, Sparkles, Crown } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { VerifiedBadge } from "@/components/livvo/VerifiedBadge";
 import { trackAdEvent } from "@/lib/livvo/ads.functions";
 
 const searchSchema = z.object({
@@ -32,6 +33,10 @@ type Ranked = {
   is_premium: boolean;
   rank_group: number;
   subscription_id: string | null;
+  council: string | null;
+  council_number: string | null;
+  council_state: string | null;
+  is_verified: boolean;
 };
 
 function Buscar() {
@@ -180,6 +185,7 @@ function Buscar() {
                           {p.is_premium && <Crown className="size-3.5 text-primary" />}
                         </h3>
                         <p className="text-xs text-muted-foreground truncate">{p.specialty_name}</p>
+                        {p.is_verified && <div className="mt-1"><VerifiedBadge council={p.council} number={p.council_number} uf={p.council_state} /></div>}
                       </div>
                       <div className="flex items-center gap-1 text-xs font-semibold text-amber-500 shrink-0">
                         <Star className="size-3 fill-current" /> {Number(p.rating_average).toFixed(1)}

@@ -2,12 +2,18 @@ import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { z } from "zod";
 
+const councilEnum = z.enum(["CRM","CRO","CRP","CRF","CRBM","COREN","CRN","CREFITO","CREFONO","OUTRO"]);
+
 const patchSchema = z.object({
   display_name: z.string().nullish(),
   cpf_cnpj: z.string().nullish(),
   specialty_id: z.string().uuid().nullish(),
   secondary_specialties: z.array(z.string().uuid()).optional(),
   professional_registry: z.string().nullish(),
+  council: councilEnum.nullish(),
+  council_number: z.string().nullish(),
+  council_state: z.string().max(2).nullish(),
+  council_document_url: z.string().nullish(),
   bio: z.string().nullish(),
   years_experience: z.number().int().min(0).max(80).nullish(),
   academic_formation: z.string().nullish(),
@@ -139,6 +145,22 @@ export const approveProfessional = createServerFn({ method: "POST" })
     if (!isAdmin) throw new Error("Forbidden");
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: row, error } = await supabaseAdmin.rpc("approve_professional", { _id: data.professionalId });
+    if (error) throw error;
+    return row;
+  });
+
+export const verifyProfessionalCouncil = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: { professionalId: string; approved: boolean; reason?: string }) => d)
+  .handler(async ({ data, context }) => {
+    const { data: isAdmin } = await context.supabase.rpc("has_role", { _user_id: context.userId, _role: "admin" });
+    if (!isAdmin) throw new Error("Forbidden");
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: row, error } = await supabaseAdmin.rpc("verify_professional_council", {
+      _id: data.professionalId,
+      _approved: data.approved,
+      _reason: data.reason ?? undefined,
+    });
     if (error) throw error;
     return row;
   });
