@@ -32,6 +32,10 @@ type Ranked = {
   is_premium: boolean;
   rank_group: number;
   subscription_id: string | null;
+  council: string | null;
+  council_number: string | null;
+  council_state: string | null;
+  is_verified: boolean;
 };
 
 function Buscar() {
