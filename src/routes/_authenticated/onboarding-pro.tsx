@@ -68,6 +68,11 @@ function Onboarding() {
   const [displayName, setDisplayName] = useState("");
   const [cpfCnpj, setCpfCnpj] = useState("");
   const [registry, setRegistry] = useState("");
+  const [council, setCouncil] = useState<string>("");
+  const [councilNumber, setCouncilNumber] = useState("");
+  const [councilState, setCouncilState] = useState("");
+  const [councilDocUrl, setCouncilDocUrl] = useState<string>("");
+  const [councilUploading, setCouncilUploading] = useState(false);
   const [specId, setSpecId] = useState("");
   const [secondarySpecs, setSecondarySpecs] = useState<string[]>([]);
   const [bio, setBio] = useState("");
