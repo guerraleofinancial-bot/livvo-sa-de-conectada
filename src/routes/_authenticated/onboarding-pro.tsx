@@ -222,7 +222,51 @@ function Onboarding() {
                   <div><Label>Nome profissional</Label><Input value={displayName} onChange={(e) => setDisplayName(e.target.value)} placeholder="Ex.: Dra. Helena Souza" /></div>
                   <div><Label>CPF ou CNPJ</Label><Input value={cpfCnpj} onChange={(e) => setCpfCnpj(e.target.value)} /></div>
                 </div>
-                <div><Label>Registro profissional (CRM, CRO, CREFITO, CRP, CRN, CREFONO...)</Label><Input value={registry} onChange={(e) => setRegistry(e.target.value)} placeholder="Ex.: CRM 123456/SP ou CRO-SP 12345" /></div>
+                <div className="rounded-2xl border border-health/30 bg-health/5 p-4 space-y-3">
+                  <div className="flex items-center gap-2">
+                    <ShieldCheck className="size-4 text-health" />
+                    <p className="text-sm font-semibold">Validação documental do conselho</p>
+                  </div>
+                  <p className="text-xs text-muted-foreground -mt-1">Obrigatório para aparecer na busca, receber agendamentos e contratar Premium ou Destaques. A análise é feita pela equipe Livvo.</p>
+                  <div className="grid sm:grid-cols-[1fr_1fr_100px] gap-3">
+                    <div>
+                      <Label>Conselho</Label>
+                      <select value={council} onChange={(e) => setCouncil(e.target.value)} className="w-full h-10 rounded-xl border border-border bg-card px-3 text-sm">
+                        <option value="">Selecione...</option>
+                        {["CRM","CRO","CRP","CRF","CRBM","COREN","CRN","CREFITO","CREFONO","OUTRO"].map((c) => <option key={c} value={c}>{c}</option>)}
+                      </select>
+                    </div>
+                    <div><Label>Número</Label><Input value={councilNumber} onChange={(e) => setCouncilNumber(e.target.value)} placeholder="123456" /></div>
+                    <div><Label>UF</Label><Input maxLength={2} value={councilState} onChange={(e) => setCouncilState(e.target.value.toUpperCase())} placeholder="SP" /></div>
+                  </div>
+                  <div>
+                    <Label>Documento do conselho (frente)</Label>
+                    <div className="flex items-center gap-3 mt-1">
+                      <label className="inline-flex">
+                        <input type="file" className="hidden" accept="image/*,application/pdf" onChange={async (e) => {
+                          const file = e.target.files?.[0]; if (!file || !user) return;
+                          if (file.size > 12 * 1024 * 1024) { toast.error("Arquivo muito grande (máx 12MB)"); return; }
+                          setCouncilUploading(true);
+                          try {
+                            const ext = file.name.split(".").pop() ?? "bin";
+                            const path = `${user.id}/council/${Date.now()}.${ext}`;
+                            const { error } = await supabase.storage.from("provider-documents").upload(path, file, { upsert: true, contentType: file.type });
+                            if (error) throw error;
+                            setCouncilDocUrl(path);
+                            toast.success("Documento enviado");
+                          } catch (err) { toast.error("Falha", { description: (err as Error).message }); }
+                          finally { setCouncilUploading(false); }
+                        }} />
+                        <Button asChild size="sm" variant="outline"><span className="cursor-pointer">{councilUploading ? "Enviando..." : councilDocUrl ? "Substituir documento" : "Enviar documento"}</span></Button>
+                      </label>
+                      {councilDocUrl && <Badge variant="secondary">Documento anexado</Badge>}
+                    </div>
+                  </div>
+                  <div>
+                    <Label>Registro completo (texto livre, opcional)</Label>
+                    <Input value={registry} onChange={(e) => setRegistry(e.target.value)} placeholder="Ex.: CRM 123456/SP" />
+                  </div>
+                </div>
                 <div>
                   <Label>Especialidade principal</Label>
                   <select value={specId} onChange={(e) => setSpecId(e.target.value)} className="w-full h-10 rounded-xl border border-border bg-card px-3 text-sm">
