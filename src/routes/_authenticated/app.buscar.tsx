@@ -185,6 +185,7 @@ function Buscar() {
                           {p.is_premium && <Crown className="size-3.5 text-primary" />}
                         </h3>
                         <p className="text-xs text-muted-foreground truncate">{p.specialty_name}</p>
+                        {p.is_verified && <div className="mt-1"><VerifiedBadge council={p.council} number={p.council_number} uf={p.council_state} /></div>}
                       </div>
                       <div className="flex items-center gap-1 text-xs font-semibold text-amber-500 shrink-0">
                         <Star className="size-3 fill-current" /> {Number(p.rating_average).toFixed(1)}
