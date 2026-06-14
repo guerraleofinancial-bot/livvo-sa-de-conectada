@@ -55,10 +55,12 @@ function ProHome() {
       </header>
 
       <section>
-        <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center justify-between mb-3 gap-3 flex-wrap">
           <h2 className="text-sm font-bold">Visão comercial · últimos 30 dias</h2>
-          <Link to="/pro/crm" className="text-xs font-semibold text-primary">CRM</Link>
+          <NewPatientButtons onNew={() => setOpenNew(true)} onImport={() => setOpenImport(true)} />
         </div>
+        <NewPatientDialog open={openNew} onOpenChange={setOpenNew} />
+        <ImportPatientsDialog open={openImport} onOpenChange={setOpenImport} />
         <div className="grid grid-cols-2 gap-3">
           {[
             { icon: Users, label: "Leads", value: dash?.leads ?? 0, tone: "primary" },
