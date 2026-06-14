@@ -1,8 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
-import { Calendar, Users, Star, Wallet, Clock } from "lucide-react";
+import { getCrmDashboard } from "@/lib/livvo/crm.functions";
+import { Calendar, Users, Star, Wallet, Clock, FileText, TrendingUp, UserCheck, UserX } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/pro/")({
   component: ProHome,
@@ -10,6 +12,7 @@ export const Route = createFileRoute("/_authenticated/pro/")({
 
 function ProHome() {
   const { user } = useAuth();
+  const dashFn = useServerFn(getCrmDashboard);
 
   const { data: pro } = useQuery({
     queryKey: ["me-pro", user?.id],
@@ -17,19 +20,10 @@ function ProHome() {
     queryFn: async () => (await supabase.from("professionals").select("*, profiles:id(full_name), specialties(name)").eq("id", user!.id).maybeSingle()).data,
   });
 
-  const { data: stats } = useQuery({
-    queryKey: ["pro-stats", user?.id],
+  const { data: dash } = useQuery({
+    queryKey: ["crm-dashboard", user?.id],
     enabled: !!user,
-    queryFn: async () => {
-      const [total, upcoming, done, revenue] = await Promise.all([
-        supabase.from("appointments").select("id", { count: "exact", head: true }).eq("professional_id", user!.id),
-        supabase.from("appointments").select("id", { count: "exact", head: true }).eq("professional_id", user!.id).in("status", ["agendada", "confirmada"]).gte("scheduled_at", new Date().toISOString()),
-        supabase.from("appointments").select("id", { count: "exact", head: true }).eq("professional_id", user!.id).eq("status", "realizada"),
-        supabase.from("appointments").select("price").eq("professional_id", user!.id).eq("status", "realizada"),
-      ]);
-      const rev = (revenue.data ?? []).reduce((s, a) => s + Number(a.price), 0);
-      return { total: total.count ?? 0, upcoming: upcoming.count ?? 0, done: done.count ?? 0, revenue: rev };
-    },
+    queryFn: () => dashFn({ data: { rangeDays: 30 } }),
   });
 
   const { data: nextAppts } = useQuery({
@@ -39,6 +33,7 @@ function ProHome() {
   });
 
   const p = pro as (typeof pro & { profiles: { full_name?: string } | null; specialties: { name?: string } | null }) | null;
+  const convRate = Number(dash?.conversion_rate ?? 0);
 
   return (
     <div className="px-5 pt-10 space-y-6 livvo-fade-in">
@@ -54,22 +49,43 @@ function ProHome() {
         )}
       </header>
 
-      <div className="grid grid-cols-2 gap-3">
-        {[
-          { icon: Calendar, label: "Próximas", value: stats?.upcoming ?? 0, tone: "primary" },
-          { icon: Users, label: "Realizadas", value: stats?.done ?? 0, tone: "health" },
-          { icon: Star, label: "Avaliação", value: p ? Number(p.rating_average).toFixed(1) : "—", tone: "primary" },
-          { icon: Wallet, label: "Receita", value: `R$ ${(stats?.revenue ?? 0).toFixed(0)}`, tone: "health" },
-        ].map((s) => (
-          <div key={s.label} className="rounded-2xl bg-card border border-border p-4">
-            <div className={`size-9 rounded-xl grid place-items-center mb-3 ${s.tone === "primary" ? "bg-primary-soft text-primary" : "bg-health-soft text-health"}`}>
-              <s.icon className="size-4" />
+      <section>
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="text-sm font-bold">Visão comercial · últimos 30 dias</h2>
+          <Link to="/pro/crm" className="text-xs font-semibold text-primary">CRM</Link>
+        </div>
+        <div className="grid grid-cols-2 gap-3">
+          {[
+            { icon: Users, label: "Leads", value: dash?.leads ?? 0, tone: "primary" },
+            { icon: Calendar, label: "Agendamentos", value: dash?.appointments_created ?? 0, tone: "primary" },
+            { icon: UserCheck, label: "Atendidos", value: dash?.appointments_done ?? 0, tone: "health" },
+            { icon: UserX, label: "Cancelados", value: dash?.cancellations ?? 0, tone: "primary" },
+            { icon: FileText, label: "Orçamentos", value: dash?.quotes_sent ?? 0, tone: "primary" },
+            { icon: TrendingUp, label: "Conversão", value: `${(convRate * 100).toFixed(0)}%`, tone: "health" },
+            { icon: Wallet, label: "Receita", value: `R$ ${Number(dash?.revenue ?? 0).toFixed(0)}`, tone: "health" },
+            { icon: Star, label: "Ticket méd.", value: `R$ ${Number(dash?.avg_ticket ?? 0).toFixed(0)}`, tone: "health" },
+          ].map((s) => (
+            <div key={s.label} className="rounded-2xl bg-card border border-border p-4">
+              <div className={`size-9 rounded-xl grid place-items-center mb-3 ${s.tone === "primary" ? "bg-primary-soft text-primary" : "bg-health-soft text-health"}`}>
+                <s.icon className="size-4" />
+              </div>
+              <p className="font-mono text-xl font-bold">{s.value}</p>
+              <p className="text-xs text-muted-foreground mt-0.5">{s.label}</p>
             </div>
-            <p className="font-mono text-xl font-bold">{s.value}</p>
-            <p className="text-xs text-muted-foreground mt-0.5">{s.label}</p>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="grid grid-cols-2 gap-3">
+        <div className="rounded-2xl bg-card border border-border p-4">
+          <p className="text-xs text-muted-foreground">Pacientes ativos</p>
+          <p className="text-2xl font-bold mt-1">{dash?.patients_active ?? 0}</p>
+        </div>
+        <div className="rounded-2xl bg-card border border-border p-4">
+          <p className="text-xs text-muted-foreground">Pacientes inativos</p>
+          <p className="text-2xl font-bold mt-1">{dash?.patients_inactive ?? 0}</p>
+        </div>
+      </section>
 
       <section>
         <div className="flex items-center justify-between mb-3">
