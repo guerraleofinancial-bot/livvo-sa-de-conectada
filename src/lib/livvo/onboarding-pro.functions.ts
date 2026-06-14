@@ -159,7 +159,7 @@ export const verifyProfessionalCouncil = createServerFn({ method: "POST" })
     const { data: row, error } = await supabaseAdmin.rpc("verify_professional_council", {
       _id: data.professionalId,
       _approved: data.approved,
-      _reason: data.reason ?? null,
+      _reason: data.reason ?? undefined,
     });
     if (error) throw error;
     return row;
