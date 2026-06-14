@@ -157,7 +157,7 @@ function Onboarding() {
   function buildPatch(forStep: Step) {
     const base: Record<string, unknown> = {};
     if (forStep >= 0) Object.assign(base, { avatar_url: avatar, logo_url: logo, cover_url: cover });
-    if (forStep >= 1) Object.assign(base, { display_name: displayName, cpf_cnpj: cpfCnpj, professional_registry: registry, specialty_id: specId || null, secondary_specialties: secondarySpecs });
+    if (forStep >= 1) Object.assign(base, { display_name: displayName, cpf_cnpj: cpfCnpj, professional_registry: registry, council: council || null, council_number: councilNumber, council_state: councilState, council_document_url: councilDocUrl || null, specialty_id: specId || null, secondary_specialties: secondarySpecs });
     if (forStep >= 2) Object.assign(base, { bio, years_experience: years ? Number(years) : null, academic_formation: formation, postgrad, certifications: certs, languages });
     if (forStep >= 3) Object.assign(base, { whatsapp, phone, professional_email: email || null, instagram, website });
     if (forStep >= 4) Object.assign(base, { address_zip: zip, address_street: street, address_number: number, address_complement: complement, address_district: district, address_city: city, address_state: stateUf });
