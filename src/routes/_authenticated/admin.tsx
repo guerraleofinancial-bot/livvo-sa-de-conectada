@@ -64,7 +64,7 @@ function AdminPanel() {
 
   const { data: pendingPros } = useQuery({
     queryKey: ["pending-pros"], enabled: isAdmin,
-    queryFn: async () => (await supabase.from("professionals").select("*, profiles:id(full_name, email), specialties(name)").eq("status", "pendente")).data ?? [],
+    queryFn: async () => (await supabase.from("professionals").select("*, profiles:id(full_name, email), specialties(name)").in("status", ["pendente","em_analise"])).data ?? [],
   });
   const { data: pendingCompanies } = useQuery({
     queryKey: ["pending-companies"], enabled: isAdmin,
