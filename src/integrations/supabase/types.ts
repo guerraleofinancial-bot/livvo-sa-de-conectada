@@ -2722,7 +2722,7 @@ export type Database = {
         | "nao_compareceu"
       automation_kind: "reminder_24h" | "review_request" | "retention_90d"
       automation_status: "queued" | "sent" | "failed" | "cancelled"
-      company_role: "owner" | "admin" | "profissional"
+      company_role: "owner" | "admin" | "recepcionista" | "profissional"
       company_type:
         | "clinica"
         | "laboratorio"
@@ -2732,9 +2732,13 @@ export type Database = {
       coupon_type: "percent" | "fixed"
       crm_status:
         | "novo_lead"
+        | "contato_realizado"
+        | "orcamento_enviado"
+        | "aguardando_decisao"
         | "agendado"
         | "confirmada"
         | "atendido"
+        | "fidelizado"
         | "cancelado"
         | "retorno_pendente"
         | "inativo"
@@ -2760,6 +2764,20 @@ export type Database = {
         | "appointment_reminder"
         | "review_request"
         | "retention_campaign"
+        | "lead_created"
+        | "quote_sent"
+        | "quote_viewed"
+        | "quote_approved"
+        | "quote_rejected"
+      patient_origin:
+        | "busca_organica"
+        | "anuncio_patrocinado"
+        | "indicacao"
+        | "cadastro_direto"
+        | "importado"
+        | "perfil_publico"
+        | "campanha"
+        | "outros"
       payment_status: "pendente" | "pago" | "reembolsado" | "falhou"
       payout_batch_status: "pendente" | "pago" | "cancelado"
       professional_status: "pendente" | "aprovado" | "rejeitado" | "suspenso"
@@ -2773,6 +2791,13 @@ export type Database = {
         | "em_analise"
         | "aprovado"
         | "rejeitado"
+      quote_status:
+        | "rascunho"
+        | "enviado"
+        | "visualizado"
+        | "aprovado"
+        | "recusado"
+        | "expirado"
       resource_kind:
         | "sala"
         | "equipamento_ultrassom"
@@ -2925,7 +2950,7 @@ export const Constants = {
       ],
       automation_kind: ["reminder_24h", "review_request", "retention_90d"],
       automation_status: ["queued", "sent", "failed", "cancelled"],
-      company_role: ["owner", "admin", "profissional"],
+      company_role: ["owner", "admin", "recepcionista", "profissional"],
       company_type: [
         "clinica",
         "laboratorio",
@@ -2936,9 +2961,13 @@ export const Constants = {
       coupon_type: ["percent", "fixed"],
       crm_status: [
         "novo_lead",
+        "contato_realizado",
+        "orcamento_enviado",
+        "aguardando_decisao",
         "agendado",
         "confirmada",
         "atendido",
+        "fidelizado",
         "cancelado",
         "retorno_pendente",
         "inativo",
@@ -2966,6 +2995,21 @@ export const Constants = {
         "appointment_reminder",
         "review_request",
         "retention_campaign",
+        "lead_created",
+        "quote_sent",
+        "quote_viewed",
+        "quote_approved",
+        "quote_rejected",
+      ],
+      patient_origin: [
+        "busca_organica",
+        "anuncio_patrocinado",
+        "indicacao",
+        "cadastro_direto",
+        "importado",
+        "perfil_publico",
+        "campanha",
+        "outros",
       ],
       payment_status: ["pendente", "pago", "reembolsado", "falhou"],
       payout_batch_status: ["pendente", "pago", "cancelado"],
@@ -2981,6 +3025,14 @@ export const Constants = {
         "em_analise",
         "aprovado",
         "rejeitado",
+      ],
+      quote_status: [
+        "rascunho",
+        "enviado",
+        "visualizado",
+        "aprovado",
+        "recusado",
+        "expirado",
       ],
       resource_kind: [
         "sala",
