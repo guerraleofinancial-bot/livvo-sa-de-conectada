@@ -17,3 +17,4 @@ Design: Healthtech Refinado, mobile-first, paleta primary azul + health verde + 
 - [Nomenclatura](mem://preferences/nomenclatura) — Paciente/Parceiro/Administrador, regras híbridas, serviços
 - [MarketingShell](mem://preferences/marketing-shell) — Nav + footer compartilhados das páginas públicas
 - [CRM e Notificações](mem://features/crm) — Funil de pacientes, notas privadas/clínica, prefs de canais, automações (24h, review, retenção 90d), trigger crm_appointment_sync
+- [Orçamentos](mem://features/quotes) — Módulo de quotes+items, status, triggers que sincronizam CRM e notificações, RPC crm_dashboard, novos enums (crm_status/company_role/notification_event/patient_origin)
