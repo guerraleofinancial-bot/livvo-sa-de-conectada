@@ -75,7 +75,11 @@ export const updateCrmRelationship = createServerFn({ method: "POST" })
       assigned_user_id: z.string().uuid().nullable().optional(),
     }).parse(d))
   .handler(async ({ data, context }) => {
-    const patch: Record<string, unknown> = {};
+    const patch: {
+      origin?: z.infer<typeof OriginEnum>;
+      quick_note?: string;
+      assigned_user_id?: string | null;
+    } = {};
     if (data.origin !== undefined) patch.origin = data.origin;
     if (data.quick_note !== undefined) patch.quick_note = data.quick_note;
     if (data.assigned_user_id !== undefined) patch.assigned_user_id = data.assigned_user_id;

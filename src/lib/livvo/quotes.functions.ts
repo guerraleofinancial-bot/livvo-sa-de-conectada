@@ -125,7 +125,7 @@ export const setQuoteStatus = createServerFn({ method: "POST" })
   .inputValidator((d: { id: string; status: z.infer<typeof QuoteStatus>; reason?: string }) =>
     z.object({ id: z.string().uuid(), status: QuoteStatus, reason: z.string().trim().max(500).optional() }).parse(d))
   .handler(async ({ data, context }) => {
-    const patch: Record<string, unknown> = { status: data.status };
+    const patch: { status: z.infer<typeof QuoteStatus>; decision_reason?: string } = { status: data.status };
     if (data.reason) patch.decision_reason = data.reason;
     const { data: row, error } = await context.supabase.from("quotes")
       .update(patch).eq("id", data.id).select().single();
