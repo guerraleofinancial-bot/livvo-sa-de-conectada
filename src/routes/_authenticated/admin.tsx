@@ -8,6 +8,7 @@ import { Users, Stethoscope, Calendar, Wallet, ShieldCheck, CheckCircle2, XCircl
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { setProfessionalStatus, setCompanyStatus, setUserSuspended, seedDemoData, updatePlatformSettings, setReviewStatus, createPayoutBatch, markPayoutBatchPaid } from "@/lib/livvo/admin.functions";
+import { verifyProfessionalCouncil } from "@/lib/livvo/onboarding-pro.functions";
 import { adminAdsRevenueReport, adminListSubscriptions, cancelSubscription } from "@/lib/livvo/ads.functions";
 import { toast } from "sonner";
 
