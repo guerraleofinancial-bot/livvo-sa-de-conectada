@@ -51,9 +51,13 @@ export const getQuote = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     const { data: q, error } = await context.supabase
       .from("quotes")
-      .select("*, patient:patient_id(id, full_name, avatar_url, email, phone), items:quote_items(*)")
+      .select("*, items:quote_items(*)")
       .eq("id", data.id).single();
     if (error) throw error;
+    const { data: patient } = q.patient_id
+      ? await context.supabase.from("profiles").select("id, full_name, avatar_url, email, phone").eq("id", q.patient_id).maybeSingle()
+      : { data: null };
+    (q as any).patient = patient ?? null;
     // mark as viewed if patient is viewing
     if (q.patient_id === context.userId && q.status === "enviado") {
       await context.supabase.from("quotes").update({ status: "visualizado" }).eq("id", q.id);
@@ -61,6 +65,7 @@ export const getQuote = createServerFn({ method: "POST" })
     }
     return q;
   });
+
 
 export const createQuote = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
