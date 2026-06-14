@@ -6,6 +6,7 @@ import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { Search as SearchIcon, ArrowLeft, MapPin, Star, Building2, SlidersHorizontal, Sparkles, Crown } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { VerifiedBadge } from "@/components/livvo/VerifiedBadge";
 import { trackAdEvent } from "@/lib/livvo/ads.functions";
 
 const searchSchema = z.object({
