@@ -167,7 +167,7 @@ function Onboarding() {
   async function next() {
     try {
       // step-specific minimal validation
-      if (step === 1 && (!registry || !specId)) { toast.error("Informe especialidade e registro"); return; }
+      if (step === 1 && (!specId || !council || !councilNumber || !councilState || !councilDocUrl)) { toast.error("Conselho, número, UF e documento são obrigatórios"); return; }
       await save({ data: { step: Math.min(6, step + 1), patch: buildPatch(step) } });
       if (step === 5) await saveHours({ data: { hours } });
       setStep((s) => Math.min(6, s + 1) as Step);
