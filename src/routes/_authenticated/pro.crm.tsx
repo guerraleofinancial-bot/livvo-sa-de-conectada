@@ -156,10 +156,11 @@ function CrmPage() {
           <div className="space-y-2">
             {rows.map((r) => {
               const p = (r as { patient?: { full_name?: string; avatar_url?: string } }).patient ?? {};
+              const contactId = (p as { id?: string }).id ?? r.patient_id;
               const meta = STATUS_META[r.status as CrmStatus] ?? STATUS_META.novo_lead;
               return (
-                <button key={r.id} onClick={() => navigate({ to: "/pro/crm/$id", params: { id: r.id } })}
-                  className="w-full text-left flex items-center gap-3 p-3 rounded-2xl bg-card border border-border hover:border-primary/30 transition-colors">
+                <button key={r.id} type="button" onClick={() => openContact(contactId, r)}
+                  className="relative z-0 w-full text-left flex items-center gap-3 p-3 rounded-2xl bg-card border border-border hover:border-primary/30 transition-colors cursor-pointer pointer-events-auto">
                   <div className="size-12 rounded-full bg-primary-soft text-primary grid place-items-center font-bold border border-border overflow-hidden shrink-0">
                     {p.avatar_url ? <img src={p.avatar_url} className="size-full object-cover" alt="" /> : (p.full_name ?? "?").charAt(0)}
                   </div>
@@ -176,7 +177,7 @@ function CrmPage() {
                       <span>R$ {Number(r.total_revenue ?? 0).toFixed(0)}</span>
                     </div>
                   </div>
-                  <ChevronRight className="size-4 text-muted-foreground shrink-0" />
+                  <ChevronRight className="size-4 text-muted-foreground shrink-0 pointer-events-none" />
                 </button>
               );
             })}
@@ -205,9 +206,10 @@ function CrmPage() {
                   <div className="space-y-2">
                     {cards.map((r) => {
                       const p = (r as { patient?: { full_name?: string; avatar_url?: string } }).patient ?? {};
+                      const contactId = (p as { id?: string }).id ?? r.patient_id;
                       return (
-                        <button key={r.id} onClick={() => navigate({ to: "/pro/crm/$id", params: { id: r.id } })}
-                          className="w-full text-left bg-card border border-border rounded-xl p-2.5 hover:border-primary/30">
+                        <button key={r.id} type="button" onClick={() => openContact(contactId, r)}
+                          className="relative z-0 w-full text-left bg-card border border-border rounded-xl p-2.5 hover:border-primary/30 cursor-pointer pointer-events-auto">
                           <div className="flex items-center gap-2">
                             <div className="size-8 rounded-full bg-primary-soft text-primary grid place-items-center text-xs font-bold overflow-hidden">
                               {p.avatar_url ? <img src={p.avatar_url} className="size-full object-cover" alt="" /> : (p.full_name ?? "?").charAt(0)}
