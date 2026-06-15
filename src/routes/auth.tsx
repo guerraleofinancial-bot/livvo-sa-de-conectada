@@ -11,8 +11,10 @@ import { toast } from "sonner";
 
 const searchSchema = z.object({
   mode: z.enum(["login", "signup"]).default("login").catch("login"),
-  role: z.enum(["paciente", "profissional"]).default("paciente").catch("paciente"),
+  role: z.enum(["paciente", "profissional", "empresa"]).default("paciente").catch("paciente"),
 });
+
+type SignupRole = "paciente" | "profissional" | "empresa";
 
 export const Route = createFileRoute("/auth")({
   validateSearch: searchSchema,
