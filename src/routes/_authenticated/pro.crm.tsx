@@ -55,13 +55,38 @@ type ContactDetail = Awaited<ReturnType<typeof getCrmContactDetail>>;
 
 function CrmPage() {
   const fetchFn = useServerFn(listCrmPatients);
+  const detailFn = useServerFn(getCrmContactDetail);
+  const qc = useQueryClient();
   const { data } = useQuery({ queryKey: ["crm-patients"], queryFn: () => fetchFn() });
   const [q, setQ] = useState("");
   const [view, setView] = useState<"list" | "kanban">("list");
   const [filter, setFilter] = useState<CrmStatus | "">("");
   const [openNew, setOpenNew] = useState(false);
   const [openImport, setOpenImport] = useState(false);
+  const [selectedContactId, setSelectedContactId] = useState<string | null>(null);
   const navigate = useNavigate();
+
+  const detailQuery = useQuery({
+    queryKey: ["crm-contact-detail", selectedContactId],
+    queryFn: () => detailFn({ data: { contactId: selectedContactId! } }),
+    enabled: !!selectedContactId,
+    retry: false,
+  });
+
+  useEffect(() => {
+    console.log("[CRM] selectedContactId", selectedContactId);
+  }, [selectedContactId]);
+
+  useEffect(() => {
+    if (detailQuery.data) console.log("[CRM] resultado da busca do contato", detailQuery.data);
+    if (detailQuery.error) console.error("[CRM] erro de permissão ou RLS", detailQuery.error);
+  }, [detailQuery.data, detailQuery.error]);
+
+  const openContact = (contactId: string, row?: CrmRow) => {
+    console.log("[CRM] contact clicado", row ?? null);
+    console.log("[CRM] contact.id", contactId);
+    setSelectedContactId(contactId);
+  };
 
   const rows = useMemo(() => {
     const all = data ?? [];
