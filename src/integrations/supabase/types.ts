@@ -2026,6 +2026,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "professionals_profile_fkey"
+            columns: ["id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "professionals_specialty_id_fkey"
             columns: ["specialty_id"]
             isOneToOne: false

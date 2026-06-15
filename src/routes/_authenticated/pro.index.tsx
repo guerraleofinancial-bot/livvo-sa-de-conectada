@@ -23,7 +23,7 @@ function ProHome() {
   const { data: pro } = useQuery({
     queryKey: ["me-pro", user?.id],
     enabled: !!user,
-    queryFn: async () => (await supabase.from("professionals").select("*, profiles:id(full_name), specialties(name)").eq("id", user!.id).maybeSingle()).data,
+    queryFn: async () => (await supabase.from("professionals").select("*, profiles:profiles!professionals_profile_fkey(full_name), specialties(name)").eq("id", user!.id).maybeSingle()).data,
   });
 
   const { data: dash } = useQuery({

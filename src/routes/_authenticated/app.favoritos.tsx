@@ -21,7 +21,7 @@ function Favoritos() {
         .from("favorites")
         .select(`
           id, professional_id, company_id,
-          professionals(id, consultation_price, rating_average, address_city, profiles:id(full_name, avatar_url), specialties(name)),
+          professionals(id, consultation_price, rating_average, address_city, profiles:profiles!professionals_profile_fkey(full_name, avatar_url), specialties(name)),
           companies(id, legal_name, trade_name, type, address_city, logo_url)
         `)
         .eq("patient_id", user!.id);

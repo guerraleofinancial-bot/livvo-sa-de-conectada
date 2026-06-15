@@ -26,7 +26,7 @@ function Consultas() {
     queryFn: async () => {
       const { data } = await supabase
         .from("appointments")
-        .select("*, professionals(id, profiles:id(full_name, avatar_url), specialties(name)), reviews(id)")
+        .select("*, professionals(id, profiles:profiles!professionals_profile_fkey(full_name, avatar_url), specialties(name)), reviews(id)")
         .eq("patient_id", user!.id)
         .order("scheduled_at", { ascending: false });
       return data ?? [];

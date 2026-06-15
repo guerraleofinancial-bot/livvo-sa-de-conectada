@@ -22,7 +22,7 @@ function ChatRoom() {
 
   const { data: appt } = useQuery({
     queryKey: ["appt", appointmentId],
-    queryFn: async () => (await supabase.from("appointments").select("*, professionals(profiles:id(full_name, avatar_url), specialties(name))").eq("id", appointmentId).single()).data,
+    queryFn: async () => (await supabase.from("appointments").select("*, professionals(profiles:profiles!professionals_profile_fkey(full_name, avatar_url), specialties(name))").eq("id", appointmentId).single()).data,
   });
 
   useEffect(() => {

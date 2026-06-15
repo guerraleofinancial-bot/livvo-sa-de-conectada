@@ -26,7 +26,7 @@ function ProfileDetail() {
       (
         await supabase
           .from("professionals")
-          .select("*, profiles:id(full_name, avatar_url, city, state), specialties(name)")
+          .select("*, profiles:profiles!professionals_profile_fkey(full_name, avatar_url, city, state), specialties(name)")
           .eq("id", id)
           .eq("status", "aprovado")
           .not("council_verified_at", "is", null)
