@@ -38,9 +38,10 @@ function PatientDetail() {
   const delNote = useServerFn(deleteCrmNote);
   const newQuote = useServerFn(createQuote);
 
-  const { data, refetch } = useQuery({
+  const { data, refetch, isLoading, error } = useQuery({
     queryKey: ["crm-patient", id],
     queryFn: () => fetchFn({ data: { relationshipId: id } }),
+    retry: false,
   });
 
   const [noteText, setNoteText] = useState("");
@@ -68,7 +69,17 @@ function PatientDetail() {
     onSuccess: (q) => navigate({ to: "/pro/orcamentos/$id", params: { id: q.id } }),
   });
 
-  if (!data) return <div className="p-10 text-center text-sm text-muted-foreground">Carregando…</div>;
+  if (isLoading) return <div className="p-10 text-center text-sm text-muted-foreground">Carregando…</div>;
+  if (error || !data) return (
+    <div className="px-5 pt-10 space-y-3">
+      <Link to="/pro/crm" className="inline-flex items-center gap-1 text-sm text-muted-foreground"><ArrowLeft className="size-4" /> Voltar</Link>
+      <div className="rounded-2xl border border-destructive/30 bg-destructive/5 p-6 text-center">
+        <p className="text-sm font-medium text-destructive">Não foi possível abrir este paciente.</p>
+        <p className="text-xs text-muted-foreground mt-1">{(error as Error | null)?.message ?? "Verifique suas permissões ou tente novamente."}</p>
+        <Button size="sm" variant="outline" className="mt-3" onClick={() => refetch()}>Tentar novamente</Button>
+      </div>
+    </div>
+  );
   const r = data.relationship as typeof data.relationship & {
     patient: { full_name?: string; avatar_url?: string; phone?: string; email?: string; city?: string; date_of_birth?: string };
   };

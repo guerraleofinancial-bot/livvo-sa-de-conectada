@@ -47,8 +47,11 @@ export const getCrmPatient = createServerFn({ method: "POST" })
     const { data: rel, error } = await context.supabase
       .from("crm_patient_relationships")
       .select("*")
-      .eq("id", data.relationshipId).single();
+      .eq("id", data.relationshipId).maybeSingle();
     if (error) throw error;
+    if (!rel) {
+      throw new Error("Não foi possível abrir este paciente. Verifique suas permissões ou tente novamente.");
+    }
     const [withPatient] = await attachPatients(context.supabase, [rel]);
 
     const [appts, notes, quotes] = await Promise.all([
