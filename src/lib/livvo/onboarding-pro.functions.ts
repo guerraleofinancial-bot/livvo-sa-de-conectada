@@ -113,6 +113,33 @@ export const submitOnboarding = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: pro, error: readErr } = await supabaseAdmin
+      .from("professionals")
+      .select("council, council_number, council_state, council_document_url, display_name, specialty_id")
+      .eq("id", context.userId)
+      .maybeSingle();
+    if (readErr) throw readErr;
+    if (!pro) throw new Error("Cadastro não encontrado");
+    if (!pro.council || !pro.council_number || !pro.council_state) {
+      throw new Error("Informe o conselho profissional, número e UF antes de enviar.");
+    }
+    if (!pro.council_document_url) {
+      throw new Error("Anexe o documento do conselho profissional antes de enviar.");
+    }
+    if (!pro.display_name || !pro.specialty_id) {
+      throw new Error("Preencha nome de exibição e especialidade principal.");
+    }
+    const { count: hoursCount } = await supabaseAdmin
+      .from("professional_business_hours")
+      .select("id", { count: "exact", head: true })
+      .eq("professional_id", context.userId);
+    if (!hoursCount) throw new Error("Configure ao menos um horário de atendimento.");
+    const { count: svcCount } = await supabaseAdmin
+      .from("services")
+      .select("id", { count: "exact", head: true })
+      .eq("professional_id", context.userId);
+    if (!svcCount) throw new Error("Cadastre ao menos um serviço antes de enviar.");
+
     const { error } = await supabaseAdmin.from("professionals").update({
       status: "pendente",
       onboarding_completed_at: new Date().toISOString(),
