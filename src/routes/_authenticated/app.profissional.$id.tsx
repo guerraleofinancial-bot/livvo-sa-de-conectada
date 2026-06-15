@@ -79,7 +79,8 @@ function ProfileDetail() {
     }
   }
 
-  if (!pro) return <div className="p-8 text-center text-sm text-muted-foreground">Carregando...</div>;
+  if (proLoading) return <div className="p-8 text-center text-sm text-muted-foreground">Carregando...</div>;
+  if (!pro) return <div className="p-8 text-center text-sm text-muted-foreground">Profissional não encontrado ou indisponível.</div>;
   const p = pro as typeof pro & { profiles: { full_name?: string; avatar_url?: string } | null; specialties: { name?: string } | null };
 
   function goCheckout() {
