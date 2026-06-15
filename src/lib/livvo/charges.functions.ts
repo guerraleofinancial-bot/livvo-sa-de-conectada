@@ -156,8 +156,8 @@ export const getPublicCharge = createServerFn({ method: "GET" })
 
     let providerName = "Profissional Livvo";
     if (p.company_id) {
-      const { data: c } = await supabaseAdmin.from("companies").select("name").eq("id", p.company_id).maybeSingle();
-      if (c?.name) providerName = c.name;
+      const { data: c } = await supabaseAdmin.from("companies").select("trade_name, legal_name").eq("id", p.company_id).maybeSingle();
+      if (c?.trade_name || c?.legal_name) providerName = (c.trade_name ?? c.legal_name) as string;
     } else if (p.recipient_id) {
       const { data: pr } = await supabaseAdmin.from("profiles").select("full_name").eq("id", p.recipient_id).maybeSingle();
       if (pr?.full_name) providerName = pr.full_name;
@@ -190,7 +190,7 @@ export const simulatePayCharge = createServerFn({ method: "POST" })
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: p } = await supabaseAdmin.from("payments").select("*").eq("public_token", data.token).maybeSingle();
     if (!p) throw new Error("Cobrança não encontrada");
-    if (p.status === "paga" || p.status === "pago") return { ok: true, alreadyPaid: true };
+    if (p.status === "pago") return { ok: true, alreadyPaid: true };
     if (["cancelada", "reembolsado"].includes(p.status)) throw new Error("Cobrança não pode ser paga");
 
     const now = new Date().toISOString();
@@ -237,7 +237,6 @@ export const simulatePayCharge = createServerFn({ method: "POST" })
         _event: "charge_paid",
         _title: "Pagamento confirmado",
         _body: `Cobrança de R$ ${Number(p.gross_amount).toFixed(2)} foi paga.`,
-        _link: null,
         _metadata: { payment_id: p.id },
       });
     }
@@ -247,7 +246,6 @@ export const simulatePayCharge = createServerFn({ method: "POST" })
         _event: "charge_paid",
         _title: "Pagamento aprovado",
         _body: "Seu pagamento foi aprovado.",
-        _link: null,
         _metadata: { payment_id: p.id },
       });
     }
