@@ -465,6 +465,41 @@ export type Database = {
         }
         Relationships: []
       }
+      charge_events: {
+        Row: {
+          actor_id: string | null
+          created_at: string
+          event: string
+          id: string
+          metadata: Json
+          payment_id: string
+        }
+        Insert: {
+          actor_id?: string | null
+          created_at?: string
+          event: string
+          id?: string
+          metadata?: Json
+          payment_id: string
+        }
+        Update: {
+          actor_id?: string | null
+          created_at?: string
+          event?: string
+          id?: string
+          metadata?: Json
+          payment_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "charge_events_payment_id_fkey"
+            columns: ["payment_id"]
+            isOneToOne: false
+            referencedRelation: "payments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       companies: {
         Row: {
           address_city: string | null
@@ -1450,9 +1485,14 @@ export type Database = {
       payments: {
         Row: {
           amount: number
-          appointment_id: string
+          appointment_id: string | null
           commission_amount: number | null
+          commission_percent: number | null
+          company_id: string | null
           created_at: string
+          crm_contact_id: string | null
+          description: string | null
+          due_date: string | null
           gateway: string
           gateway_payment_id: string | null
           gateway_transaction_id: string | null
@@ -1461,21 +1501,30 @@ export type Database = {
           method: string | null
           net_amount: number | null
           paid_at: string | null
-          patient_id: string
+          patient_id: string | null
           payment_method: string | null
           payout_status: string
+          public_token: string | null
+          quote_id: string | null
           recipient_id: string | null
           refund_status: string | null
           refunded_at: string | null
+          sent_at: string | null
           status: Database["public"]["Enums"]["payment_status"]
           updated_at: string
+          viewed_at: string | null
           webhook_payload: Json | null
         }
         Insert: {
           amount: number
-          appointment_id: string
+          appointment_id?: string | null
           commission_amount?: number | null
+          commission_percent?: number | null
+          company_id?: string | null
           created_at?: string
+          crm_contact_id?: string | null
+          description?: string | null
+          due_date?: string | null
           gateway?: string
           gateway_payment_id?: string | null
           gateway_transaction_id?: string | null
@@ -1484,21 +1533,30 @@ export type Database = {
           method?: string | null
           net_amount?: number | null
           paid_at?: string | null
-          patient_id: string
+          patient_id?: string | null
           payment_method?: string | null
           payout_status?: string
+          public_token?: string | null
+          quote_id?: string | null
           recipient_id?: string | null
           refund_status?: string | null
           refunded_at?: string | null
+          sent_at?: string | null
           status?: Database["public"]["Enums"]["payment_status"]
           updated_at?: string
+          viewed_at?: string | null
           webhook_payload?: Json | null
         }
         Update: {
           amount?: number
-          appointment_id?: string
+          appointment_id?: string | null
           commission_amount?: number | null
+          commission_percent?: number | null
+          company_id?: string | null
           created_at?: string
+          crm_contact_id?: string | null
+          description?: string | null
+          due_date?: string | null
           gateway?: string
           gateway_payment_id?: string | null
           gateway_transaction_id?: string | null
@@ -1507,14 +1565,18 @@ export type Database = {
           method?: string | null
           net_amount?: number | null
           paid_at?: string | null
-          patient_id?: string
+          patient_id?: string | null
           payment_method?: string | null
           payout_status?: string
+          public_token?: string | null
+          quote_id?: string | null
           recipient_id?: string | null
           refund_status?: string | null
           refunded_at?: string | null
+          sent_at?: string | null
           status?: Database["public"]["Enums"]["payment_status"]
           updated_at?: string
+          viewed_at?: string | null
           webhook_payload?: Json | null
         }
         Relationships: [
@@ -1523,6 +1585,27 @@ export type Database = {
             columns: ["appointment_id"]
             isOneToOne: false
             referencedRelation: "appointments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payments_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payments_crm_contact_id_fkey"
+            columns: ["crm_contact_id"]
+            isOneToOne: false
+            referencedRelation: "crm_contacts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payments_quote_id_fkey"
+            columns: ["quote_id"]
+            isOneToOne: false
+            referencedRelation: "quotes"
             referencedColumns: ["id"]
           },
         ]
@@ -3137,6 +3220,8 @@ export type Database = {
         | "quote_viewed"
         | "quote_approved"
         | "quote_rejected"
+        | "charge_sent"
+        | "charge_paid"
       patient_origin:
         | "busca_organica"
         | "anuncio_patrocinado"
@@ -3393,6 +3478,8 @@ export const Constants = {
         "quote_viewed",
         "quote_approved",
         "quote_rejected",
+        "charge_sent",
+        "charge_paid",
       ],
       patient_origin: [
         "busca_organica",
