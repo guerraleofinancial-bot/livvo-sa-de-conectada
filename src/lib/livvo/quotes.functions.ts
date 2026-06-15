@@ -187,9 +187,12 @@ export const deleteQuote = createServerFn({ method: "POST" })
 export const listProServicesForQuote = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
+    const companyIds = await userCompanyIds(context.supabase, context.userId);
+    const conds = [`professional_id.eq.${context.userId}`];
+    if (companyIds.length) conds.push(`company_id.in.(${companyIds.join(",")})`);
     const { data, error } = await context.supabase
       .from("services").select("id, name, price, duration_minutes")
-      .or(`professional_id.eq.${context.userId}`)
+      .or(conds.join(","))
       .eq("active", true)
       .order("name");
     if (error) throw error;
