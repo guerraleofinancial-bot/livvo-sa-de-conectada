@@ -11,8 +11,10 @@ import { toast } from "sonner";
 
 const searchSchema = z.object({
   mode: z.enum(["login", "signup"]).default("login").catch("login"),
-  role: z.enum(["paciente", "profissional"]).default("paciente").catch("paciente"),
+  role: z.enum(["paciente", "profissional", "empresa"]).default("paciente").catch("paciente"),
 });
+
+type SignupRole = "paciente" | "profissional" | "empresa";
 
 export const Route = createFileRoute("/auth")({
   validateSearch: searchSchema,
@@ -29,7 +31,7 @@ function AuthPage() {
   const { mode, role } = Route.useSearch();
   const navigate = useNavigate();
   const [tab, setTab] = useState<"login" | "signup">(mode);
-  const [chosenRole, setChosenRole] = useState<"paciente" | "profissional">(role);
+  const [chosenRole, setChosenRole] = useState<SignupRole>(role);
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -62,6 +64,7 @@ function AuthPage() {
     if (error) return toast.error("Falha no cadastro", { description: error.message });
     toast.success("Conta criada!", { description: "Bem-vindo à Livvo." });
     if (chosenRole === "profissional") navigate({ to: "/onboarding-pro" });
+    else if (chosenRole === "empresa") navigate({ to: "/onboarding-empresa" });
     else navigate({ to: "/app" });
   }
 
@@ -95,21 +98,23 @@ function AuthPage() {
 
           {tab === "signup" && (
             <div className="mb-5">
-              <p className="mb-2 text-xs font-semibold text-muted-foreground">Eu sou</p>
-              <div className="grid grid-cols-2 gap-2">
-                {(["paciente", "profissional"] as const).map((r) => (
+              <p className="mb-2 text-xs font-semibold text-muted-foreground">Como deseja usar a Livvo?</p>
+              <div className="grid grid-cols-1 gap-2">
+                {([
+                  { id: "paciente", label: "Paciente", desc: "Buscar e agendar atendimentos" },
+                  { id: "profissional", label: "Profissional da Saúde", desc: "Receber pacientes e gerir agenda" },
+                  { id: "empresa", label: "Clínica ou Empresa", desc: "Gerenciar unidades e equipe" },
+                ] as const).map((r) => (
                   <button
-                    key={r}
+                    key={r.id}
                     type="button"
-                    onClick={() => setChosenRole(r)}
+                    onClick={() => setChosenRole(r.id)}
                     className={`rounded-xl border-2 p-3 text-left text-sm font-semibold transition ${
-                      chosenRole === r ? "border-primary bg-primary-soft text-primary" : "border-border bg-card text-foreground hover:border-primary/30"
+                      chosenRole === r.id ? "border-primary bg-primary-soft text-primary" : "border-border bg-card text-foreground hover:border-primary/30"
                     }`}
                   >
-                    {r === "paciente" ? "Paciente" : "Parceiro Livvo"}
-                    <p className="mt-0.5 text-[10px] font-normal text-muted-foreground">
-                      {r === "paciente" ? "Buscar e agendar" : "Receber pacientes"}
-                    </p>
+                    {r.label}
+                    <p className="mt-0.5 text-[11px] font-normal text-muted-foreground">{r.desc}</p>
                   </button>
                 ))}
               </div>

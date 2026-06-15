@@ -9,22 +9,22 @@ export const Route = createFileRoute("/_authenticated/pro")({
 });
 
 function ProLayout() {
-  const { user, isProfessional, isAdmin, loading } = useAuth();
+  const { user, isProfessional, isCompany, isAdmin, loading } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
     if (loading) return;
     if (!user) return;
-    if (!isProfessional && !isAdmin) {
+    if (!isProfessional && !isCompany && !isAdmin) {
       navigate({ to: "/app", replace: true });
     }
-  }, [loading, user, isProfessional, isAdmin, navigate]);
+  }, [loading, user, isProfessional, isCompany, isAdmin, navigate]);
 
   if (loading) {
     return <div className="min-h-screen grid place-items-center"><Loader2 className="size-6 animate-spin text-muted-foreground" /></div>;
   }
 
-  if (!isProfessional && !isAdmin) return null;
+  if (!isProfessional && !isCompany && !isAdmin) return null;
 
   return (
     <div className="min-h-screen bg-surface pb-24">

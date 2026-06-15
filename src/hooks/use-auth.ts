@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import type { User } from "@supabase/supabase-js";
 
-export type AppRole = "paciente" | "profissional" | "admin";
+export type AppRole = "paciente" | "profissional" | "empresa" | "admin";
 
 export interface AuthState {
   user: User | null;
@@ -10,6 +10,7 @@ export interface AuthState {
   loading: boolean;
   isAdmin: boolean;
   isProfessional: boolean;
+  isCompany: boolean;
   isPatient: boolean;
 }
 
@@ -52,6 +53,7 @@ export function useAuth(): AuthState {
     loading,
     isAdmin: roles.includes("admin"),
     isProfessional: roles.includes("profissional"),
+    isCompany: roles.includes("empresa"),
     isPatient: roles.includes("paciente"),
   };
 }
