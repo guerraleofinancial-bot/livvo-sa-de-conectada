@@ -13,6 +13,18 @@ const ItemSchema = z.object({
   unit_price: z.number().min(0).max(1_000_000),
 });
 
+async function resolvePatients(supabase: any, ids: string[]) {
+  if (!ids.length) return new Map<string, any>();
+  const [{ data: profiles }, { data: contacts }] = await Promise.all([
+    supabase.from("profiles").select("id, full_name, avatar_url, email, phone").in("id", ids),
+    supabase.from("crm_contacts").select("id, full_name, phone, email").in("id", ids),
+  ]);
+  const map = new Map<string, any>();
+  (profiles ?? []).forEach((p: any) => map.set(p.id, { ...p, kind: "user" }));
+  (contacts ?? []).forEach((c: any) => { if (!map.has(c.id)) map.set(c.id, { ...c, avatar_url: null, kind: "contact" }); });
+  return map;
+}
+
 export const listProQuotes = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
@@ -23,11 +35,8 @@ export const listProQuotes = createServerFn({ method: "GET" })
       .order("created_at", { ascending: false })
       .limit(200);
     if (error) throw error;
-    const ids = Array.from(new Set((data ?? []).map((r: any) => r.patient_id).filter(Boolean)));
-    const { data: profiles } = ids.length
-      ? await context.supabase.from("profiles").select("id, full_name, avatar_url").in("id", ids)
-      : { data: [] as any[] };
-    const map = new Map((profiles ?? []).map((p: any) => [p.id, p]));
+    const ids = Array.from(new Set((data ?? []).map((r: any) => r.patient_id).filter(Boolean))) as string[];
+    const map = await resolvePatients(context.supabase, ids);
     return (data ?? []).map((r: any) => ({ ...r, patient: map.get(r.patient_id) ?? null }));
   });
 
@@ -54,10 +63,8 @@ export const getQuote = createServerFn({ method: "POST" })
       .select("*, items:quote_items(*)")
       .eq("id", data.id).single();
     if (error) throw error;
-    const { data: patient } = q.patient_id
-      ? await context.supabase.from("profiles").select("id, full_name, avatar_url, email, phone").eq("id", q.patient_id).maybeSingle()
-      : { data: null };
-    (q as any).patient = patient ?? null;
+    const map = await resolvePatients(context.supabase, q.patient_id ? [q.patient_id] : []);
+    (q as any).patient = map.get(q.patient_id) ?? null;
     // mark as viewed if patient is viewing
     if (q.patient_id === context.userId && q.status === "enviado") {
       await context.supabase.from("quotes").update({ status: "visualizado" }).eq("id", q.id);
