@@ -196,6 +196,69 @@ export const findDuplicates = createServerFn({ method: "POST" })
     return rows ?? [];
   });
 
+const UpdateContactInput = z.object({
+  contactId: z.string().uuid(),
+  full_name: z.string().trim().min(1).max(120).optional(),
+  phone: z.string().trim().optional(),
+  whatsapp: z.string().trim().optional().nullable(),
+  email: z.string().trim().email().optional().or(z.literal("")).nullable(),
+  city: z.string().trim().max(120).optional().nullable(),
+  date_of_birth: z.string().trim().optional().nullable(),
+  sex: z.string().trim().max(20).optional().nullable(),
+  insurance: z.string().trim().max(120).optional().nullable(),
+  notes: z.string().trim().max(2000).optional().nullable(),
+  origin: OriginEnum.optional(),
+});
+
+export const updateCrmContact = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) => UpdateContactInput.parse(d))
+  .handler(async ({ data, context }) => {
+    const { contactId, ...rest } = data;
+    const patch: Record<string, unknown> = clean({ ...rest });
+    if (rest.phone !== undefined) patch.phone = digitsOnly(rest.phone);
+    if (rest.whatsapp !== undefined && rest.whatsapp !== null) {
+      patch.whatsapp = digitsOnly(rest.whatsapp);
+    }
+    if (rest.email === "") patch.email = null;
+    const { data: row, error } = await context.supabase
+      .from("crm_contacts").update(patch).eq("id", contactId).select().single();
+    if (error) throw error;
+    return row;
+  });
+
+const CreateApptInput = z.object({
+  patient_id: z.string().uuid(),
+  professional_id: z.string().uuid(),
+  scheduled_at: z.string(),
+  duration_minutes: z.number().int().min(5).max(480).default(30),
+  service_id: z.string().uuid().nullable().optional(),
+  price: z.number().min(0).default(0),
+  notes: z.string().trim().max(2000).optional().nullable(),
+});
+
+export const createManualAppointment = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) => CreateApptInput.parse(d))
+  .handler(async ({ data, context }) => {
+    const payload = {
+      patient_id: data.patient_id,
+      professional_id: data.professional_id,
+      scheduled_at: data.scheduled_at,
+      duration_minutes: data.duration_minutes,
+      service_id: data.service_id ?? null,
+      price: data.price,
+      gross_amount: data.price,
+      net_amount: data.price,
+      notes: data.notes ?? null,
+      status: "agendada" as const,
+    };
+    const { data: row, error } = await context.supabase
+      .from("appointments").insert(payload).select().single();
+    if (error) throw error;
+    return row;
+  });
+
 const ImportRow = ContactInput.omit({ source: true }).partial({
   full_name: true, phone: true, origin: true,
 }).extend({
