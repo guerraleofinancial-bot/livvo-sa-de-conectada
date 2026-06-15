@@ -3079,7 +3079,7 @@ export type Database = {
     Enums: {
       ad_event_kind: "impression" | "click" | "booking"
       ad_target_type: "professional" | "company"
-      app_role: "paciente" | "profissional" | "admin"
+      app_role: "paciente" | "profissional" | "admin" | "empresa"
       appointment_modality: "presencial" | "telemedicina"
       appointment_status:
         | "agendada"
@@ -3323,7 +3323,7 @@ export const Constants = {
     Enums: {
       ad_event_kind: ["impression", "click", "booking"],
       ad_target_type: ["professional", "company"],
-      app_role: ["paciente", "profissional", "admin"],
+      app_role: ["paciente", "profissional", "admin", "empresa"],
       appointment_modality: ["presencial", "telemedicina"],
       appointment_status: [
         "agendada",
