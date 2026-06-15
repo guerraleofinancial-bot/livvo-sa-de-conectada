@@ -115,7 +115,8 @@ export const bulkImportPatients = createServerFn({ method: "POST" })
       duplicate_strategy: z.enum(["skip", "update", "create"]).default("skip"),
     }).parse(d))
   .handler(async ({ data, context }) => {
-    let created = 0, skipped = 0, updated = 0, errors = 0;
+    let created = 0, updated = 0, skipped = 0, errors = 0, dupInFile = 0;
+    const seen = new Map<string, number>(); // key (phone|email) -> first index
     for (const raw of data.rows) {
       try {
         const parsed = ImportRow.parse(raw);
@@ -123,7 +124,16 @@ export const bulkImportPatients = createServerFn({ method: "POST" })
         const whatsapp = parsed.whatsapp ? digitsOnly(parsed.whatsapp) : phone;
         const email = parsed.email ? String(parsed.email).trim().toLowerCase() : null;
 
-        // duplicate check
+        // in-file dedup
+        const key = `${phone}|${email ?? ""}`;
+        if (phone && seen.has(key)) {
+          dupInFile++;
+          if (data.duplicate_strategy === "skip") { skipped++; continue; }
+        } else {
+          seen.set(key, 1);
+        }
+
+        // duplicate check against DB
         const conds: string[] = [`phone.eq.${phone}`, `whatsapp.eq.${phone}`];
         if (email) conds.push(`email.eq.${email}`);
         const { data: dup } = await context.supabase.from("crm_contacts")
@@ -150,5 +160,5 @@ export const bulkImportPatients = createServerFn({ method: "POST" })
         errors++;
       }
     }
-    return { created, updated, skipped, errors };
+    return { created, updated, skipped, errors, dupInFile };
   });
