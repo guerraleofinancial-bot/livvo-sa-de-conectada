@@ -246,7 +246,7 @@ function PatientDetail() {
         <h2 className="text-sm font-bold">Observações internas</h2>
         <p className="text-[11px] text-muted-foreground">Notas comerciais e operacionais. Não substituem prontuário clínico.</p>
         <div className="rounded-2xl border border-border bg-card p-3 space-y-2">
-          <Textarea placeholder="Adicionar observação..." value={noteText} onChange={(e) => setNoteText(e.target.value)} rows={3} />
+          <Textarea id="crm-note-input" placeholder="Adicionar observação..." value={noteText} onChange={(e) => setNoteText(e.target.value)} rows={3} />
           <div className="flex items-center gap-2">
             <button onClick={() => setVisibility("private")} className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold border ${visibility === "private" ? "bg-foreground text-background border-foreground" : "border-border"}`}>
               <Lock className="size-3" /> Privada
