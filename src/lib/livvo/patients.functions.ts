@@ -2,6 +2,44 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
+export const listCrmScope = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { supabase, userId } = context;
+    const { data: pro } = await supabase.from("professionals").select("id").eq("id", userId).maybeSingle();
+    const { data: companies } = await supabase.from("companies").select("id, legal_name, trade_name").eq("owner_id", userId);
+    const company = companies?.[0] ?? null;
+
+    let responsibleOptions: Array<{ id: string; full_name: string }> = [];
+    if (company) {
+      // Owner is always a candidate if they are also a professional
+      const ids = new Set<string>();
+      if (pro) ids.add(userId);
+      const { data: members } = await supabase
+        .from("company_members").select("user_id").eq("company_id", company.id);
+      (members ?? []).forEach((m: any) => ids.add(m.user_id));
+      const { data: unitPros } = await supabase
+        .from("unit_professionals").select("professional_id, company_units!inner(company_id)")
+        .eq("company_units.company_id", company.id);
+      (unitPros ?? []).forEach((u: any) => ids.add(u.professional_id));
+      if (ids.size) {
+        const { data: pros } = await supabase
+          .from("professionals").select("id, status").in("id", Array.from(ids)).eq("status", "aprovado");
+        const proIds = (pros ?? []).map((p: any) => p.id);
+        if (proIds.length) {
+          const { data: profs } = await supabase
+            .from("profiles").select("id, full_name").in("id", proIds);
+          responsibleOptions = (profs ?? []) as any;
+        }
+      }
+    }
+    return {
+      isSoloProfessional: !!pro && !company,
+      company,
+      responsibleOptions,
+    };
+  });
+
 const OriginEnum = z.enum([
   "busca_organica", "anuncio_patrocinado", "indicacao", "cadastro_direto",
   "importado", "perfil_publico", "campanha", "outros",
