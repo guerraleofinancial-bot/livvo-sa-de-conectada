@@ -72,6 +72,49 @@ export const getCrmPatient = createServerFn({ method: "POST" })
     return { relationship: withPatient, appointments: appts.data ?? [], notes: notes.data ?? [], quotes: quotes.data ?? [] };
   });
 
+export const getCrmContactDetail = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: { contactId: string }) => z.object({ contactId: z.string().uuid() }).parse(d))
+  .handler(async ({ data, context }) => {
+    const { data: contact, error: contactError } = await context.supabase
+      .from("crm_contacts")
+      .select("*")
+      .eq("id", data.contactId)
+      .maybeSingle();
+    if (contactError) throw contactError;
+    if (!contact) {
+      throw new Error("Não foi possível abrir este paciente. Verifique suas permissões ou tente novamente.");
+    }
+
+    const { data: relationship, error: relError } = await context.supabase
+      .from("crm_patient_relationships")
+      .select("*")
+      .eq("patient_id", data.contactId)
+      .order("updated_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (relError) throw relError;
+
+    const professionalId = relationship?.professional_id ?? contact.professional_id;
+    const [appts, notes, quotes] = professionalId ? await Promise.all([
+      context.supabase.from("appointments")
+        .select("id, scheduled_at, status, gross_amount, service_id, created_at")
+        .eq("professional_id", professionalId).eq("patient_id", data.contactId)
+        .order("scheduled_at", { ascending: false }),
+      context.supabase.from("crm_patient_notes")
+        .select("*")
+        .eq("professional_id", professionalId).eq("patient_id", data.contactId)
+        .order("created_at", { ascending: false }),
+      context.supabase.from("quotes")
+        .select("id, status, title, total, created_at, sent_at, decided_at, valid_until")
+        .eq("patient_id", data.contactId)
+        .or(`professional_id.eq.${professionalId},assigned_user_id.eq.${professionalId}`)
+        .order("created_at", { ascending: false }),
+    ]) : [{ data: [] }, { data: [] }, { data: [] }];
+
+    return { contact, relationship, appointments: appts.data ?? [], notes: notes.data ?? [], quotes: quotes.data ?? [] };
+  });
+
 
 export const updateCrmStatus = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
