@@ -86,13 +86,13 @@ function Agenda() {
         <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-3">Próximos atendimentos</h2>
         <div className="space-y-2">
           {(appts ?? []).slice(0, 10).map((row) => {
-            const a = row as typeof row & { profiles: { full_name?: string } | null };
+            const a = row as typeof row & { patient_name: string };
             const d = new Date(a.scheduled_at);
             return (
               <div key={a.id} className="p-3 rounded-2xl bg-card border border-border flex items-center gap-3">
                 <Calendar className="size-4 text-primary shrink-0" />
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold truncate">{a.profiles?.full_name ?? "Paciente"}</p>
+                  <p className="text-sm font-semibold truncate">{a.patient_name}</p>
                   <p className="text-xs text-muted-foreground">{d.toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" })}</p>
                 </div>
                 <span className="px-2 py-0.5 text-[10px] uppercase font-bold rounded-full bg-primary-soft text-primary">{a.status}</span>
