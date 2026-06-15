@@ -31,7 +31,7 @@ function Checkout() {
 
   const { data: pro } = useQuery({
     queryKey: ["chk-pro", params.professionalId],
-    queryFn: async () => (await supabase.from("professionals").select("id, consultation_price, profiles:id(full_name), specialties(name)").eq("id", params.professionalId).single()).data,
+    queryFn: async () => (await supabase.from("professionals").select("id, consultation_price, profiles:profiles!professionals_profile_fkey(full_name), specialties(name)").eq("id", params.professionalId).single()).data,
   });
 
   const { data: service } = useQuery({

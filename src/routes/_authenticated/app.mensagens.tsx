@@ -17,7 +17,7 @@ function Mensagens() {
     queryFn: async () => {
       const { data } = await supabase
         .from("appointments")
-        .select("id, scheduled_at, status, professional_id, patient_id, professionals(profiles:id(full_name, avatar_url), specialties(name))")
+        .select("id, scheduled_at, status, professional_id, patient_id, professionals(profiles:profiles!professionals_profile_fkey(full_name, avatar_url), specialties(name))")
         .or(`patient_id.eq.${user!.id},professional_id.eq.${user!.id}`)
         .in("status", ["agendada", "confirmada", "em_andamento", "realizada"])
         .order("scheduled_at", { ascending: false });

@@ -49,7 +49,7 @@ function PatientHome() {
     queryFn: async () => {
       const { data } = await supabase
         .from("appointments")
-        .select("id, scheduled_at, status, professional_id, professionals(id, profiles:id(full_name, avatar_url), specialties(name))")
+        .select("id, scheduled_at, status, professional_id, professionals(id, profiles:profiles!professionals_profile_fkey(full_name, avatar_url), specialties(name))")
         .eq("patient_id", user!.id)
         .in("status", ["agendada", "confirmada"])
         .gte("scheduled_at", new Date().toISOString())
@@ -65,7 +65,7 @@ function PatientHome() {
     queryFn: async () => {
       const { data } = await supabase
         .from("professionals")
-        .select("id, consultation_price, rating_average, address_city, profiles:id(full_name, avatar_url), specialties(name)")
+        .select("id, consultation_price, rating_average, address_city, profiles:profiles!professionals_profile_fkey(full_name, avatar_url), specialties(name)")
         .eq("status", "aprovado")
         .order("rating_average", { ascending: false })
         .limit(5);

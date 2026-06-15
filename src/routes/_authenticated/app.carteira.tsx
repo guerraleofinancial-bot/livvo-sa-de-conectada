@@ -16,7 +16,7 @@ function Carteira() {
     enabled: !!user,
     queryFn: async () => (await supabase
       .from("payments")
-      .select("id, amount, status, method, paid_at, created_at, appointment_id, appointments(scheduled_at, professionals(profiles:id(full_name)))")
+      .select("id, amount, status, method, paid_at, created_at, appointment_id, appointments(scheduled_at, professionals(profiles:profiles!professionals_profile_fkey(full_name)))")
       .eq("patient_id", user!.id)
       .order("created_at", { ascending: false })).data ?? [],
   });
