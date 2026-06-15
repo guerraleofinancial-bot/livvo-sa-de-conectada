@@ -143,6 +143,16 @@ export const setQuoteStatus = createServerFn({ method: "POST" })
   .inputValidator((d: { id: string; status: z.infer<typeof QuoteStatus>; reason?: string }) =>
     z.object({ id: z.string().uuid(), status: QuoteStatus, reason: z.string().trim().max(500).optional() }).parse(d))
   .handler(async ({ data, context }) => {
+    // Validate before sending
+    if (data.status === "enviado") {
+      const { data: q } = await context.supabase
+        .from("quotes")
+        .select("title, items:quote_items(id)")
+        .eq("id", data.id)
+        .single();
+      if (!q?.title?.trim()) throw new Error("Adicione um título antes de enviar");
+      if (!q?.items || q.items.length === 0) throw new Error("Adicione ao menos 1 item antes de enviar");
+    }
     const patch: { status: z.infer<typeof QuoteStatus>; decision_reason?: string } = { status: data.status };
     if (data.reason) patch.decision_reason = data.reason;
     const { data: row, error } = await context.supabase.from("quotes")
