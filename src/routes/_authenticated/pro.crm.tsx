@@ -233,6 +233,19 @@ function CrmPage() {
           </div>
         </div>
       )}
+
+      <CRMContactDetailModal
+        open={!!selectedContactId}
+        onOpenChange={(open) => { if (!open) setSelectedContactId(null); }}
+        detail={detailQuery.data ?? null}
+        isLoading={detailQuery.isLoading || detailQuery.isFetching}
+        error={detailQuery.error as Error | null}
+        onSaved={() => {
+          detailQuery.refetch();
+          qc.invalidateQueries({ queryKey: ["crm-patients"] });
+          qc.invalidateQueries({ queryKey: ["pro-agenda"] });
+        }}
+      />
     </div>
   );
 }
