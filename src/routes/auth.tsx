@@ -64,6 +64,7 @@ function AuthPage() {
     if (error) return toast.error("Falha no cadastro", { description: error.message });
     toast.success("Conta criada!", { description: "Bem-vindo à Livvo." });
     if (chosenRole === "profissional") navigate({ to: "/onboarding-pro" });
+    else if (chosenRole === "empresa") navigate({ to: "/onboarding-empresa" });
     else navigate({ to: "/app" });
   }
 
