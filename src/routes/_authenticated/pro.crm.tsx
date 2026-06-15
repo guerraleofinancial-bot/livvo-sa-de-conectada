@@ -1,12 +1,20 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { listCrmPatients } from "@/lib/livvo/crm.functions";
-import { Users, Calendar, ChevronRight, LayoutGrid, List, FileText } from "lucide-react";
-import { useState, useMemo } from "react";
+import { getCrmContactDetail, listCrmPatients, updateCrmStatus } from "@/lib/livvo/crm.functions";
+import { createQuote } from "@/lib/livvo/quotes.functions";
+import { createManualAppointment, updateCrmContact } from "@/lib/livvo/patients.functions";
+import { Users, Calendar, ChevronRight, LayoutGrid, List, FileText, CalendarPlus, Phone, Mail, MapPin, Pencil } from "lucide-react";
+import { useEffect, useState, useMemo } from "react";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 import { NewPatientDialog } from "@/components/livvo/new-patient-dialog";
 import { ImportPatientsDialog, NewPatientButtons } from "@/components/livvo/import-patients-dialog";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/pro/crm")({
   component: CrmPage,
