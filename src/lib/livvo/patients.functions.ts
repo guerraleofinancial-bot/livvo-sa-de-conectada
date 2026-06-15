@@ -222,7 +222,7 @@ export const updateCrmContact = createServerFn({ method: "POST" })
     }
     if (rest.email === "") patch.email = null;
     const { data: row, error } = await context.supabase
-      .from("crm_contacts").update(patch).eq("id", contactId).select().single();
+      .from("crm_contacts").update(patch as never).eq("id", contactId).select().single();
     if (error) throw error;
     return row;
   });
