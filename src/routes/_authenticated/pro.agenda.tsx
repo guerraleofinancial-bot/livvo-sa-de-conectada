@@ -22,7 +22,19 @@ function Agenda() {
   const { data: appts } = useQuery({
     queryKey: ["pro-agenda", user?.id],
     enabled: !!user,
-    queryFn: async () => (await supabase.from("appointments").select("*, profiles:patient_id(full_name)").eq("professional_id", user!.id).order("scheduled_at")).data ?? [],
+    queryFn: async () => {
+      const { data: rows } = await supabase.from("appointments").select("*").eq("professional_id", user!.id).order("scheduled_at");
+      const ids = Array.from(new Set((rows ?? []).map((r) => r.patient_id).filter(Boolean)));
+      if (!ids.length) return (rows ?? []).map((r) => ({ ...r, patient_name: "Paciente" }));
+      const [{ data: profiles }, { data: contacts }] = await Promise.all([
+        supabase.from("profiles").select("id, full_name").in("id", ids),
+        supabase.from("crm_contacts").select("id, full_name").in("id", ids),
+      ]);
+      const map = new Map<string, string>();
+      (profiles ?? []).forEach((p) => map.set(p.id, p.full_name ?? "Paciente"));
+      (contacts ?? []).forEach((c) => { if (!map.has(c.id)) map.set(c.id, c.full_name ?? "Paciente"); });
+      return (rows ?? []).map((r) => ({ ...r, patient_name: map.get(r.patient_id) ?? "Paciente" }));
+    },
   });
 
   const { data: avail } = useQuery({
