@@ -271,6 +271,145 @@ function PatientDetail() {
           {data.notes.length === 0 && <p className="text-xs text-muted-foreground">Nenhuma observação ainda.</p>}
         </div>
       </section>
+
+      <EditContactDialog
+        open={editOpen}
+        onOpenChange={setEditOpen}
+        contactId={r.patient_id}
+        initial={p}
+        onSaved={() => { refetch(); qc.invalidateQueries({ queryKey: ["crm-patients"] }); }}
+        editFn={editFn}
+      />
+      <ScheduleDialog
+        open={apptOpen}
+        onOpenChange={setApptOpen}
+        patientId={r.patient_id}
+        patientName={p.full_name ?? "Paciente"}
+        professionalId={r.professional_id}
+        onCreated={() => { refetch(); qc.invalidateQueries({ queryKey: ["crm-patients"] }); toast.success("Agendamento criado"); }}
+        apptFn={apptFn}
+      />
     </div>
+  );
+}
+
+function EditContactDialog({ open, onOpenChange, contactId, initial, onSaved, editFn }: {
+  open: boolean;
+  onOpenChange: (v: boolean) => void;
+  contactId: string;
+  initial: { full_name?: string; phone?: string; email?: string; city?: string; date_of_birth?: string };
+  onSaved: () => void;
+  editFn: ReturnType<typeof useServerFn<typeof updateCrmContact>>;
+}) {
+  const [form, setForm] = useState({
+    full_name: "", phone: "", whatsapp: "", email: "", city: "",
+    date_of_birth: "", sex: "", insurance: "", notes: "",
+  });
+  useEffect(() => {
+    if (open) {
+      setForm({
+        full_name: initial.full_name ?? "",
+        phone: initial.phone ?? "",
+        whatsapp: (initial as { whatsapp?: string }).whatsapp ?? "",
+        email: initial.email ?? "",
+        city: initial.city ?? "",
+        date_of_birth: initial.date_of_birth ? String(initial.date_of_birth).slice(0, 10) : "",
+        sex: (initial as { sex?: string }).sex ?? "",
+        insurance: (initial as { insurance?: string }).insurance ?? "",
+        notes: (initial as { notes?: string }).notes ?? "",
+      });
+    }
+  }, [open, initial]);
+  const set = (k: keyof typeof form, v: string) => setForm((f) => ({ ...f, [k]: v }));
+  const mut = useMutation({
+    mutationFn: () => editFn({ data: { contactId, ...form } }),
+    onSuccess: () => { toast.success("Dados atualizados"); onOpenChange(false); onSaved(); },
+    onError: (e: Error) => toast.error(e.message ?? "Erro ao salvar"),
+  });
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+        <DialogHeader><DialogTitle>Editar dados do paciente</DialogTitle></DialogHeader>
+        <div className="space-y-3">
+          <div><Label>Nome*</Label><Input value={form.full_name} onChange={(e) => set("full_name", e.target.value)} /></div>
+          <div className="grid grid-cols-2 gap-2">
+            <div><Label>Telefone*</Label><Input value={form.phone} onChange={(e) => set("phone", e.target.value)} /></div>
+            <div><Label>WhatsApp</Label><Input value={form.whatsapp} onChange={(e) => set("whatsapp", e.target.value)} /></div>
+          </div>
+          <div><Label>Email</Label><Input type="email" value={form.email} onChange={(e) => set("email", e.target.value)} /></div>
+          <div className="grid grid-cols-2 gap-2">
+            <div><Label>Cidade</Label><Input value={form.city} onChange={(e) => set("city", e.target.value)} /></div>
+            <div><Label>Nascimento</Label><Input type="date" value={form.date_of_birth} onChange={(e) => set("date_of_birth", e.target.value)} /></div>
+          </div>
+          <div className="grid grid-cols-2 gap-2">
+            <div><Label>Sexo</Label><Input value={form.sex} onChange={(e) => set("sex", e.target.value)} /></div>
+            <div><Label>Convênio</Label><Input value={form.insurance} onChange={(e) => set("insurance", e.target.value)} /></div>
+          </div>
+          <div><Label>Observações</Label><Textarea rows={3} value={form.notes} onChange={(e) => set("notes", e.target.value)} /></div>
+        </div>
+        <DialogFooter>
+          <Button variant="outline" onClick={() => onOpenChange(false)}>Cancelar</Button>
+          <Button onClick={() => mut.mutate()} disabled={mut.isPending || !form.full_name.trim() || !form.phone.trim()}>Salvar</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function ScheduleDialog({ open, onOpenChange, patientId, patientName, professionalId, onCreated, apptFn }: {
+  open: boolean;
+  onOpenChange: (v: boolean) => void;
+  patientId: string;
+  patientName: string;
+  professionalId: string;
+  onCreated: () => void;
+  apptFn: ReturnType<typeof useServerFn<typeof createManualAppointment>>;
+}) {
+  const [date, setDate] = useState("");
+  const [time, setTime] = useState("");
+  const [duration, setDuration] = useState(30);
+  const [price, setPrice] = useState(0);
+  const [notes, setNotes] = useState("");
+  useEffect(() => {
+    if (open) {
+      const d = new Date();
+      d.setDate(d.getDate() + 1);
+      setDate(d.toISOString().slice(0, 10));
+      setTime("09:00");
+      setDuration(30); setPrice(0); setNotes("");
+    }
+  }, [open]);
+  const mut = useMutation({
+    mutationFn: () => {
+      const iso = new Date(`${date}T${time}:00`).toISOString();
+      return apptFn({ data: {
+        patient_id: patientId, professional_id: professionalId,
+        scheduled_at: iso, duration_minutes: duration, price, notes: notes || null,
+      }});
+    },
+    onSuccess: () => { onOpenChange(false); onCreated(); },
+    onError: (e: Error) => toast.error(e.message ?? "Erro ao agendar"),
+  });
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-md">
+        <DialogHeader><DialogTitle>Agendar — {patientName}</DialogTitle></DialogHeader>
+        <div className="space-y-3">
+          <div className="grid grid-cols-2 gap-2">
+            <div><Label>Data</Label><Input type="date" value={date} onChange={(e) => setDate(e.target.value)} /></div>
+            <div><Label>Horário</Label><Input type="time" value={time} onChange={(e) => setTime(e.target.value)} /></div>
+          </div>
+          <div className="grid grid-cols-2 gap-2">
+            <div><Label>Duração (min)</Label><Input type="number" min={5} max={480} value={duration} onChange={(e) => setDuration(Number(e.target.value))} /></div>
+            <div><Label>Valor (R$)</Label><Input type="number" min={0} step="0.01" value={price} onChange={(e) => setPrice(Number(e.target.value))} /></div>
+          </div>
+          <div><Label>Observações</Label><Textarea rows={3} value={notes} onChange={(e) => setNotes(e.target.value)} /></div>
+        </div>
+        <DialogFooter>
+          <Button variant="outline" onClick={() => onOpenChange(false)}>Cancelar</Button>
+          <Button onClick={() => mut.mutate()} disabled={mut.isPending || !date || !time}>Confirmar</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }
