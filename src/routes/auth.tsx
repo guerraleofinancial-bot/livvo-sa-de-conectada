@@ -31,7 +31,7 @@ function AuthPage() {
   const { mode, role } = Route.useSearch();
   const navigate = useNavigate();
   const [tab, setTab] = useState<"login" | "signup">(mode);
-  const [chosenRole, setChosenRole] = useState<"paciente" | "profissional">(role);
+  const [chosenRole, setChosenRole] = useState<SignupRole>(role);
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
