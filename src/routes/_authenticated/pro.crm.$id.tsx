@@ -3,10 +3,14 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { getCrmPatient, updateCrmStatus, addCrmNote, deleteCrmNote, updateCrmRelationship } from "@/lib/livvo/crm.functions";
 import { createQuote } from "@/lib/livvo/quotes.functions";
-import { ArrowLeft, Calendar, Phone, Mail, Trash2, Lock, Users, FileText, MapPin, Cake, Plus, MessageSquare } from "lucide-react";
-import { useState } from "react";
+import { updateCrmContact, createManualAppointment } from "@/lib/livvo/patients.functions";
+import { ArrowLeft, Calendar, Phone, Mail, Trash2, Lock, Users, FileText, MapPin, Cake, Plus, MessageSquare, Pencil, CalendarPlus } from "lucide-react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/pro/crm/$id")({
