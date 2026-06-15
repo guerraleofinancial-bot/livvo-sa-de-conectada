@@ -3146,7 +3146,15 @@ export type Database = {
         | "perfil_publico"
         | "campanha"
         | "outros"
-      payment_status: "pendente" | "pago" | "reembolsado" | "falhou"
+      payment_status:
+        | "pendente"
+        | "pago"
+        | "reembolsado"
+        | "falhou"
+        | "enviada"
+        | "visualizada"
+        | "vencida"
+        | "cancelada"
       payout_batch_status: "pendente" | "pago" | "cancelado"
       professional_council:
         | "CRM"
@@ -3396,7 +3404,16 @@ export const Constants = {
         "campanha",
         "outros",
       ],
-      payment_status: ["pendente", "pago", "reembolsado", "falhou"],
+      payment_status: [
+        "pendente",
+        "pago",
+        "reembolsado",
+        "falhou",
+        "enviada",
+        "visualizada",
+        "vencida",
+        "cancelada",
+      ],
       payout_batch_status: ["pendente", "pago", "cancelado"],
       professional_council: [
         "CRM",
