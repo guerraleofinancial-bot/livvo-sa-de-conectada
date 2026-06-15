@@ -25,13 +25,27 @@ async function resolvePatients(supabase: any, ids: string[]) {
   return map;
 }
 
+async function userCompanyIds(supabase: any, userId: string) {
+  const [{ data: owned }, { data: member }] = await Promise.all([
+    supabase.from("companies").select("id").eq("owner_id", userId),
+    supabase.from("company_members").select("company_id").eq("user_id", userId).in("role", ["owner", "admin", "recepcionista"]),
+  ]);
+  const set = new Set<string>();
+  (owned ?? []).forEach((r: any) => set.add(r.id));
+  (member ?? []).forEach((r: any) => set.add(r.company_id));
+  return Array.from(set);
+}
+
 export const listProQuotes = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
+    const companyIds = await userCompanyIds(context.supabase, context.userId);
+    const conds = [`professional_id.eq.${context.userId}`, `assigned_user_id.eq.${context.userId}`];
+    if (companyIds.length) conds.push(`company_id.in.(${companyIds.join(",")})`);
     const { data, error } = await context.supabase
       .from("quotes")
       .select("id, status, title, total, valid_until, created_at, sent_at, patient_id")
-      .or(`professional_id.eq.${context.userId},assigned_user_id.eq.${context.userId}`)
+      .or(conds.join(","))
       .order("created_at", { ascending: false })
       .limit(200);
     if (error) throw error;
