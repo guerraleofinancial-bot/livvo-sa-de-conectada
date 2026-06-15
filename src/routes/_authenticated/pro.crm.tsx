@@ -44,6 +44,15 @@ const ORDER: CrmStatus[] = [
   "agendado","confirmada","atendido","fidelizado","retorno_pendente","inativo","cancelado",
 ];
 
+const ORIGINS = [
+  ["busca_organica","Busca"],["anuncio_patrocinado","Anúncio"],["indicacao","Indicação"],
+  ["cadastro_direto","Cadastro direto"],["importado","Importado"],
+  ["perfil_publico","Perfil público"],["campanha","Campanha"],["outros","Outros"],
+] as const;
+
+type CrmRow = Awaited<ReturnType<typeof listCrmPatients>>[number];
+type ContactDetail = Awaited<ReturnType<typeof getCrmContactDetail>>;
+
 function CrmPage() {
   const fetchFn = useServerFn(listCrmPatients);
   const { data } = useQuery({ queryKey: ["crm-patients"], queryFn: () => fetchFn() });
