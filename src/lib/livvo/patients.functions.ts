@@ -256,6 +256,18 @@ export const createManualAppointment = createServerFn({ method: "POST" })
     const { data: row, error } = await context.supabase
       .from("appointments").insert(payload).select().single();
     if (error) throw error;
+    await context.supabase
+      .from("crm_patient_relationships")
+      .update({
+        status: "agendado",
+        status_suggested: "agendado",
+        status_changed_at: new Date().toISOString(),
+        status_changed_by: context.userId,
+        next_appointment_at: data.scheduled_at,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("professional_id", data.professional_id)
+      .eq("patient_id", data.patient_id);
     return row;
   });
 
