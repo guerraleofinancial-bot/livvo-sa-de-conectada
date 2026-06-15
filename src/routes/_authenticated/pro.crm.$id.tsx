@@ -38,9 +38,10 @@ function PatientDetail() {
   const delNote = useServerFn(deleteCrmNote);
   const newQuote = useServerFn(createQuote);
 
-  const { data, refetch } = useQuery({
+  const { data, refetch, isLoading, error } = useQuery({
     queryKey: ["crm-patient", id],
     queryFn: () => fetchFn({ data: { relationshipId: id } }),
+    retry: false,
   });
 
   const [noteText, setNoteText] = useState("");
