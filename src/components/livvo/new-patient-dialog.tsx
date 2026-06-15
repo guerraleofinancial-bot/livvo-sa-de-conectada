@@ -123,6 +123,23 @@ export function NewPatientDialog({ open, onOpenChange }: Props) {
             <Label>Convênio</Label>
             <Input value={form.insurance} onChange={(e) => set("insurance", e.target.value)} placeholder="Particular / Unimed..." />
           </div>
+          {scope?.company && scope.responsibleOptions.length > 0 && (
+            <div>
+              <Label>Profissional responsável</Label>
+              <Select
+                value={form.responsible_user_id || UNASSIGNED}
+                onValueChange={(v) => set("responsible_user_id", v === UNASSIGNED ? "" : v)}
+              >
+                <SelectTrigger><SelectValue placeholder="Sem responsável (contato da empresa)" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value={UNASSIGNED}>Sem responsável (empresa)</SelectItem>
+                  {scope.responsibleOptions.map((p) => (
+                    <SelectItem key={p.id} value={p.id}>{p.full_name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
           <div>
             <Label>Origem</Label>
             <Select value={form.origin} onValueChange={(v) => set("origin", v)}>
