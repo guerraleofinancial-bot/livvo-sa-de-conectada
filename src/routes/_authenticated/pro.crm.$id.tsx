@@ -50,6 +50,11 @@ function PatientDetail() {
 
   const [noteText, setNoteText] = useState("");
   const [visibility, setVisibility] = useState<"private" | "clinic">("private");
+  const [editOpen, setEditOpen] = useState(false);
+  const [apptOpen, setApptOpen] = useState(false);
+
+  const editFn = useServerFn(updateCrmContact);
+  const apptFn = useServerFn(createManualAppointment);
 
   const statusMut = useMutation({
     mutationFn: (status: string) => setStatus({ data: { relationshipId: id, status: status as Parameters<typeof setStatus>[0]["data"]["status"], override: true } }),
