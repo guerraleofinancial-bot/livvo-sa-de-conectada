@@ -72,18 +72,7 @@ function CrmPage() {
     retry: false,
   });
 
-  useEffect(() => {
-    console.log("[CRM] selectedContactId", selectedContactId);
-  }, [selectedContactId]);
-
-  useEffect(() => {
-    if (detailQuery.data) console.log("[CRM] resultado da busca do contato", detailQuery.data);
-    if (detailQuery.error) console.error("[CRM] erro de permissão ou RLS", detailQuery.error);
-  }, [detailQuery.data, detailQuery.error]);
-
   const openContact = (contactId: string, row?: CrmRow) => {
-    console.log("[CRM] contact clicado", row ?? null);
-    console.log("[CRM] contact.id", contactId);
     setSelectedContactId(contactId);
   };
 
@@ -303,7 +292,6 @@ function CRMContactDetailModal({ open, onOpenChange, detail, isLoading, error, o
     },
     onSuccess: () => { toast.success("Dados atualizados"); onSaved(); },
     onError: (e: Error) => {
-      console.error("[CRM] erro de permissão ou RLS", e);
       toast.error(e.message ?? "Erro ao salvar");
     },
   });
@@ -440,7 +428,6 @@ function ScheduleContactDialog({ open, onOpenChange, contactId, patientName, pro
     }}),
     onSuccess: onCreated,
     onError: (e: Error) => {
-      console.error("[CRM] erro de permissão ou RLS", e);
       toast.error(e.message ?? "Erro ao agendar");
     },
   });
