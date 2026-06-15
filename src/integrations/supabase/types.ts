@@ -783,7 +783,7 @@ export type Database = {
           origin: Database["public"]["Enums"]["patient_origin"]
           origin_detail: string | null
           phone: string
-          professional_id: string
+          professional_id: string | null
           responsible_user_id: string | null
           sex: string | null
           source: string
@@ -806,7 +806,7 @@ export type Database = {
           origin?: Database["public"]["Enums"]["patient_origin"]
           origin_detail?: string | null
           phone: string
-          professional_id: string
+          professional_id?: string | null
           responsible_user_id?: string | null
           sex?: string | null
           source?: string
@@ -829,7 +829,7 @@ export type Database = {
           origin?: Database["public"]["Enums"]["patient_origin"]
           origin_detail?: string | null
           phone?: string
-          professional_id?: string
+          professional_id?: string | null
           responsible_user_id?: string | null
           sex?: string | null
           source?: string
