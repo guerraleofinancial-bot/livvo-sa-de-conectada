@@ -101,8 +101,22 @@ async function resolveScope(
   supabase: any, userId: string,
   requestedCompanyId: string | null, responsibleUserId: string | null
 ) {
-  const { data: pro } = await supabase
+  let { data: pro } = await supabase
     .from("professionals").select("id").eq("id", userId).maybeSingle();
+  if (!pro) {
+    // If user has the 'profissional' role but no professionals row yet,
+    // auto-create a minimal one so CRM works (auto-approve trigger handles status).
+    const { data: roles } = await supabase
+      .from("user_roles").select("role").eq("user_id", userId);
+    const hasProRole = (roles ?? []).some((r: any) => r.role === "profissional");
+    if (hasProRole) {
+      const { data: created } = await supabase
+        .from("professionals")
+        .insert({ id: userId, professional_registry: "" })
+        .select("id").maybeSingle();
+      if (created) pro = created;
+    }
+  }
   const isProfessional = !!pro;
 
   const { data: ownedCompanies } = await supabase
