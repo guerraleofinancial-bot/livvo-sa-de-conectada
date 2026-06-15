@@ -64,7 +64,6 @@ function CrmPage() {
   const [openNew, setOpenNew] = useState(false);
   const [openImport, setOpenImport] = useState(false);
   const [selectedContactId, setSelectedContactId] = useState<string | null>(null);
-  const navigate = useNavigate();
 
   const detailQuery = useQuery({
     queryKey: ["crm-contact-detail", selectedContactId],
@@ -236,7 +235,7 @@ function CrmPage() {
 
       <CRMContactDetailModal
         open={!!selectedContactId}
-        onOpenChange={(open) => { if (!open) setSelectedContactId(null); }}
+        onOpenChange={(open: boolean) => { if (!open) setSelectedContactId(null); }}
         detail={detailQuery.data ?? null}
         isLoading={detailQuery.isLoading || detailQuery.isFetching}
         error={detailQuery.error as Error | null}
