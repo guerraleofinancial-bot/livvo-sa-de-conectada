@@ -151,12 +151,21 @@ function PatientDetail() {
         </div>
       </section>
 
-      <section className="flex gap-2">
-        <Button size="sm" className="flex-1" onClick={() => quoteMut.mutate()} disabled={quoteMut.isPending}>
-          <FileText className="size-4 mr-1.5" /> Novo orçamento
+      <section className="grid grid-cols-2 gap-2 sm:grid-cols-5">
+        <Button size="sm" variant="outline" onClick={() => setEditOpen(true)}>
+          <Pencil className="size-4 mr-1.5" /> Editar
         </Button>
-        <Button size="sm" variant="outline" className="flex-1" asChild>
-          <Link to="/app/mensagens"><MessageSquare className="size-4 mr-1.5" /> Mensagem</Link>
+        <Button size="sm" onClick={() => setApptOpen(true)}>
+          <CalendarPlus className="size-4 mr-1.5" /> Agendar
+        </Button>
+        <Button size="sm" variant="outline" onClick={() => quoteMut.mutate()} disabled={quoteMut.isPending}>
+          <FileText className="size-4 mr-1.5" /> Orçamento
+        </Button>
+        <Button size="sm" variant="outline" onClick={() => document.getElementById("crm-note-input")?.focus()}>
+          <MessageSquare className="size-4 mr-1.5" /> Observação
+        </Button>
+        <Button size="sm" variant="outline" asChild>
+          <Link to="/app/mensagens"><Mail className="size-4 mr-1.5" /> Mensagem</Link>
         </Button>
       </section>
 
