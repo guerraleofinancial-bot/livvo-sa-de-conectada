@@ -212,7 +212,7 @@ function Agenda() {
     </DropdownMenu>
   );
 
-  const ApptRow = (a: ApptRow) => {
+  const ApptItem = (a: ApptRow) => {
     const d = new Date(a.scheduled_at);
     return (
       <div key={a.id} className="p-3 rounded-2xl bg-card border border-border flex items-center gap-3">
@@ -255,7 +255,7 @@ function Agenda() {
                   Sem agendamentos futuros.
                 </div>
               )}
-              {upcoming.map((a) => <ApptRow key={a.id} {...a} />)}
+              {upcoming.map((a) => <ApptItem key={a.id} {...a} />)}
             </div>
           </section>
 
@@ -277,7 +277,7 @@ function Agenda() {
                   Nenhum atendimento neste dia.
                 </div>
               )}
-              {dayList.map((a) => <ApptRow key={a.id} {...a} />)}
+              {dayList.map((a) => <ApptItem key={a.id} {...a} />)}
             </div>
           </section>
 
