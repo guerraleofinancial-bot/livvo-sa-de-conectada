@@ -20,9 +20,18 @@ function ProfileDetail() {
   const [selectedSlot, setSelectedSlot] = useState<Date | null>(null);
   const [serviceId, setServiceId] = useState<string | undefined>(undefined);
 
-  const { data: pro } = useQuery({
+  const { data: pro, isLoading: proLoading } = useQuery({
     queryKey: ["pro", id],
-    queryFn: async () => (await supabase.from("professionals").select("*, profiles:id(full_name, avatar_url, city, state), specialties(name)").eq("id", id).single()).data,
+    queryFn: async () =>
+      (
+        await supabase
+          .from("professionals")
+          .select("*, profiles:id(full_name, avatar_url, city, state), specialties(name)")
+          .eq("id", id)
+          .eq("status", "aprovado")
+          .not("council_verified_at", "is", null)
+          .maybeSingle()
+      ).data,
   });
 
   const { data: services } = useQuery({
