@@ -4,7 +4,8 @@ import { useServerFn } from "@tanstack/react-start";
 import { getCrmContactDetail, listCrmPatients, updateCrmStatus } from "@/lib/livvo/crm.functions";
 import { createQuote } from "@/lib/livvo/quotes.functions";
 import { createManualAppointment, updateCrmContact } from "@/lib/livvo/patients.functions";
-import { Users, Calendar, ChevronRight, LayoutGrid, List, FileText, CalendarPlus, Phone, Mail, MapPin, Pencil } from "lucide-react";
+import { createCharge, listChargesForContact } from "@/lib/livvo/charges.functions";
+import { Users, Calendar, ChevronRight, LayoutGrid, List, FileText, CalendarPlus, Phone, Mail, MapPin, Pencil, DollarSign, Copy, CheckCircle2 } from "lucide-react";
 import { useEffect, useState, useMemo } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -252,6 +253,7 @@ function CRMContactDetailModal({ open, onOpenChange, detail, isLoading, error, o
   const quoteFn = useServerFn(createQuote);
   const statusFn = useServerFn(updateCrmStatus);
   const [scheduleOpen, setScheduleOpen] = useState(false);
+  const [chargeOpen, setChargeOpen] = useState(false);
   const [form, setForm] = useState({
     full_name: "", phone: "", whatsapp: "", email: "", city: "", date_of_birth: "",
     sex: "", insurance: "", origin: "cadastro_direto", notes: "", status: "novo_lead",
@@ -361,7 +363,7 @@ function CRMContactDetailModal({ open, onOpenChange, detail, isLoading, error, o
               <div className="sm:col-span-2"><Label>Observações</Label><Textarea rows={4} value={form.notes} onChange={(e) => set("notes", e.target.value)} /></div>
             </div>
 
-            <div className="grid gap-2 sm:grid-cols-3">
+            <div className="grid gap-2 sm:grid-cols-2">
               <Button variant="outline" onClick={() => saveMut.mutate()} disabled={saveMut.isPending || !form.full_name.trim() || !form.phone.trim()}>
                 <Pencil className="size-4" /> Salvar alterações
               </Button>
@@ -370,6 +372,9 @@ function CRMContactDetailModal({ open, onOpenChange, detail, isLoading, error, o
               </Button>
               <Button variant="outline" onClick={() => quoteMut.mutate()} disabled={quoteMut.isPending}>
                 <FileText className="size-4" /> Criar orçamento
+              </Button>
+              <Button onClick={() => setChargeOpen(true)} className="bg-health hover:bg-health/90 text-white">
+                <DollarSign className="size-4" /> Enviar cobrança
               </Button>
             </div>
           </div>
@@ -385,6 +390,16 @@ function CRMContactDetailModal({ open, onOpenChange, detail, isLoading, error, o
           professionalId={professionalId}
           apptFn={apptFn}
           onCreated={() => { setScheduleOpen(false); onSaved(); toast.success("Agendamento criado"); }}
+        />
+      )}
+      {contact && (
+        <SendChargeDialog
+          open={chargeOpen}
+          onOpenChange={setChargeOpen}
+          contactId={contact.id}
+          patientName={patientName}
+          companyId={contact.company_id ?? relationship?.company_id ?? null}
+          onSent={() => { setChargeOpen(false); onSaved(); }}
         />
       )}
     </Dialog>
@@ -451,6 +466,110 @@ function ScheduleContactDialog({ open, onOpenChange, contactId, patientName, pro
           <Button variant="outline" onClick={() => onOpenChange(false)}>Cancelar</Button>
           <Button onClick={() => mut.mutate()} disabled={mut.isPending || !date || !time}>Confirmar</Button>
         </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function SendChargeDialog({ open, onOpenChange, contactId, patientName, companyId, onSent }: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  contactId: string;
+  patientName: string;
+  companyId: string | null;
+  onSent: () => void;
+}) {
+  const chargeFn = useServerFn(createCharge);
+  const listFn = useServerFn(listChargesForContact);
+  const [amount, setAmount] = useState("");
+  const [description, setDescription] = useState("");
+  const [dueDate, setDueDate] = useState("");
+  const [method, setMethod] = useState<"pix" | "cartao" | "link">("pix");
+  const [created, setCreated] = useState<{ token: string; gross: number; commission: number; net: number } | null>(null);
+
+  const history = useQuery({
+    queryKey: ["charges-contact", contactId],
+    queryFn: () => listFn({ data: { contactId } }),
+    enabled: open,
+  });
+
+  useEffect(() => {
+    if (!open) { setAmount(""); setDescription(""); setDueDate(""); setMethod("pix"); setCreated(null); }
+  }, [open]);
+
+  const mut = useMutation({
+    mutationFn: () => chargeFn({ data: {
+      amount: Number(amount),
+      description: description || null,
+      dueDate: dueDate || null,
+      paymentMethod: method,
+      crmContactId: contactId,
+      companyId,
+    }}),
+    onSuccess: (r) => { setCreated({ token: r.token, gross: r.gross, commission: r.commission, net: r.net }); history.refetch(); onSent(); toast.success("Cobrança criada"); },
+    onError: (e: Error) => toast.error(e.message ?? "Erro ao criar cobrança"),
+  });
+
+  const publicUrl = created ? `${typeof window !== "undefined" ? window.location.origin : ""}/pay/${created.token}` : "";
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-md">
+        <DialogHeader><DialogTitle>Enviar cobrança — {patientName}</DialogTitle></DialogHeader>
+        {!created ? (
+          <>
+            <div className="space-y-3">
+              <div><Label>Valor bruto (R$)</Label><Input type="number" min={0} step="0.01" value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="0,00" /></div>
+              <div><Label>Descrição / Serviço</Label><Input value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Ex.: Consulta nutricional" /></div>
+              <div className="grid grid-cols-2 gap-2">
+                <div><Label>Vencimento</Label><Input type="date" value={dueDate} onChange={(e) => setDueDate(e.target.value)} /></div>
+                <div>
+                  <Label>Forma</Label>
+                  <Select value={method} onValueChange={(v) => setMethod(v as typeof method)}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="pix">PIX</SelectItem>
+                      <SelectItem value="cartao">Cartão</SelectItem>
+                      <SelectItem value="link">Link de pagamento</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <p className="text-[11px] text-muted-foreground bg-primary-soft/40 rounded-lg p-2">
+                Pagamentos pela Livvo garantem segurança, confirmação automática e controle de repasses.
+              </p>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => onOpenChange(false)}>Cancelar</Button>
+              <Button onClick={() => mut.mutate()} disabled={mut.isPending || !amount || Number(amount) <= 0}>
+                {mut.isPending ? "Criando…" : "Criar cobrança"}
+              </Button>
+            </DialogFooter>
+          </>
+        ) : (
+          <div className="space-y-4">
+            <div className="rounded-2xl bg-health-soft text-health p-4 text-center">
+              <CheckCircle2 className="size-6 mx-auto mb-1" />
+              <p className="text-sm font-semibold">Cobrança criada</p>
+            </div>
+            <div className="rounded-xl border border-border p-3 text-xs space-y-1">
+              <div className="flex justify-between"><span>Valor bruto</span><span className="font-semibold">R$ {created.gross.toFixed(2)}</span></div>
+              <div className="flex justify-between text-muted-foreground"><span>Comissão Livvo</span><span>- R$ {created.commission.toFixed(2)}</span></div>
+              <div className="flex justify-between text-health font-semibold border-t pt-1 mt-1"><span>Líquido a receber</span><span>R$ {created.net.toFixed(2)}</span></div>
+            </div>
+            <div>
+              <Label className="text-xs">Link de pagamento</Label>
+              <div className="flex gap-2 mt-1">
+                <Input readOnly value={publicUrl} className="text-xs" />
+                <Button size="sm" variant="outline" onClick={() => { navigator.clipboard.writeText(publicUrl); toast.success("Link copiado"); }}>
+                  <Copy className="size-4" />
+                </Button>
+              </div>
+              <p className="text-[11px] text-muted-foreground mt-1">Envie este link ao paciente por WhatsApp ou email.</p>
+            </div>
+            <DialogFooter><Button onClick={() => onOpenChange(false)}>Concluir</Button></DialogFooter>
+          </div>
+        )}
       </DialogContent>
     </Dialog>
   );
