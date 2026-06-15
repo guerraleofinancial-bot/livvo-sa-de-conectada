@@ -59,24 +59,70 @@ async function ensureRelationship(supabase: any, professionalId: string, patient
   return data.id as string;
 }
 
+async function resolveScope(
+  supabase: any, userId: string,
+  requestedCompanyId: string | null, responsibleUserId: string | null
+) {
+  const { data: pro } = await supabase
+    .from("professionals").select("id").eq("id", userId).maybeSingle();
+  const isProfessional = !!pro;
+
+  const { data: ownedCompanies } = await supabase
+    .from("companies").select("id").eq("owner_id", userId);
+
+  let companyId: string | null = requestedCompanyId ?? null;
+  if (!companyId && ownedCompanies && ownedCompanies.length > 0) {
+    companyId = ownedCompanies[0].id as string;
+  }
+  if (companyId) {
+    const { data: ok } = await supabase.rpc("is_company_staff", { _user: userId, _company: companyId });
+    if (!ok) companyId = null;
+  }
+
+  let professionalId: string | null = null;
+  if (responsibleUserId) {
+    const { data: respPro } = await supabase
+      .from("professionals").select("id").eq("id", responsibleUserId).maybeSingle();
+    if (respPro) professionalId = respPro.id as string;
+  } else if (isProfessional && !companyId) {
+    professionalId = userId;
+  }
+
+  if (!professionalId && !companyId) {
+    throw new Error(
+      "Não foi possível identificar o responsável pelo CRM. Complete seu perfil profissional ou vínculo empresarial."
+    );
+  }
+  return { professionalId, companyId, responsibleUserId: responsibleUserId ?? null };
+}
+
 export const createManualPatient = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => ContactInput.parse(d))
   .handler(async ({ data, context }) => {
+    const { professionalId, companyId, responsibleUserId } = await resolveScope(
+      context.supabase, context.userId, data.company_id ?? null, data.responsible_user_id ?? null
+    );
+    const { company_id: _c, responsible_user_id: _r, ...rest } = data;
     const payload = clean({
-      ...data,
+      ...rest,
       phone: digitsOnly(data.phone),
       whatsapp: data.whatsapp ? digitsOnly(data.whatsapp) : digitsOnly(data.phone),
       email: data.email || null,
-      professional_id: context.userId,
+      professional_id: professionalId,
+      company_id: companyId,
+      responsible_user_id: responsibleUserId,
       created_by: context.userId,
     });
     const { data: contact, error } = await context.supabase
       .from("crm_contacts").insert(payload).select().single();
     if (error) throw error;
-    const relId = await ensureRelationship(
-      context.supabase, context.userId, contact.id, data.origin, data.company_id ?? null
-    );
+    let relId: string | null = null;
+    if (professionalId) {
+      relId = await ensureRelationship(
+        context.supabase, professionalId, contact.id, data.origin, companyId
+      );
+    }
     return { contact, relationshipId: relId };
   });
 
