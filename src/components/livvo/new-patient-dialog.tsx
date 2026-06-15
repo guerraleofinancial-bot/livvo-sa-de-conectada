@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
-import { createManualPatient } from "@/lib/livvo/patients.functions";
+import { createManualPatient, listCrmScope } from "@/lib/livvo/patients.functions";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -25,21 +25,36 @@ const ORIGINS = [
 
 type Props = { open: boolean; onOpenChange: (v: boolean) => void };
 
+const UNASSIGNED = "__none__";
+
 export function NewPatientDialog({ open, onOpenChange }: Props) {
   const navigate = useNavigate();
   const qc = useQueryClient();
   const createFn = useServerFn(createManualPatient);
+  const scopeFn = useServerFn(listCrmScope);
+  const { data: scope } = useQuery({
+    queryKey: ["crm-scope"],
+    queryFn: () => scopeFn(),
+    enabled: open,
+  });
   const [form, setForm] = useState({
     full_name: "", phone: "", whatsapp: "", city: "",
     email: "", date_of_birth: "", sex: "",
     notes: "", insurance: "", origin: "cadastro_direto",
+    responsible_user_id: "",
   });
 
   const set = (k: keyof typeof form, v: string) => setForm((f) => ({ ...f, [k]: v }));
 
   const mut = useMutation({
     mutationFn: async (mode: "save" | "appt" | "quote") => {
-      const res = await createFn({ data: { ...form, source: "manual" } as any });
+      const { responsible_user_id, ...rest } = form;
+      const payload: any = { ...rest, source: "manual" };
+      if (responsible_user_id && responsible_user_id !== UNASSIGNED) {
+        payload.responsible_user_id = responsible_user_id;
+      }
+      if (scope?.company?.id) payload.company_id = scope.company.id;
+      const res = await createFn({ data: payload });
       return { ...res, mode };
     },
     onSuccess: ({ relationshipId, mode }) => {
@@ -47,10 +62,11 @@ export function NewPatientDialog({ open, onOpenChange }: Props) {
       qc.invalidateQueries({ queryKey: ["crm-dashboard"] });
       toast.success("Paciente cadastrado");
       onOpenChange(false);
-      setForm({ full_name: "", phone: "", whatsapp: "", city: "", email: "", date_of_birth: "", sex: "", notes: "", insurance: "", origin: "cadastro_direto" });
+      setForm({ full_name: "", phone: "", whatsapp: "", city: "", email: "", date_of_birth: "", sex: "", notes: "", insurance: "", origin: "cadastro_direto", responsible_user_id: "" });
       if (mode === "appt") navigate({ to: "/pro/agenda" });
       else if (mode === "quote") navigate({ to: "/pro/orcamentos" });
-      else navigate({ to: "/pro/crm/$id", params: { id: relationshipId } });
+      else if (relationshipId) navigate({ to: "/pro/crm/$id", params: { id: relationshipId } });
+      else navigate({ to: "/pro/crm" });
     },
     onError: (e: Error) => toast.error(e.message ?? "Erro ao salvar"),
   });
@@ -107,6 +123,23 @@ export function NewPatientDialog({ open, onOpenChange }: Props) {
             <Label>Convênio</Label>
             <Input value={form.insurance} onChange={(e) => set("insurance", e.target.value)} placeholder="Particular / Unimed..." />
           </div>
+          {scope?.company && scope.responsibleOptions.length > 0 && (
+            <div>
+              <Label>Profissional responsável</Label>
+              <Select
+                value={form.responsible_user_id || UNASSIGNED}
+                onValueChange={(v) => set("responsible_user_id", v === UNASSIGNED ? "" : v)}
+              >
+                <SelectTrigger><SelectValue placeholder="Sem responsável (contato da empresa)" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value={UNASSIGNED}>Sem responsável (empresa)</SelectItem>
+                  {scope.responsibleOptions.map((p) => (
+                    <SelectItem key={p.id} value={p.id}>{p.full_name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
           <div>
             <Label>Origem</Label>
             <Select value={form.origin} onValueChange={(v) => set("origin", v)}>
