@@ -16,6 +16,7 @@ import { Route as ComoFuncionaRouteImport } from './routes/como-funciona'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as PayTokenRouteImport } from './routes/pay.$token'
 import { Route as AuthenticatedProRouteImport } from './routes/_authenticated/pro'
 import { Route as AuthenticatedOnboardingProRouteImport } from './routes/_authenticated/onboarding-pro'
 import { Route as AuthenticatedOnboardingEmpresaRouteImport } from './routes/_authenticated/onboarding-empresa'
@@ -81,6 +82,11 @@ const AuthenticatedRoute = AuthenticatedRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PayTokenRoute = PayTokenRouteImport.update({
+  id: '/pay/$token',
+  path: '/pay/$token',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedProRoute = AuthenticatedProRouteImport.update({
@@ -276,6 +282,7 @@ export interface FileRoutesByFullPath {
   '/onboarding-empresa': typeof AuthenticatedOnboardingEmpresaRoute
   '/onboarding-pro': typeof AuthenticatedOnboardingProRoute
   '/pro': typeof AuthenticatedProRouteWithChildren
+  '/pay/$token': typeof PayTokenRoute
   '/app/buscar': typeof AuthenticatedAppBuscarRoute
   '/app/carteira': typeof AuthenticatedAppCarteiraRoute
   '/app/consultas': typeof AuthenticatedAppConsultasRoute
@@ -314,6 +321,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AuthenticatedAdminRoute
   '/onboarding-empresa': typeof AuthenticatedOnboardingEmpresaRoute
   '/onboarding-pro': typeof AuthenticatedOnboardingProRoute
+  '/pay/$token': typeof PayTokenRoute
   '/app/buscar': typeof AuthenticatedAppBuscarRoute
   '/app/carteira': typeof AuthenticatedAppCarteiraRoute
   '/app/consultas': typeof AuthenticatedAppConsultasRoute
@@ -356,6 +364,7 @@ export interface FileRoutesById {
   '/_authenticated/onboarding-empresa': typeof AuthenticatedOnboardingEmpresaRoute
   '/_authenticated/onboarding-pro': typeof AuthenticatedOnboardingProRoute
   '/_authenticated/pro': typeof AuthenticatedProRouteWithChildren
+  '/pay/$token': typeof PayTokenRoute
   '/_authenticated/app/buscar': typeof AuthenticatedAppBuscarRoute
   '/_authenticated/app/carteira': typeof AuthenticatedAppCarteiraRoute
   '/_authenticated/app/consultas': typeof AuthenticatedAppConsultasRoute
@@ -398,6 +407,7 @@ export interface FileRouteTypes {
     | '/onboarding-empresa'
     | '/onboarding-pro'
     | '/pro'
+    | '/pay/$token'
     | '/app/buscar'
     | '/app/carteira'
     | '/app/consultas'
@@ -436,6 +446,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/onboarding-empresa'
     | '/onboarding-pro'
+    | '/pay/$token'
     | '/app/buscar'
     | '/app/carteira'
     | '/app/consultas'
@@ -477,6 +488,7 @@ export interface FileRouteTypes {
     | '/_authenticated/onboarding-empresa'
     | '/_authenticated/onboarding-pro'
     | '/_authenticated/pro'
+    | '/pay/$token'
     | '/_authenticated/app/buscar'
     | '/_authenticated/app/carteira'
     | '/_authenticated/app/consultas'
@@ -514,6 +526,7 @@ export interface RootRouteChildren {
   ParaEmpresasRoute: typeof ParaEmpresasRoute
   ParaParceirosRoute: typeof ParaParceirosRoute
   PlanosEPrecosRoute: typeof PlanosEPrecosRoute
+  PayTokenRoute: typeof PayTokenRoute
   ApiPublicAutomationRunRoute: typeof ApiPublicAutomationRunRoute
   ApiPublicPaymentsWebhookRoute: typeof ApiPublicPaymentsWebhookRoute
 }
@@ -567,6 +580,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pay/$token': {
+      id: '/pay/$token'
+      path: '/pay/$token'
+      fullPath: '/pay/$token'
+      preLoaderRoute: typeof PayTokenRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/pro': {
@@ -925,6 +945,7 @@ const rootRouteChildren: RootRouteChildren = {
   ParaEmpresasRoute: ParaEmpresasRoute,
   ParaParceirosRoute: ParaParceirosRoute,
   PlanosEPrecosRoute: PlanosEPrecosRoute,
+  PayTokenRoute: PayTokenRoute,
   ApiPublicAutomationRunRoute: ApiPublicAutomationRunRoute,
   ApiPublicPaymentsWebhookRoute: ApiPublicPaymentsWebhookRoute,
 }

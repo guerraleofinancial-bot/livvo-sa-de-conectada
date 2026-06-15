@@ -4,7 +4,8 @@ import { useServerFn } from "@tanstack/react-start";
 import { getCrmContactDetail, listCrmPatients, updateCrmStatus } from "@/lib/livvo/crm.functions";
 import { createQuote } from "@/lib/livvo/quotes.functions";
 import { createManualAppointment, updateCrmContact } from "@/lib/livvo/patients.functions";
-import { Users, Calendar, ChevronRight, LayoutGrid, List, FileText, CalendarPlus, Phone, Mail, MapPin, Pencil } from "lucide-react";
+import { createCharge, listChargesForContact } from "@/lib/livvo/charges.functions";
+import { Users, Calendar, ChevronRight, LayoutGrid, List, FileText, CalendarPlus, Phone, Mail, MapPin, Pencil, DollarSign, Copy, CheckCircle2 } from "lucide-react";
 import { useEffect, useState, useMemo } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -252,6 +253,7 @@ function CRMContactDetailModal({ open, onOpenChange, detail, isLoading, error, o
   const quoteFn = useServerFn(createQuote);
   const statusFn = useServerFn(updateCrmStatus);
   const [scheduleOpen, setScheduleOpen] = useState(false);
+  const [chargeOpen, setChargeOpen] = useState(false);
   const [form, setForm] = useState({
     full_name: "", phone: "", whatsapp: "", email: "", city: "", date_of_birth: "",
     sex: "", insurance: "", origin: "cadastro_direto", notes: "", status: "novo_lead",
@@ -361,7 +363,7 @@ function CRMContactDetailModal({ open, onOpenChange, detail, isLoading, error, o
               <div className="sm:col-span-2"><Label>Observações</Label><Textarea rows={4} value={form.notes} onChange={(e) => set("notes", e.target.value)} /></div>
             </div>
 
-            <div className="grid gap-2 sm:grid-cols-3">
+            <div className="grid gap-2 sm:grid-cols-2">
               <Button variant="outline" onClick={() => saveMut.mutate()} disabled={saveMut.isPending || !form.full_name.trim() || !form.phone.trim()}>
                 <Pencil className="size-4" /> Salvar alterações
               </Button>
@@ -370,6 +372,9 @@ function CRMContactDetailModal({ open, onOpenChange, detail, isLoading, error, o
               </Button>
               <Button variant="outline" onClick={() => quoteMut.mutate()} disabled={quoteMut.isPending}>
                 <FileText className="size-4" /> Criar orçamento
+              </Button>
+              <Button onClick={() => setChargeOpen(true)} className="bg-health hover:bg-health/90 text-white">
+                <DollarSign className="size-4" /> Enviar cobrança
               </Button>
             </div>
           </div>
@@ -385,6 +390,16 @@ function CRMContactDetailModal({ open, onOpenChange, detail, isLoading, error, o
           professionalId={professionalId}
           apptFn={apptFn}
           onCreated={() => { setScheduleOpen(false); onSaved(); toast.success("Agendamento criado"); }}
+        />
+      )}
+      {contact && (
+        <SendChargeDialog
+          open={chargeOpen}
+          onOpenChange={setChargeOpen}
+          contactId={contact.id}
+          patientName={patientName}
+          companyId={contact.company_id ?? relationship?.company_id ?? null}
+          onSent={() => { setChargeOpen(false); onSaved(); }}
         />
       )}
     </Dialog>
