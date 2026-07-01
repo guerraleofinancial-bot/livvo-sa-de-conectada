@@ -204,7 +204,9 @@ function Agenda() {
             <StatusBadge status="pendente_definicao" />
           ) : (
             <StatusBadge status={a.status} />
+          )}
         </div>
+
         <AppointmentActions
           appt={apptForActions(a)}
           onOpenTimeline={() => setTimelineId(a.id)}
