@@ -92,7 +92,7 @@ export const updatePlatformSettings = createServerFn({ method: "POST" })
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: before } = await supabaseAdmin.from("platform_settings").select("*").eq("id", 1).maybeSingle();
     const { error } = await supabaseAdmin.from("platform_settings")
-      .update({ ...data, updated_at: new Date().toISOString(), updated_by: context.userId })
+      .update({ ...(data as Record<string, unknown>), updated_at: new Date().toISOString(), updated_by: context.userId } as never)
       .eq("id", 1);
     if (error) throw error;
     await writeAudit({
