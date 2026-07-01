@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Sparkles, Eye, MousePointerClick, CalendarCheck, TrendingUp, Crown, X } from "lucide-react";
 import { listFeaturedPlans, subscribeToPlan, myActiveSubscriptions, cancelSubscription, adsAnalyticsForProvider } from "@/lib/livvo/ads.functions";
 import { toast } from "sonner";
+import { FirstVisitTip } from "@/components/livvo/first-visit-tip";
 
 export const Route = createFileRoute("/_authenticated/pro/impulsionar")({
   component: Impulsionar,

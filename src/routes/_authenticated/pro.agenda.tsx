@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { FirstVisitTip } from "@/components/livvo/first-visit-tip";
 import { AppointmentActions, isPending, type ApptForActions } from "@/components/livvo/appointment-actions";
 import { AppointmentTimelineDialog } from "@/components/livvo/appointment-timeline";
 import { StatusBadge } from "@/components/livvo/status-badge";
