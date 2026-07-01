@@ -215,6 +215,18 @@ function ProHome() {
         </p>
       </section>
 
+      {/* MARKETING SHORTCUT */}
+      <Link to="/pro/marketing" className="livvo-card livvo-card-hover p-4 flex items-center gap-3 bg-gradient-to-br from-primary/5 to-transparent border-primary/20">
+        <div className="size-10 rounded-xl bg-primary text-primary-foreground grid place-items-center shrink-0">
+          <Sparkles className="size-5" />
+        </div>
+        <div className="min-w-0 flex-1">
+          <p className="text-sm font-bold">Centro de Crescimento</p>
+          <p className="text-[11px] text-muted-foreground leading-snug">Página pública, kit de divulgação, perfil 100% e recomendações.</p>
+        </div>
+        <ChevronRight className="size-4 text-primary shrink-0" />
+      </Link>
+
       {/* VISÃO COMERCIAL */}
       <section>
         <div className="flex items-end justify-between mb-3 gap-3 flex-wrap">
