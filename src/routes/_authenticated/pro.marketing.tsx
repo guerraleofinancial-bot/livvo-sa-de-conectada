@@ -17,7 +17,7 @@ import { toast } from "sonner";
 import {
   Megaphone, Link as LinkIcon, Package, CheckCircle2, TrendingUp, BarChart3,
   Gift, FileBarChart, Copy, ExternalLink, ArrowRight, Sparkles, Trophy,
-  QrCode as QrIcon, Circle, ChevronRight, Info,
+  QrCode as QrIcon, Circle, ChevronRight, Info, Smartphone, RefreshCw, Eye, Pencil,
 } from "lucide-react";
 import { computeProfessionalCompleteness } from "@/lib/livvo/profile-completeness";
 import { computeMilestones, computeRecommendations } from "@/lib/livvo/growth-recommendations";
@@ -201,7 +201,7 @@ function MarketingHub() {
 
         {/* ============ PÁGINA PÚBLICA ============ */}
         <TabsContent value="pagina" className="space-y-4 mt-4">
-          <MyPublicPageCard
+          <PageEditorWithPreview
             publicUrl={publicUrl}
             previewUrl={previewUrl}
             slugDraft={slugDraft}
@@ -450,6 +450,128 @@ function MyPublicPageCard({
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+type PageEditorProps = {
+  publicUrl: string | null;
+  previewUrl: string | null;
+  slugDraft: string;
+  setSlugDraft: (v: string) => void;
+  slugValid: boolean;
+  savingSlug: boolean;
+  saveSlug: () => void | Promise<void>;
+  currentSlug?: string | null;
+  proName?: string;
+};
+
+function PageEditorWithPreview(props: PageEditorProps) {
+  const [mobileView, setMobileView] = useState<"editar" | "previa">("editar");
+  return (
+    <div className="space-y-3">
+      {/* Mobile toggle */}
+      <div className="lg:hidden inline-flex rounded-full border border-border bg-card p-0.5 text-xs">
+        <button
+          type="button"
+          onClick={() => setMobileView("editar")}
+          className={`px-3 py-1.5 rounded-full font-semibold inline-flex items-center gap-1.5 transition-colors ${mobileView === "editar" ? "bg-primary text-primary-foreground" : "text-muted-foreground"}`}
+        >
+          <Pencil className="size-3" /> Editar
+        </button>
+        <button
+          type="button"
+          onClick={() => setMobileView("previa")}
+          className={`px-3 py-1.5 rounded-full font-semibold inline-flex items-center gap-1.5 transition-colors ${mobileView === "previa" ? "bg-primary text-primary-foreground" : "text-muted-foreground"}`}
+        >
+          <Eye className="size-3" /> Prévia
+        </button>
+      </div>
+
+      <div className="grid lg:grid-cols-2 gap-4 items-start">
+        <div className={mobileView === "editar" ? "block" : "hidden lg:block"}>
+          <MyPublicPageCard {...props} />
+        </div>
+        <div className={mobileView === "previa" ? "block lg:sticky lg:top-4" : "hidden lg:block lg:sticky lg:top-4"}>
+          <LivePreviewPanel url={props.previewUrl} slugValid={props.slugValid} />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function LivePreviewPanel({ url, slugValid }: { url: string | null; slugValid: boolean }) {
+  const [key, setKey] = useState(0);
+  const [loading, setLoading] = useState(true);
+  useEffect(() => { setLoading(true); setKey((k) => k + 1); }, [url]);
+
+  // auto-refresh when tab regains focus (user came back from editing profile/hours)
+  useEffect(() => {
+    const onFocus = () => setKey((k) => k + 1);
+    window.addEventListener("focus", onFocus);
+    return () => window.removeEventListener("focus", onFocus);
+  }, []);
+
+  if (!url || !slugValid) {
+    return (
+      <div className="livvo-card p-4">
+        <p className="text-sm font-bold flex items-center gap-1.5"><Eye className="size-4 text-primary" /> Prévia em tempo real</p>
+        <p className="text-xs text-muted-foreground mt-2">
+          A prévia será exibida assim que o link estiver válido.
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="livvo-card p-4 space-y-3">
+      <div className="flex items-center justify-between gap-2 flex-wrap">
+        <div className="min-w-0">
+          <p className="text-sm font-bold flex items-center gap-1.5"><Eye className="size-4 text-primary" /> Prévia em tempo real</p>
+          <p className="text-[11px] text-muted-foreground leading-snug">Exatamente como o paciente vê seu perfil.</p>
+        </div>
+        <div className="flex items-center gap-1">
+          <Button size="sm" variant="outline" className="h-8 px-2 text-[11px]" onClick={() => { setLoading(true); setKey((k) => k + 1); }}>
+            <RefreshCw className="size-3 mr-1" /> Atualizar
+          </Button>
+          <Button size="sm" variant="outline" className="h-8 px-2 text-[11px]" asChild>
+            <a href={url} target="_blank" rel="noopener noreferrer" aria-label="Abrir em nova aba">
+              <ExternalLink className="size-3" />
+            </a>
+          </Button>
+        </div>
+      </div>
+
+      {/* Phone frame */}
+      <div className="mx-auto w-full max-w-[340px]">
+        <div className="relative rounded-[2rem] border-8 border-foreground/85 bg-foreground/85 shadow-xl overflow-hidden">
+          <div className="absolute top-0 inset-x-0 h-5 flex justify-center pointer-events-none z-10">
+            <div className="mt-1 h-3 w-20 rounded-full bg-background/20 flex items-center justify-center">
+              <Smartphone className="size-2.5 text-background/60" />
+            </div>
+          </div>
+          <div className="relative bg-background rounded-[1.35rem] overflow-hidden" style={{ aspectRatio: "9 / 19.5" }}>
+            {loading && (
+              <div className="absolute inset-0 bg-muted/30 grid place-items-center z-[1]">
+                <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <RefreshCw className="size-3 animate-spin" /> Carregando prévia…
+                </div>
+              </div>
+            )}
+            <iframe
+              key={key}
+              src={url}
+              title="Prévia da página pública"
+              className="w-full h-full border-0 block"
+              onLoad={() => setLoading(false)}
+              loading="lazy"
+            />
+          </div>
+        </div>
+        <p className="text-[10px] text-muted-foreground text-center mt-2 leading-snug">
+          Dica: edite foto, biografia ou horários em outras telas e volte aqui — a prévia atualiza sozinha.
+        </p>
+      </div>
     </div>
   );
 }
