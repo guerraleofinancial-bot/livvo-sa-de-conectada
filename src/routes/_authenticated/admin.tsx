@@ -14,7 +14,9 @@ import { toast } from "sonner";
 import { AdminGrowthCharts } from "@/components/livvo/admin/AdminGrowthCharts";
 import { SettingsCenter } from "@/components/livvo/admin/SettingsCenter";
 import { AuditLogsTab } from "@/components/livvo/admin/AuditLogsTab";
-import { FileText } from "lucide-react";
+import { MultiRoleAccountsTab } from "@/components/livvo/admin/MultiRoleAccountsTab";
+import { FileText, UsersRound } from "lucide-react";
+
 
 export const Route = createFileRoute("/_authenticated/admin")({
   beforeLoad: async () => {
@@ -30,7 +32,7 @@ export const Route = createFileRoute("/_authenticated/admin")({
   component: AdminPanel,
 });
 
-type Tab = "overview" | "pros" | "companies" | "finance" | "ads" | "reviews" | "users" | "settings" | "audit";
+type Tab = "overview" | "pros" | "companies" | "finance" | "ads" | "reviews" | "users" | "identidades" | "settings" | "audit";
 
 function AdminPanel() {
   const { isAdmin, loading } = useAuth();
@@ -148,8 +150,10 @@ function AdminPanel() {
     { id: "ads", label: "Anúncios & Receita", icon: Sparkles },
     { id: "reviews", label: "Avaliações", icon: MessageSquareWarning },
     { id: "users", label: "Usuários", icon: Users },
+    { id: "identidades", label: "Identidades", icon: UsersRound },
     { id: "settings", label: "Configurações", icon: Percent },
     { id: "audit", label: "Auditoria", icon: FileText },
+
   ];
 
   return (
@@ -401,12 +405,20 @@ function AdminPanel() {
           </section>
         )}
 
+        {tab === "identidades" && (
+          <section className="space-y-4">
+            <h2 className="text-sm font-bold">Contas com múltiplos papéis</h2>
+            <MultiRoleAccountsTab />
+          </section>
+        )}
+
         {tab === "audit" && (
           <section className="space-y-4">
             <h2 className="text-sm font-bold">Logs de auditoria</h2>
             <AuditLogsTab />
           </section>
         )}
+
       </main>
     </div>
   );
