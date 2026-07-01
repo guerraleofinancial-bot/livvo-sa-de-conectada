@@ -50,10 +50,14 @@
 
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  --font-display: "Inter", ui-sans-serif, system-ui, sans-serif;
 
   --shadow-card: 0 1px 2px 0 hsl(215 25% 15% / 0.04),
     0 1px 3px 0 hsl(215 25% 15% / 0.06);
-  --shadow-elevated: 0 10px 30px -10px hsl(173 80% 30% / 0.18);
+  --shadow-soft: 0 1px 2px hsl(215 25% 15% / 0.04), 0 2px 6px hsl(215 25% 15% / 0.04);
+  --shadow-lifted: 0 4px 10px -2px hsl(215 25% 15% / 0.06), 0 10px 24px -6px hsl(215 25% 15% / 0.08);
+  --shadow-elevated: 0 10px 30px -10px hsl(173 80% 30% / 0.20);
+  --shadow-hero: 0 24px 60px -20px hsl(173 80% 25% / 0.28);
   --shadow-glow: 0 0 0 6px hsl(173 80% 40% / 0.10);
 }
 
@@ -174,15 +178,18 @@
 
 @utility livvo-card {
   @apply rounded-2xl bg-card border border-border/70;
-  box-shadow: 0 1px 2px hsl(220 15% 20% / 0.04);
+  box-shadow: var(--shadow-soft);
 }
 @utility livvo-card-hover {
   @apply transition-all duration-200;
   &:hover {
-    box-shadow: var(--shadow-elevated);
-    transform: translateY(-1px);
-    border-color: color-mix(in oklab, var(--primary) 30%, var(--border));
+    box-shadow: var(--shadow-lifted);
+    transform: translateY(-2px);
+    border-color: color-mix(in oklab, var(--primary) 32%, var(--border));
   }
+}
+@utility livvo-card-flat {
+  @apply rounded-2xl bg-card border border-border/70;
 }
 @utility livvo-shimmer {
   background: linear-gradient(90deg,
@@ -195,5 +202,71 @@
 @keyframes livvo-shimmer {
   0% { background-position: 200% 0; }
   100% { background-position: -200% 0; }
+}
+
+/* Premium primitives — chips, headings, skeletons */
+@utility livvo-chip {
+  @apply inline-flex items-center gap-1 rounded-full border border-border bg-card px-2.5 py-1 text-[11px] font-semibold text-muted-foreground;
+}
+@utility livvo-chip-primary {
+  @apply inline-flex items-center gap-1 rounded-full border border-transparent bg-primary-soft px-2.5 py-1 text-[11px] font-semibold text-primary;
+}
+@utility livvo-chip-health {
+  @apply inline-flex items-center gap-1 rounded-full border border-transparent bg-health-soft px-2.5 py-1 text-[11px] font-semibold text-health;
+}
+@utility livvo-chip-sponsored {
+  @apply inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide;
+  background: linear-gradient(135deg, hsl(45 95% 92%), hsl(38 95% 88%));
+  color: hsl(28 60% 30%);
+  border: 1px solid hsl(38 90% 80%);
+}
+@utility livvo-eyebrow {
+  @apply text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground;
+}
+@utility livvo-h1 {
+  @apply text-2xl font-semibold tracking-[-0.02em] text-foreground sm:text-[28px];
+}
+@utility livvo-h2 {
+  @apply text-lg font-semibold tracking-[-0.01em] text-foreground sm:text-xl;
+}
+@utility livvo-subtle {
+  @apply text-sm text-muted-foreground;
+}
+@utility livvo-skeleton {
+  @apply rounded-xl bg-muted/70;
+  position: relative;
+  overflow: hidden;
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, color-mix(in oklab, var(--card) 70%, transparent), transparent);
+    transform: translateX(-100%);
+    animation: livvo-skeleton-shine 1.6s ease-in-out infinite;
+  }
+}
+@keyframes livvo-skeleton-shine {
+  100% { transform: translateX(100%); }
+}
+@utility livvo-focus-ring {
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--primary) 35%, transparent);
+  }
+}
+@utility livvo-hero-gradient {
+  background:
+    radial-gradient(120% 90% at 100% 0%, color-mix(in oklab, var(--primary) 12%, transparent), transparent 60%),
+    radial-gradient(120% 90% at 0% 100%, color-mix(in oklab, var(--health) 10%, transparent), transparent 60%),
+    var(--card);
+}
+@utility livvo-hero-primary {
+  background:
+    radial-gradient(120% 90% at 100% 0%, color-mix(in oklab, white 22%, var(--primary)), transparent 60%),
+    linear-gradient(135deg, var(--primary), color-mix(in oklab, var(--primary) 60%, hsl(173 60% 25%)));
+  color: var(--primary-foreground);
+}
+@utility livvo-divider {
+  @apply h-px w-full bg-border/70;
 }
 

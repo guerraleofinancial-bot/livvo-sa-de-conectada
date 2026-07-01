@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { Bell, Search, HeartPulse, Baby, Sparkles, Brain, Stethoscope, Flower, Bone, Apple, Eye, BrainCircuit } from "lucide-react";
 import { useEffect } from "react";
+import { ProfessionalCard, ProfessionalCardSkeleton } from "@/components/livvo/ProfessionalCard";
 
 export const Route = createFileRoute("/_authenticated/app/")({
   component: PatientHome,
@@ -60,12 +61,12 @@ function PatientHome() {
     },
   });
 
-  const { data: pros } = useQuery({
+  const { data: pros, isLoading: prosLoading } = useQuery({
     queryKey: ["pros-near"],
     queryFn: async () => {
       const { data } = await supabase
         .from("professionals")
-        .select("id, consultation_price, rating_average, address_city, profiles:profiles!professionals_profile_fkey(full_name, avatar_url), specialties(name)")
+        .select("id, consultation_price, rating_average, rating_count, address_city, address_state, council, council_number, council_state, council_verified_at, profiles:profiles!professionals_profile_fkey(full_name, avatar_url), specialties(name)")
         .eq("status", "aprovado")
         .order("rating_average", { ascending: false })
         .limit(5);
@@ -170,49 +171,41 @@ function PatientHome() {
 
       {/* Pros near you */}
       <section className="livvo-slide-up">
-        <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-sm font-bold">Profissionais bem avaliados</h2>
-          <Link to="/app/buscar" className="text-xs font-semibold text-primary">Ver todos</Link>
+        <div className="mb-4 flex items-end justify-between">
+          <div>
+            <p className="livvo-eyebrow">Recomendados</p>
+            <h2 className="livvo-h2 mt-0.5">Profissionais bem avaliados</h2>
+          </div>
+          <Link to="/app/buscar" className="text-xs font-semibold text-primary hover:underline">Ver todos</Link>
         </div>
         <div className="space-y-3">
-          {(pros ?? []).map((row) => {
+          {prosLoading && Array.from({ length: 3 }).map((_, i) => <ProfessionalCardSkeleton key={i} variant="compact" />)}
+          {!prosLoading && (pros ?? []).map((row) => {
             const p = row as typeof row & { profiles: { full_name?: string; avatar_url?: string } | null; specialties: { name?: string } | null };
             return (
-            <Link
-              key={p.id}
-              to="/app/profissional/$id"
-              params={{ id: p.id }}
-              className="block p-4 bg-card border border-border rounded-2xl shadow-sm hover:border-primary/30 transition-colors"
-            >
-              <div className="flex gap-4">
-                <div className="size-16 rounded-full bg-primary-soft shrink-0 grid place-items-center text-primary font-bold border border-border overflow-hidden">
-                  {p.profiles?.avatar_url ? <img src={p.profiles.avatar_url} className="size-full object-cover" alt="" /> : (p.profiles?.full_name ?? "?").charAt(0)}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex justify-between items-start gap-2">
-                    <div className="min-w-0">
-                      <h3 className="text-sm font-semibold truncate">{p.profiles?.full_name}</h3>
-                      <p className="text-xs text-muted-foreground truncate">{p.specialties?.name}</p>
-                    </div>
-                    <div className="flex items-center gap-1 text-xs font-semibold text-amber-500 shrink-0">
-                      <span>★</span> {Number(p.rating_average).toFixed(1)}
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-between mt-3">
-                    <div className="font-mono text-[11px] text-muted-foreground flex gap-3">
-                      <span>{p.address_city ?? "—"}</span>
-                      <span className="text-foreground font-bold">R$ {Number(p.consultation_price).toFixed(0)}</span>
-                    </div>
-                    <div className="px-3 py-1.5 bg-health text-white text-[11px] font-bold rounded-lg shadow-sm shadow-health/20">
-                      Agendar
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </Link>
+              <ProfessionalCard
+                key={p.id}
+                variant="compact"
+                data={{
+                  id: p.id,
+                  fullName: p.profiles?.full_name ?? null,
+                  avatarUrl: p.profiles?.avatar_url ?? null,
+                  specialty: p.specialties?.name ?? null,
+                  city: p.address_city,
+                  state: p.address_state,
+                  price: p.consultation_price,
+                  rating: p.rating_average,
+                  ratingCount: p.rating_count ?? 0,
+                  council: p.council,
+                  councilNumber: p.council_number,
+                  councilState: p.council_state,
+                  isVerified: !!p.council_verified_at,
+                  agendaOpen: !!p.council_verified_at,
+                }}
+              />
             );
           })}
-          {pros && pros.length === 0 && (
+          {!prosLoading && pros && pros.length === 0 && (
             <div className="rounded-2xl border border-dashed border-border p-8 text-center text-sm text-muted-foreground">
               Nenhum profissional disponível ainda.
             </div>
