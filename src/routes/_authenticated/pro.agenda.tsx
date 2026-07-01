@@ -442,6 +442,13 @@ function Agenda() {
           </section>
         </TabsContent>
       </Tabs>
+
+      <AppointmentTimelineDialog
+        appointmentId={timelineId}
+        open={!!timelineId}
+        onOpenChange={(v) => { if (!v) setTimelineId(null); }}
+      />
     </div>
   );
 }
+
