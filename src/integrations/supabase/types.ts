@@ -1851,6 +1851,7 @@ export type Database = {
           id: number
           refund_policy: string
           release_after_days: number
+          single_role_enforced_at: string
           updated_at: string
           updated_by: string | null
         }
@@ -1862,6 +1863,7 @@ export type Database = {
           id?: number
           refund_policy?: string
           release_after_days?: number
+          single_role_enforced_at?: string
           updated_at?: string
           updated_by?: string | null
         }
@@ -1873,6 +1875,7 @@ export type Database = {
           id?: number
           refund_policy?: string
           release_after_days?: number
+          single_role_enforced_at?: string
           updated_at?: string
           updated_by?: string | null
         }
@@ -2268,6 +2271,7 @@ export type Database = {
           gender: Database["public"]["Enums"]["gender_type"] | null
           id: string
           phone: string | null
+          role_exception: boolean
           state: string | null
           suspended: boolean
           updated_at: string
@@ -2282,6 +2286,7 @@ export type Database = {
           gender?: Database["public"]["Enums"]["gender_type"] | null
           id: string
           phone?: string | null
+          role_exception?: boolean
           state?: string | null
           suspended?: boolean
           updated_at?: string
@@ -2296,6 +2301,7 @@ export type Database = {
           gender?: Database["public"]["Enums"]["gender_type"] | null
           id?: string
           phone?: string | null
+          role_exception?: boolean
           state?: string | null
           suspended?: boolean
           updated_at?: string
@@ -3006,6 +3012,22 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_multi_role_accounts: {
+        Args: never
+        Returns: {
+          created_at: string
+          email: string
+          full_name: string
+          last_sign_in_at: string
+          role_exception: boolean
+          roles: Database["public"]["Enums"]["app_role"][]
+          user_id: string
+        }[]
+      }
+      admin_set_role_exception: {
+        Args: { _flag: boolean; _user_id: string }
+        Returns: boolean
+      }
       ads_revenue_summary: {
         Args: { _from: string; _to: string }
         Returns: {
