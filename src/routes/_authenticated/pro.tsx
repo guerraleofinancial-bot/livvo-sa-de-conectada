@@ -28,8 +28,8 @@ function ProLayout() {
   if (!isProfessional && !isCompany && !isAdmin) return null;
 
   return (
-    <div className="min-h-screen bg-surface pb-24">
-      <div className="mx-auto max-w-md">
+    <div className="min-h-screen bg-surface pb-24 md:pb-10">
+      <div className="mx-auto w-full max-w-6xl px-4 md:px-8">
         <ProHeader />
         <Outlet />
       </div>
