@@ -1,144 +1,131 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, Outlet, useNavigate, useRouterState } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { useServerFn } from "@tanstack/react-start";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useState, type FormEvent } from "react";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
-import { Search as SearchIcon, ArrowLeft, SlidersHorizontal, Sparkles, MapPin, X } from "lucide-react";
+import {
+  Search as SearchIcon,
+  ArrowLeft,
+  SlidersHorizontal,
+  MapPin,
+  X,
+  Stethoscope,
+  Building2,
+  FlaskConical,
+  ClipboardList,
+  LayoutGrid,
+} from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { ProfessionalCard, ProfessionalCardSkeleton, type ProfessionalCardData } from "@/components/livvo/ProfessionalCard";
-import { CompanyCard } from "@/components/livvo/CompanyCard";
 import { HorizontalScroller } from "@/components/livvo/ui";
-import { trackAdEvent } from "@/lib/livvo/ads.functions";
 
 const searchSchema = z.object({
-  specialty: z.string().optional(),
+  spec: z.string().optional(),
   q: z.string().optional(),
+  city: z.string().optional(),
+  uf: z.string().optional(),
+  // legacy
+  specialty: z.string().optional(),
 });
 
 export const Route = createFileRoute("/_authenticated/app/buscar")({
   validateSearch: searchSchema,
-  component: Buscar,
+  component: BuscarLayout,
 });
 
-type Ranked = {
-  professional_id: string;
-  full_name: string;
-  avatar_url: string | null;
-  specialty_name: string | null;
-  specialty_slug: string | null;
-  address_city: string | null;
-  address_state: string | null;
-  consultation_price: number;
-  rating_average: number;
-  rating_count: number;
-  is_premium: boolean;
-  rank_group: number;
-  subscription_id: string | null;
-  council: string | null;
-  council_number: string | null;
-  council_state: string | null;
-  is_verified: boolean;
-};
+const TABS = [
+  { to: "/app/buscar", label: "Todos", icon: LayoutGrid, exact: true },
+  { to: "/app/buscar/profissionais", label: "Profissionais", icon: Stethoscope, exact: false },
+  { to: "/app/buscar/clinicas", label: "Clínicas", icon: Building2, exact: false },
+  { to: "/app/buscar/laboratorios", label: "Laboratórios", icon: FlaskConical, exact: false },
+  { to: "/app/buscar/exames", label: "Exames", icon: ClipboardList, exact: false },
+] as const;
 
-function toCardData(r: Ranked, sponsoredLabel?: string): ProfessionalCardData {
-  return {
-    id: r.professional_id,
-    fullName: r.full_name,
-    avatarUrl: r.avatar_url,
-    specialty: r.specialty_name,
-    city: r.address_city,
-    state: r.address_state,
-    price: r.consultation_price,
-    rating: r.rating_average,
-    ratingCount: r.rating_count,
-    council: r.council,
-    councilNumber: r.council_number,
-    councilState: r.council_state,
-    isVerified: r.is_verified,
-    isPremium: r.is_premium,
-    isSponsored: r.rank_group < 4,
-    sponsoredLabel,
-    agendaOpen: r.is_verified,
-  };
-}
+// Palavras-chave para busca inteligente na aba "Todos"
+const KEYWORD_ROUTES: Array<{ patterns: RegExp; to: (typeof TABS)[number]["to"] }> = [
+  { patterns: /hospital|cl[ií]nica|centro m[eé]dico|policl[ií]nica|ambulat[oó]rio/i, to: "/app/buscar/clinicas" },
+  { patterns: /laborat[oó]rio|diagn[oó]stico|coleta|imagem|raio.?x|ressonancia|ressonância|tomografia|ultrassom/i, to: "/app/buscar/laboratorios" },
+  { patterns: /hemograma|exame|glicose|colesterol|urina|sangue|hormônio|hormonio|tsh|pcr|covid/i, to: "/app/buscar/exames" },
+];
 
-function Buscar() {
-  const { specialty: initialSpec, q: initialQ } = Route.useSearch();
-  const [q, setQ] = useState(initialQ ?? "");
-  const [specSlug, setSpecSlug] = useState<string | undefined>(initialSpec);
-  const [city, setCity] = useState("");
-  const [state, setState] = useState("");
+function BuscarLayout() {
+  const raw = Route.useSearch();
+  const navigate = useNavigate();
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+
+  // aceita ?specialty= legado
+  const specSlug = raw.spec ?? raw.specialty;
+  const [q, setQ] = useState(raw.q ?? "");
+  const [city, setCity] = useState(raw.city ?? "");
+  const [uf, setUf] = useState(raw.uf ?? "");
   const [showFilters, setShowFilters] = useState(false);
-  const trackEvent = useServerFn(trackAdEvent);
 
   const { data: specs } = useQuery({
     queryKey: ["specialties"],
     queryFn: async () => (await supabase.from("specialties").select("*").order("name")).data ?? [],
   });
 
-  const { data: ranked, isLoading } = useQuery<Ranked[]>({
-    queryKey: ["search-ranked", q, specSlug, city, state],
-    queryFn: async () => {
-      const { data, error } = await supabase.rpc("search_providers_ranked", {
-        _state: state.trim() || undefined,
-        _city: city.trim() || undefined,
-        _specialty_slug: specSlug ?? undefined,
-        _q: q.trim() || undefined,
-        _limit: 50,
-      });
-      if (error) throw error;
-      return (data ?? []) as Ranked[];
-    },
-  });
+  const activeFilters = useMemo(
+    () =>
+      [
+        specSlug && (specs ?? []).find((s) => s.slug === specSlug)?.name,
+        city && `Cidade: ${city}`,
+        uf && `UF: ${uf}`,
+      ].filter(Boolean) as string[],
+    [specSlug, city, uf, specs]
+  );
 
-  const fired = useRef(new Set<string>());
-  useEffect(() => {
-    (ranked ?? []).forEach((r) => {
-      if (r.rank_group < 4 && r.subscription_id && !fired.current.has(r.subscription_id)) {
-        fired.current.add(r.subscription_id);
-        trackEvent({ data: { subscriptionId: r.subscription_id, targetType: "professional", targetId: r.professional_id, kind: "impression", context: { q, city, state, specialty: specSlug } } }).catch(() => {});
-      }
-    });
-  }, [ranked, trackEvent, q, city, state, specSlug]);
+  const currentTab = TABS.find((t) => (t.exact ? pathname === t.to : pathname.startsWith(t.to))) ?? TABS[0];
+  const isTodos = currentTab.to === "/app/buscar";
 
-  function onSponsoredClick(r: Ranked) {
-    if (r.rank_group < 4 && r.subscription_id) {
-      trackEvent({ data: { subscriptionId: r.subscription_id, targetType: "professional", targetId: r.professional_id, kind: "click", context: { q, city, state, specialty: specSlug } } }).catch(() => {});
+  function applySearch(nextQ: string) {
+    // Busca inteligente: se estiver em "Todos" e o texto casar com uma categoria,
+    // redireciona para a aba mais relevante.
+    let targetTab: (typeof TABS)[number]["to"] = currentTab.to;
+    if (isTodos && nextQ.trim()) {
+      const hit = KEYWORD_ROUTES.find((k) => k.patterns.test(nextQ));
+      if (hit) targetTab = hit.to;
     }
+    navigate({
+      to: targetTab,
+      search: {
+        q: nextQ.trim() || undefined,
+        spec: specSlug || undefined,
+        city: city.trim() || undefined,
+        uf: uf.trim().toUpperCase() || undefined,
+      },
+    });
   }
 
-  const groups = useMemo(() => [
-    { title: "Patrocinado", label: "Patrocinado", rank: 1, sponsored: true },
-    { title: "Em destaque na sua região", label: "Destaque regional", rank: 2, sponsored: true },
-    { title: "Em destaque na categoria", label: "Destaque de categoria", rank: 3, sponsored: true },
-    { title: "Profissionais", label: undefined, rank: 4, sponsored: false },
-  ].map((g) => ({ ...g, items: (ranked ?? []).filter((r) => r.rank_group === g.rank) })), [ranked]);
+  function onSubmit(e: FormEvent) {
+    e.preventDefault();
+    applySearch(q);
+  }
 
-  const { data: companies } = useQuery({
-    queryKey: ["search-companies", q, city],
-    queryFn: async () => {
-      let query = supabase.from("companies").select("id, legal_name, trade_name, type, address_city, address_state, logo_url").eq("status", "aprovado");
-      if (city.trim()) query = query.ilike("address_city", `%${city}%`);
-      if (q.trim()) query = query.or(`legal_name.ilike.%${q}%,trade_name.ilike.%${q}%`);
-      return (await query.limit(15)).data ?? [];
-    },
-  });
+  function updateSpec(slug: string | undefined) {
+    navigate({
+      to: currentTab.to,
+      search: {
+        q: q.trim() || undefined,
+        spec: slug,
+        city: city.trim() || undefined,
+        uf: uf.trim().toUpperCase() || undefined,
+      },
+    });
+  }
 
-  const activeFilters = [
-    specSlug && (specs ?? []).find((s) => s.slug === specSlug)?.name,
-    city && `Cidade: ${city}`,
-    state && `UF: ${state}`,
-  ].filter(Boolean) as string[];
-
-  const totalCount = ranked?.length ?? 0;
+  function clearAll() {
+    setQ("");
+    setCity("");
+    setUf("");
+    navigate({ to: currentTab.to, search: {} });
+  }
 
   return (
     <div className="pb-16 livvo-fade-in">
-      {/* Hero — full-bleed com container interno para largura útil em desktop */}
+      {/* Hero */}
       <header className="livvo-hero-gradient border-b border-border/60 rounded-b-[28px] md:rounded-b-[40px]">
-        <div className="mx-auto w-full max-w-6xl px-5 md:px-8 pt-10 md:pt-14 pb-7 md:pb-10">
-          <div className="mb-5 flex items-center justify-between">
+        <div className="mx-auto w-full max-w-6xl px-5 md:px-8 pt-8 md:pt-12 pb-5 md:pb-8">
+          <div className="mb-4 flex items-center justify-between">
             <Link
               to="/app"
               className="inline-flex size-10 items-center justify-center rounded-full border border-border bg-card/80 backdrop-blur hover:border-primary/40 transition-colors"
@@ -150,21 +137,22 @@ function Buscar() {
           </div>
 
           <div className="max-w-3xl">
-            <h1 className="livvo-h1 md:text-[38px] md:leading-[1.1]">Encontre o profissional certo</h1>
+            <h1 className="livvo-h1 md:text-[38px] md:leading-[1.1]">O que você procura?</h1>
             <p className="livvo-subtle mt-2 md:text-base">
-              Especialidades, clínicas e laboratórios verificados — perto de você, com agenda aberta.
+              Profissionais, clínicas, laboratórios e exames verificados — perto de você.
             </p>
           </div>
 
-          <div className="relative mt-6 md:mt-8 max-w-3xl">
+          <form onSubmit={onSubmit} className="relative mt-5 md:mt-7 max-w-3xl">
             <SearchIcon className="pointer-events-none absolute left-4 md:left-5 top-1/2 -translate-y-1/2 size-4 md:size-5 text-muted-foreground" />
             <Input
               value={q}
               onChange={(e) => setQ(e.target.value)}
-              placeholder="Nome, especialidade, clínica ou exame"
+              placeholder="Cardiologista, Clínica Vida, laboratório, hemograma..."
               className="h-12 md:h-14 pl-11 md:pl-14 pr-14 md:pr-16 rounded-2xl bg-card border-border/70 shadow-[0_6px_24px_-10px_rgba(0,0,0,0.15)] text-[15px] md:text-base placeholder:text-muted-foreground/80"
             />
             <button
+              type="button"
               onClick={() => setShowFilters(!showFilters)}
               aria-label="Abrir filtros"
               className={`absolute right-2 md:right-2.5 top-1/2 -translate-y-1/2 grid size-9 md:size-10 place-items-center rounded-xl transition-all ${
@@ -175,21 +163,15 @@ function Buscar() {
             >
               <SlidersHorizontal className="size-4" />
             </button>
-          </div>
+          </form>
 
           {activeFilters.length > 0 && (
-            <div className="mt-4 flex flex-wrap gap-1.5 max-w-3xl">
+            <div className="mt-3 flex flex-wrap gap-1.5 max-w-3xl">
               {activeFilters.map((f) => (
-                <span key={f} className="livvo-chip-primary">
-                  {f}
-                </span>
+                <span key={f} className="livvo-chip-primary">{f}</span>
               ))}
               <button
-                onClick={() => {
-                  setSpecSlug(undefined);
-                  setCity("");
-                  setState("");
-                }}
+                onClick={clearAll}
                 className="inline-flex items-center gap-1 rounded-full border border-border bg-card px-2.5 py-1 text-[11px] font-semibold text-muted-foreground hover:text-foreground"
               >
                 <X className="size-3" /> Limpar
@@ -197,6 +179,41 @@ function Buscar() {
             </div>
           )}
         </div>
+
+        {/* Tabs */}
+        <nav
+          aria-label="Categorias de busca"
+          className="mx-auto w-full max-w-6xl px-5 md:px-8"
+        >
+          <div className="-mx-5 md:-mx-8 px-5 md:px-8 pb-4 md:pb-5 overflow-x-auto scrollbar-hide">
+            <div className="inline-flex items-center gap-1.5 rounded-2xl border border-border/60 bg-card/70 backdrop-blur p-1 shadow-[var(--shadow-soft)]">
+              {TABS.map((t) => {
+                const Icon = t.icon;
+                const active = currentTab.to === t.to;
+                return (
+                  <Link
+                    key={t.to}
+                    to={t.to}
+                    search={{
+                      q: q.trim() || undefined,
+                      spec: specSlug || undefined,
+                      city: city.trim() || undefined,
+                      uf: uf.trim().toUpperCase() || undefined,
+                    }}
+                    className={`inline-flex items-center gap-1.5 rounded-xl px-3 md:px-4 h-9 md:h-10 text-xs md:text-sm font-semibold transition-all whitespace-nowrap ${
+                      active
+                        ? "bg-foreground text-background shadow-sm"
+                        : "text-muted-foreground hover:text-foreground hover:bg-background/60"
+                    }`}
+                  >
+                    <Icon className="size-3.5 md:size-4" />
+                    {t.label}
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        </nav>
       </header>
 
       <div className="mx-auto w-full max-w-6xl px-5 md:px-8 pt-6 md:pt-8 space-y-8 md:space-y-10">
@@ -207,8 +224,9 @@ function Buscar() {
               <div>
                 <label className="text-[11px] font-semibold text-muted-foreground">UF</label>
                 <Input
-                  value={state}
-                  onChange={(e) => setState(e.target.value.toUpperCase())}
+                  value={uf}
+                  onChange={(e) => setUf(e.target.value.toUpperCase())}
+                  onBlur={() => applySearch(q)}
                   placeholder="MA"
                   maxLength={2}
                   className="h-10"
@@ -221,6 +239,7 @@ function Buscar() {
                   <Input
                     value={city}
                     onChange={(e) => setCity(e.target.value)}
+                    onBlur={() => applySearch(q)}
                     placeholder="São Luís"
                     className="h-10 pl-8"
                   />
@@ -230,155 +249,43 @@ function Buscar() {
           </div>
         )}
 
-        {/* Chips de especialidades */}
-        <section aria-label="Especialidades">
-          <HorizontalScroller snap="center" showArrows ariaLabel="Especialidades">
-            <button
-              data-active={!specSlug || undefined}
-              onClick={() => setSpecSlug(undefined)}
-              className={`rounded-full border px-4 py-2 text-xs font-semibold transition-all ${
-                !specSlug
-                  ? "bg-foreground text-background border-foreground shadow-sm"
-                  : "bg-card border-border text-muted-foreground hover:border-primary/40 hover:text-foreground"
-              }`}
-            >
-              Todas
-            </button>
-            {(specs ?? []).map((s) => (
+        {/* Chips de especialidades (contextual: profissionais e clínicas) */}
+        {(currentTab.to === "/app/buscar" ||
+          currentTab.to === "/app/buscar/profissionais" ||
+          currentTab.to === "/app/buscar/clinicas") && (
+          <section aria-label="Especialidades">
+            <HorizontalScroller snap="center" showArrows ariaLabel="Especialidades">
               <button
-                key={s.id}
-                data-active={specSlug === s.slug || undefined}
-                onClick={() => setSpecSlug(s.slug)}
+                data-active={!specSlug || undefined}
+                onClick={() => updateSpec(undefined)}
                 className={`rounded-full border px-4 py-2 text-xs font-semibold transition-all ${
-                  specSlug === s.slug
+                  !specSlug
                     ? "bg-foreground text-background border-foreground shadow-sm"
                     : "bg-card border-border text-muted-foreground hover:border-primary/40 hover:text-foreground"
                 }`}
               >
-                {s.name}
+                Todas
               </button>
-            ))}
-          </HorizontalScroller>
-        </section>
-
-        {/* Companies rail */}
-        {companies && companies.length > 0 && (
-          <section className="rounded-3xl border border-border/60 bg-card/40 px-5 py-5 md:px-6 md:py-6 shadow-[var(--shadow-soft)]">
-            <SectionHeader eyebrow="Estabelecimentos" title="Clínicas & laboratórios" />
-            <HorizontalScroller className="mt-4" snap="start" ariaLabel="Clínicas e laboratórios">
-              {companies.map((c) => (
-                <CompanyCard
-                  key={c.id}
-                  data={{
-                    id: c.id,
-                    name: c.trade_name ?? c.legal_name,
-                    type: c.type,
-                    city: c.address_city,
-                    state: c.address_state,
-                    logoUrl: c.logo_url,
-                  }}
-                />
+              {(specs ?? []).map((s) => (
+                <button
+                  key={s.id}
+                  data-active={specSlug === s.slug || undefined}
+                  onClick={() => updateSpec(s.slug)}
+                  className={`rounded-full border px-4 py-2 text-xs font-semibold transition-all ${
+                    specSlug === s.slug
+                      ? "bg-foreground text-background border-foreground shadow-sm"
+                      : "bg-card border-border text-muted-foreground hover:border-primary/40 hover:text-foreground"
+                  }`}
+                >
+                  {s.name}
+                </button>
               ))}
             </HorizontalScroller>
           </section>
         )}
 
-        {/* Resultados */}
-        {isLoading && (
-          <section className="grid gap-3 md:grid-cols-2">
-            {Array.from({ length: 6 }).map((_, i) => (
-              <ProfessionalCardSkeleton key={i} />
-            ))}
-          </section>
-        )}
-
-        {!isLoading &&
-          groups.map(
-            (g) =>
-              g.items.length > 0 && (
-                <section key={g.rank} className="livvo-slide-up">
-                  <SectionHeader
-                    eyebrow={g.sponsored ? undefined : "Resultados"}
-                    title={g.title}
-                    badge={
-                      g.sponsored ? (
-                        <span className="livvo-chip-sponsored">
-                          <Sparkles className="size-3" /> {g.label}
-                        </span>
-                      ) : undefined
-                    }
-                    trailing={
-                      !g.sponsored && totalCount > 0 ? (
-                        <span className="livvo-subtle">
-                          {g.items.length} resultado{g.items.length !== 1 ? "s" : ""}
-                        </span>
-                      ) : undefined
-                    }
-                  />
-                  <div className="mt-4 grid gap-3 md:grid-cols-2">
-                    {g.items.map((p) => (
-                      <ProfessionalCard
-                        key={p.professional_id}
-                        data={toCardData(p, g.label)}
-                        onClick={() => onSponsoredClick(p)}
-                      />
-                    ))}
-                  </div>
-                </section>
-              )
-          )}
-
-        {!isLoading && totalCount === 0 && (
-          <div className="rounded-3xl border border-dashed border-border bg-card p-10 md:p-14 text-center">
-            <div className="mx-auto grid size-14 place-items-center rounded-2xl bg-primary-soft text-primary">
-              <SearchIcon className="size-6" />
-            </div>
-            <p className="mt-4 text-base font-semibold text-foreground">
-              Nenhum profissional encontrado
-            </p>
-            <p className="livvo-subtle mt-1 max-w-sm mx-auto">
-              Tente ajustar os filtros, remover a cidade ou buscar por outra especialidade.
-            </p>
-            {activeFilters.length > 0 && (
-              <button
-                onClick={() => {
-                  setSpecSlug(undefined);
-                  setCity("");
-                  setState("");
-                }}
-                className="mt-5 inline-flex items-center gap-1.5 rounded-full bg-foreground px-4 py-2 text-xs font-semibold text-background hover:opacity-90 transition"
-              >
-                <X className="size-3.5" /> Limpar filtros
-              </button>
-            )}
-          </div>
-        )}
+        <Outlet />
       </div>
-    </div>
-  );
-}
-
-function SectionHeader({
-  eyebrow,
-  title,
-  badge,
-  trailing,
-}: {
-  eyebrow?: string;
-  title: string;
-  badge?: React.ReactNode;
-  trailing?: React.ReactNode;
-}) {
-  return (
-    <div className="flex items-end justify-between gap-3">
-      <div className="min-w-0">
-        {eyebrow && <p className="livvo-eyebrow">{eyebrow}</p>}
-        <h2 className="livvo-h2 mt-0.5 flex items-center gap-2">
-          <span className="truncate">{title}</span>
-          {badge}
-        </h2>
-      </div>
-      {trailing}
     </div>
   );
 }
