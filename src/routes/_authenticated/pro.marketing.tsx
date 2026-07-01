@@ -17,7 +17,7 @@ import { toast } from "sonner";
 import {
   Megaphone, Link as LinkIcon, Package, CheckCircle2, TrendingUp, BarChart3,
   Gift, FileBarChart, Copy, ExternalLink, ArrowRight, Sparkles, Trophy,
-  QrCode as QrIcon, Circle, ChevronRight, Info,
+  QrCode as QrIcon, Circle, ChevronRight, Info, Smartphone, RefreshCw, Eye, Pencil,
 } from "lucide-react";
 import { computeProfessionalCompleteness } from "@/lib/livvo/profile-completeness";
 import { computeMilestones, computeRecommendations } from "@/lib/livvo/growth-recommendations";
