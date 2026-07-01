@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { Star, MapPin, Calendar, ShieldCheck, Crown, Sparkles, ArrowRight } from "lucide-react";
 import { VerifiedBadge } from "./VerifiedBadge";
+import { LivvoBadge } from "./ui";
 
 export interface ProfessionalCardData {
   id: string;
@@ -21,6 +22,11 @@ export interface ProfessionalCardData {
   sponsoredLabel?: string;
   agendaOpen?: boolean;
   insurances?: string[] | null;
+  /** Derived trust/quality badges (all optional; caller decides based on real data). */
+  isTopRated?: boolean;
+  isNewPartner?: boolean;
+  isHotToday?: boolean;
+  isFastResponder?: boolean;
 }
 
 interface Props {
@@ -31,7 +37,12 @@ interface Props {
 }
 
 /** Premium marketplace card — reusable across search, home, favorites. */
-export function ProfessionalCard({ data, variant = "featured", onClick, showActions = true }: Props) {
+export function ProfessionalCard({
+  data,
+  variant = "featured",
+  onClick,
+  showActions = true,
+}: Props) {
   const initial = (data.fullName ?? "?").trim().charAt(0).toUpperCase();
   const rating = data.rating != null ? Number(data.rating) : null;
   const ratingCount = data.ratingCount ?? 0;
@@ -55,7 +66,9 @@ export function ProfessionalCard({ data, variant = "featured", onClick, showActi
         </span>
       )}
 
-      <div className={`grid ${variant === "compact" ? "grid-cols-[56px_minmax(0,1fr)]" : "grid-cols-[72px_minmax(0,1fr)] sm:grid-cols-[88px_minmax(0,1fr)]"} gap-4`}>
+      <div
+        className={`grid ${variant === "compact" ? "grid-cols-[56px_minmax(0,1fr)]" : "grid-cols-[72px_minmax(0,1fr)] sm:grid-cols-[88px_minmax(0,1fr)]"} gap-4`}
+      >
         {/* Avatar */}
         <div className="relative">
           <div
@@ -78,8 +91,12 @@ export function ProfessionalCard({ data, variant = "featured", onClick, showActi
         <div className="min-w-0">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
-              <h3 className="truncate text-[15px] font-semibold text-foreground">{data.fullName ?? "—"}</h3>
-              <p className="mt-0.5 truncate text-[13px] text-muted-foreground">{data.specialty ?? "—"}</p>
+              <h3 className="truncate text-[15px] font-semibold text-foreground">
+                {data.fullName ?? "—"}
+              </h3>
+              <p className="mt-0.5 truncate text-[13px] text-muted-foreground">
+                {data.specialty ?? "—"}
+              </p>
             </div>
             {rating != null && ratingCount > 0 && (
               <div className="flex shrink-0 items-center gap-1 rounded-full border border-border bg-card px-2 py-0.5 text-[11px] font-semibold text-amber-500">
@@ -93,15 +110,23 @@ export function ProfessionalCard({ data, variant = "featured", onClick, showActi
           {/* Chips */}
           <div className="mt-2.5 flex flex-wrap items-center gap-1.5">
             {data.isVerified && (
-              <VerifiedBadge council={data.council} number={data.councilNumber} uf={data.councilState} />
+              <VerifiedBadge
+                council={data.council}
+                number={data.councilNumber}
+                uf={data.councilState}
+              />
             )}
+            {data.isTopRated && <LivvoBadge variant="top" label="Top avaliado" />}
+            {data.isHotToday && <LivvoBadge variant="hot" label="Em alta hoje" />}
+            {data.isFastResponder && <LivvoBadge variant="fast" label="Responde rápido" />}
+            {data.isNewPartner && <LivvoBadge variant="new" label="Novo parceiro" />}
             {location && (
               <span className="livvo-chip">
                 <MapPin className="size-3" />
                 {location}
               </span>
             )}
-            {data.agendaOpen && (
+            {data.agendaOpen && !data.isHotToday && (
               <span className="livvo-chip-health">
                 <Calendar className="size-3" />
                 Agenda aberta
@@ -110,7 +135,9 @@ export function ProfessionalCard({ data, variant = "featured", onClick, showActi
             {data.insurances && data.insurances.length > 0 && (
               <span className="livvo-chip-primary">
                 <ShieldCheck className="size-3" />
-                {data.insurances.length === 1 ? data.insurances[0] : `${data.insurances.length} convênios`}
+                {data.insurances.length === 1
+                  ? data.insurances[0]
+                  : `${data.insurances.length} convênios`}
               </span>
             )}
           </div>
@@ -119,7 +146,9 @@ export function ProfessionalCard({ data, variant = "featured", onClick, showActi
           {variant !== "compact" && (
             <div className="mt-4 flex items-end justify-between gap-3 border-t border-border/60 pt-3">
               <div>
-                <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">A partir de</p>
+                <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+                  A partir de
+                </p>
                 <p className="font-mono text-base font-bold text-foreground">
                   {price != null ? `R$ ${price.toFixed(0)}` : "Sob consulta"}
                 </p>
@@ -142,11 +171,21 @@ export function ProfessionalCard({ data, variant = "featured", onClick, showActi
   );
 }
 
-export function ProfessionalCardSkeleton({ variant = "featured" }: { variant?: "featured" | "compact" }) {
+export function ProfessionalCardSkeleton({
+  variant = "featured",
+}: {
+  variant?: "featured" | "compact";
+}) {
   return (
-    <div className={`rounded-2xl border border-border/70 bg-card ${variant === "compact" ? "p-3" : "p-4 sm:p-5"}`}>
-      <div className={`grid ${variant === "compact" ? "grid-cols-[56px_minmax(0,1fr)]" : "grid-cols-[72px_minmax(0,1fr)] sm:grid-cols-[88px_minmax(0,1fr)]"} gap-4`}>
-        <div className={`${variant === "compact" ? "size-14" : "size-[72px] sm:size-[88px]"} livvo-skeleton rounded-2xl`} />
+    <div
+      className={`rounded-2xl border border-border/70 bg-card ${variant === "compact" ? "p-3" : "p-4 sm:p-5"}`}
+    >
+      <div
+        className={`grid ${variant === "compact" ? "grid-cols-[56px_minmax(0,1fr)]" : "grid-cols-[72px_minmax(0,1fr)] sm:grid-cols-[88px_minmax(0,1fr)]"} gap-4`}
+      >
+        <div
+          className={`${variant === "compact" ? "size-14" : "size-[72px] sm:size-[88px]"} livvo-skeleton rounded-2xl`}
+        />
         <div className="min-w-0 space-y-2">
           <div className="livvo-skeleton h-4 w-2/3" />
           <div className="livvo-skeleton h-3 w-1/2" />
