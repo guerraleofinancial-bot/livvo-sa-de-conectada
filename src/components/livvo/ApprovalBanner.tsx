@@ -94,9 +94,10 @@ export function ApprovalBanner() {
           {isRejected ? <FileText className="size-4" /> : <Clock className="size-4" />}
         </div>
         <div className="flex-1">
-          <p className="text-sm font-semibold">Modo demonstração · {statusLabel(pro.status)}</p>
+          <p className="text-sm font-semibold">Em análise · {statusLabel(pro.status)}</p>
           <p className="text-xs text-muted-foreground mt-0.5">
-            Seu cadastro ainda está em análise. Você pode conhecer e configurar sua conta, mas só poderá receber pacientes após aprovação documental.
+            Seu perfil será analisado pela equipe Livvo antes de aparecer para pacientes. Estamos validando sua documentação —
+            você receberá uma notificação quando sua conta for aprovada.
           </p>
           {isRejected && pro.council_rejection_reason && (
             <p className="text-xs text-destructive mt-2"><strong>Motivo:</strong> {pro.council_rejection_reason}</p>

@@ -241,6 +241,14 @@ function AdminPanel() {
               {(pendingPros ?? []).map((row) => {
                 const p = row as typeof row & { profiles: { full_name?: string; email?: string } | null; specialties: { name?: string } | null; council?: string | null; council_number?: string | null; council_state?: string | null; council_document_url?: string | null; council_verified_at?: string | null };
                 const councilText = [p.council, p.council_number, p.council_state].filter(Boolean).join(" ");
+                const checks = [
+                  { label: "Documento enviado", ok: !!p.council_document_url },
+                  { label: "Conselho enviado", ok: !!(p.council && p.council_number) },
+                  { label: "Conselho válido", ok: !!p.council_verified_at },
+                  { label: "Dados conferidos", ok: !!p.profiles?.full_name && !!p.profiles?.email },
+                  { label: "Especialidade validada", ok: !!p.specialties?.name },
+                ];
+                const allOk = checks.every((c) => c.ok);
                 return (
                   <div key={p.id} className="p-4 rounded-2xl bg-card border border-border space-y-3">
                     <div className="flex items-center gap-4 flex-wrap">
@@ -248,9 +256,22 @@ function AdminPanel() {
                         <p className="text-sm font-semibold truncate">{p.profiles?.full_name}</p>
                         <p className="text-xs text-muted-foreground truncate">{p.specialties?.name} · {p.profiles?.email}</p>
                       </div>
-                      <Button size="sm" variant="outline" className="text-destructive" onClick={async () => { const reason = prompt("Motivo da rejeição?") ?? ""; await setStatus({ data: { professionalId: p.id, status: "rejeitado" } }); toast.success("Rejeitado"); void reason; qc.invalidateQueries({ queryKey: ["pending-pros"] }); }}><XCircle className="size-4 mr-1" /> Rejeitar</Button>
-                      <Button size="sm" disabled={!p.council_verified_at} title={!p.council_verified_at ? "Verifique o conselho antes de aprovar" : ""} onClick={async () => { await setStatus({ data: { professionalId: p.id, status: "aprovado" } }); toast.success("Aprovado"); qc.invalidateQueries({ queryKey: ["pending-pros"] }); qc.invalidateQueries({ queryKey: ["admin-stats"] }); }}><CheckCircle2 className="size-4 mr-1" /> Aprovar</Button>
+                      <Button size="sm" variant="outline" className="text-destructive" onClick={async () => { const reason = prompt("Motivo da rejeição?") ?? ""; await setStatus({ data: { professionalId: p.id, status: "rejeitado" } }); toast.success("Rejeitado"); void reason; qc.invalidateQueries({ queryKey: ["pending-pros"] }); }}><XCircle className="size-4 mr-1" /> Reprovar</Button>
+                      <Button size="sm" disabled={!allOk} title={!allOk ? "Complete todos os itens do checklist antes de aprovar" : ""} onClick={async () => { await setStatus({ data: { professionalId: p.id, status: "aprovado" } }); toast.success("Aprovado"); qc.invalidateQueries({ queryKey: ["pending-pros"] }); qc.invalidateQueries({ queryKey: ["admin-stats"] }); }}><CheckCircle2 className="size-4 mr-1" /> Aprovar</Button>
                     </div>
+
+                    <div className="rounded-xl bg-muted/40 border border-border p-3">
+                      <p className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground mb-2">Checklist de verificação</p>
+                      <ul className="grid gap-1.5 sm:grid-cols-2">
+                        {checks.map((c) => (
+                          <li key={c.label} className="flex items-center gap-2 text-xs">
+                            {c.ok ? <CheckCircle2 className="size-4 text-health shrink-0" /> : <XCircle className="size-4 text-muted-foreground shrink-0" />}
+                            <span className={c.ok ? "text-foreground" : "text-muted-foreground"}>{c.label}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+
                     <div className="rounded-xl bg-muted/50 border border-border p-3 flex items-center gap-3 flex-wrap text-xs">
                       <ShieldCheck className={`size-4 ${p.council_verified_at ? "text-health" : "text-warning"}`} />
                       <div className="flex-1 min-w-0">
