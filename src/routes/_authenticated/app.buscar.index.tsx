@@ -199,13 +199,15 @@ function BuscarTodos() {
               <section key={g.rank} className="livvo-slide-up">
                 <SectionHeader
                   eyebrow={g.sponsored ? undefined : "Resultados"}
-                  title={g.title}
-                  badge={
-                    g.sponsored ? (
-                      <span className="livvo-chip-sponsored">
-                        <Sparkles className="size-3" /> {g.label}
-                      </span>
-                    ) : undefined
+                  title={
+                    <span className="inline-flex items-center gap-2">
+                      <span>{g.title}</span>
+                      {g.sponsored && (
+                        <span className="livvo-chip-sponsored">
+                          <Sparkles className="size-3" /> {g.label}
+                        </span>
+                      )}
+                    </span>
                   }
                   trailing={
                     !g.sponsored && totalCount > 0 ? (
@@ -215,6 +217,7 @@ function BuscarTodos() {
                     ) : undefined
                   }
                 />
+
                 <div className="mt-4 grid gap-3 md:grid-cols-2">
                   {g.items.map((p) => (
                     <ProfessionalCard

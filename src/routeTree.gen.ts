@@ -45,6 +45,7 @@ import { Route as AuthenticatedAppDocumentosRouteImport } from './routes/_authen
 import { Route as AuthenticatedAppConsultasRouteImport } from './routes/_authenticated/app.consultas'
 import { Route as AuthenticatedAppCarteiraRouteImport } from './routes/_authenticated/app.carteira'
 import { Route as AuthenticatedAppBuscarRouteImport } from './routes/_authenticated/app.buscar'
+import { Route as AuthenticatedAppBuscarIndexRouteImport } from './routes/_authenticated/app.buscar.index'
 import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments.webhook'
 import { Route as ApiPublicAutomationRunRouteImport } from './routes/api/public/automation.run'
 import { Route as AuthenticatedProOrcamentosIdRouteImport } from './routes/_authenticated/pro.orcamentos.$id'
@@ -249,6 +250,12 @@ const AuthenticatedAppBuscarRoute = AuthenticatedAppBuscarRouteImport.update({
   path: '/buscar',
   getParentRoute: () => AuthenticatedAppRoute,
 } as any)
+const AuthenticatedAppBuscarIndexRoute =
+  AuthenticatedAppBuscarIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedAppBuscarRoute,
+  } as any)
 const ApiPublicPaymentsWebhookRoute =
   ApiPublicPaymentsWebhookRouteImport.update({
     id: '/api/public/payments/webhook',
@@ -318,7 +325,7 @@ export interface FileRoutesByFullPath {
   '/e/$slug': typeof ESlugRoute
   '/p/$slug': typeof PSlugRoute
   '/pay/$token': typeof PayTokenRoute
-  '/app/buscar': typeof AuthenticatedAppBuscarRoute
+  '/app/buscar': typeof AuthenticatedAppBuscarRouteWithChildren
   '/app/carteira': typeof AuthenticatedAppCarteiraRoute
   '/app/consultas': typeof AuthenticatedAppConsultasRoute
   '/app/documentos': typeof AuthenticatedAppDocumentosRoute
@@ -346,6 +353,7 @@ export interface FileRoutesByFullPath {
   '/pro/orcamentos/$id': typeof AuthenticatedProOrcamentosIdRoute
   '/api/public/automation/run': typeof ApiPublicAutomationRunRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
+  '/app/buscar/': typeof AuthenticatedAppBuscarIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -362,7 +370,6 @@ export interface FileRoutesByTo {
   '/e/$slug': typeof ESlugRoute
   '/p/$slug': typeof PSlugRoute
   '/pay/$token': typeof PayTokenRoute
-  '/app/buscar': typeof AuthenticatedAppBuscarRoute
   '/app/carteira': typeof AuthenticatedAppCarteiraRoute
   '/app/consultas': typeof AuthenticatedAppConsultasRoute
   '/app/documentos': typeof AuthenticatedAppDocumentosRoute
@@ -390,6 +397,7 @@ export interface FileRoutesByTo {
   '/pro/orcamentos/$id': typeof AuthenticatedProOrcamentosIdRoute
   '/api/public/automation/run': typeof ApiPublicAutomationRunRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
+  '/app/buscar': typeof AuthenticatedAppBuscarIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -410,7 +418,7 @@ export interface FileRoutesById {
   '/e/$slug': typeof ESlugRoute
   '/p/$slug': typeof PSlugRoute
   '/pay/$token': typeof PayTokenRoute
-  '/_authenticated/app/buscar': typeof AuthenticatedAppBuscarRoute
+  '/_authenticated/app/buscar': typeof AuthenticatedAppBuscarRouteWithChildren
   '/_authenticated/app/carteira': typeof AuthenticatedAppCarteiraRoute
   '/_authenticated/app/consultas': typeof AuthenticatedAppConsultasRoute
   '/_authenticated/app/documentos': typeof AuthenticatedAppDocumentosRoute
@@ -438,6 +446,7 @@ export interface FileRoutesById {
   '/_authenticated/pro/orcamentos/$id': typeof AuthenticatedProOrcamentosIdRoute
   '/api/public/automation/run': typeof ApiPublicAutomationRunRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
+  '/_authenticated/app/buscar/': typeof AuthenticatedAppBuscarIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -486,6 +495,7 @@ export interface FileRouteTypes {
     | '/pro/orcamentos/$id'
     | '/api/public/automation/run'
     | '/api/public/payments/webhook'
+    | '/app/buscar/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -502,7 +512,6 @@ export interface FileRouteTypes {
     | '/e/$slug'
     | '/p/$slug'
     | '/pay/$token'
-    | '/app/buscar'
     | '/app/carteira'
     | '/app/consultas'
     | '/app/documentos'
@@ -530,6 +539,7 @@ export interface FileRouteTypes {
     | '/pro/orcamentos/$id'
     | '/api/public/automation/run'
     | '/api/public/payments/webhook'
+    | '/app/buscar'
   id:
     | '__root__'
     | '/'
@@ -577,6 +587,7 @@ export interface FileRouteTypes {
     | '/_authenticated/pro/orcamentos/$id'
     | '/api/public/automation/run'
     | '/api/public/payments/webhook'
+    | '/_authenticated/app/buscar/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -849,6 +860,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAppBuscarRouteImport
       parentRoute: typeof AuthenticatedAppRoute
     }
+    '/_authenticated/app/buscar/': {
+      id: '/_authenticated/app/buscar/'
+      path: '/'
+      fullPath: '/app/buscar/'
+      preLoaderRoute: typeof AuthenticatedAppBuscarIndexRouteImport
+      parentRoute: typeof AuthenticatedAppBuscarRoute
+    }
     '/api/public/payments/webhook': {
       id: '/api/public/payments/webhook'
       path: '/api/public/payments/webhook'
@@ -915,6 +933,20 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AuthenticatedAppBuscarRouteChildren {
+  AuthenticatedAppBuscarIndexRoute: typeof AuthenticatedAppBuscarIndexRoute
+}
+
+const AuthenticatedAppBuscarRouteChildren: AuthenticatedAppBuscarRouteChildren =
+  {
+    AuthenticatedAppBuscarIndexRoute: AuthenticatedAppBuscarIndexRoute,
+  }
+
+const AuthenticatedAppBuscarRouteWithChildren =
+  AuthenticatedAppBuscarRoute._addFileChildren(
+    AuthenticatedAppBuscarRouteChildren,
+  )
+
 interface AuthenticatedAppOrcamentosRouteChildren {
   AuthenticatedAppOrcamentosIdRoute: typeof AuthenticatedAppOrcamentosIdRoute
 }
@@ -930,7 +962,7 @@ const AuthenticatedAppOrcamentosRouteWithChildren =
   )
 
 interface AuthenticatedAppRouteChildren {
-  AuthenticatedAppBuscarRoute: typeof AuthenticatedAppBuscarRoute
+  AuthenticatedAppBuscarRoute: typeof AuthenticatedAppBuscarRouteWithChildren
   AuthenticatedAppCarteiraRoute: typeof AuthenticatedAppCarteiraRoute
   AuthenticatedAppConsultasRoute: typeof AuthenticatedAppConsultasRoute
   AuthenticatedAppDocumentosRoute: typeof AuthenticatedAppDocumentosRoute
@@ -946,7 +978,7 @@ interface AuthenticatedAppRouteChildren {
 }
 
 const AuthenticatedAppRouteChildren: AuthenticatedAppRouteChildren = {
-  AuthenticatedAppBuscarRoute: AuthenticatedAppBuscarRoute,
+  AuthenticatedAppBuscarRoute: AuthenticatedAppBuscarRouteWithChildren,
   AuthenticatedAppCarteiraRoute: AuthenticatedAppCarteiraRoute,
   AuthenticatedAppConsultasRoute: AuthenticatedAppConsultasRoute,
   AuthenticatedAppDocumentosRoute: AuthenticatedAppDocumentosRoute,
