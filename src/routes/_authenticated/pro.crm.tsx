@@ -5,7 +5,7 @@ import { getCrmContactDetail, listCrmPatients, updateCrmStatus } from "@/lib/liv
 import { createQuote } from "@/lib/livvo/quotes.functions";
 import { createManualAppointment, updateCrmContact } from "@/lib/livvo/patients.functions";
 import { createCharge, listChargesForContact } from "@/lib/livvo/charges.functions";
-import { Users, Calendar, ChevronRight, LayoutGrid, List, FileText, CalendarPlus, Phone, Mail, MapPin, Pencil, DollarSign, Copy, CheckCircle2, AlertTriangle } from "lucide-react";
+import { Users, Calendar, ChevronRight, LayoutGrid, List, FileText, CalendarPlus, Phone, Mail, MapPin, Pencil, DollarSign, Copy, CheckCircle2, AlertTriangle, MessageCircle, Building2, Tag, Sparkles } from "lucide-react";
 import { useEffect, useState, useMemo } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -54,7 +54,33 @@ const ORIGINS = [
 type CrmRow = Awaited<ReturnType<typeof listCrmPatients>>[number];
 type ContactDetail = Awaited<ReturnType<typeof getCrmContactDetail>>;
 
+function QuickAction({ icon: Icon, label, onClick, disabled, tone = "default" }: {
+  icon: React.ComponentType<{ className?: string }>;
+  label: string;
+  onClick: (e: React.MouseEvent) => void;
+  disabled?: boolean;
+  tone?: "default" | "health";
+}) {
+  const cls = tone === "health"
+    ? "hover:bg-health-soft hover:text-health"
+    : "hover:bg-primary-soft hover:text-primary";
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      title={label}
+      aria-label={label}
+      className={`shrink-0 inline-flex items-center gap-1 px-2 py-1 rounded-lg text-[11px] font-semibold text-muted-foreground transition-colors disabled:opacity-40 disabled:cursor-not-allowed ${cls}`}
+    >
+      <Icon className="size-3.5" />
+      <span className="hidden sm:inline">{label}</span>
+    </button>
+  );
+}
+
 function CrmPage() {
+
   const fetchFn = useServerFn(listCrmPatients);
   const detailFn = useServerFn(getCrmContactDetail);
   const qc = useQueryClient();
@@ -65,6 +91,7 @@ function CrmPage() {
   const [openNew, setOpenNew] = useState(false);
   const [openImport, setOpenImport] = useState(false);
   const [selectedContactId, setSelectedContactId] = useState<string | null>(null);
+  const [pendingAction, setPendingAction] = useState<null | "edit" | "schedule" | "charge" | "quote">(null);
 
   const detailQuery = useQuery({
     queryKey: ["crm-contact-detail", selectedContactId],
@@ -73,9 +100,19 @@ function CrmPage() {
     retry: false,
   });
 
-  const openContact = (contactId: string, row?: CrmRow) => {
+  const openContact = (contactId: string, action: typeof pendingAction = null) => {
+    setPendingAction(action);
     setSelectedContactId(contactId);
   };
+
+  const openWhatsApp = (raw: string | null | undefined, name?: string | null) => {
+    if (!raw) { toast.error("Paciente sem WhatsApp/telefone"); return; }
+    const digits = raw.replace(/\D/g, "");
+    const phone = digits.length <= 11 ? `55${digits}` : digits;
+    const text = encodeURIComponent(`Olá ${name?.split(" ")[0] ?? ""}, tudo bem?`);
+    window.open(`https://wa.me/${phone}?text=${text}`, "_blank");
+  };
+
 
   const rows = useMemo(() => {
     const all = data ?? [];
@@ -142,54 +179,114 @@ function CrmPage() {
             ))}
           </div>
 
-          <div className="space-y-2">
+          <div className="space-y-2.5">
             {rows.map((r) => {
-              const p = (r as { patient?: { full_name?: string; avatar_url?: string } }).patient ?? {};
-              const contactId = (p as { id?: string }).id ?? r.patient_id;
+              const p = (r as { patient?: { full_name?: string; avatar_url?: string; phone?: string; whatsapp?: string; email?: string; city?: string; insurance?: string; id?: string } }).patient ?? {};
+              const contactId = p.id ?? r.patient_id;
               const meta = STATUS_META[r.status as CrmStatus] ?? STATUS_META.novo_lead;
+              const originLabel = ORIGINS.find(([v]) => v === r.origin)?.[1];
+              const whatsappRaw = p.whatsapp || p.phone;
+              const nextDate = r.next_appointment_at ? new Date(r.next_appointment_at) : null;
+              const lastDate = r.last_appointment_at ? new Date(r.last_appointment_at) : null;
+              const overdueDays = nextDate ? Math.floor((Date.now() - nextDate.getTime()) / 86400000) : 0;
+              const stop = (fn: () => void) => (e: React.MouseEvent) => { e.stopPropagation(); e.preventDefault(); fn(); };
               return (
-                <button key={r.id} type="button" onClick={() => openContact(contactId, r)}
-                  className="relative z-0 w-full text-left flex items-center gap-3 p-3 rounded-2xl bg-card border border-border hover:border-primary/30 transition-colors cursor-pointer pointer-events-auto">
-                  <div className="size-12 rounded-full bg-primary-soft text-primary grid place-items-center font-bold border border-border overflow-hidden shrink-0">
-                    {p.avatar_url ? <img src={p.avatar_url} className="size-full object-cover" alt="" /> : (p.full_name ?? "?").charAt(0)}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <p className="text-sm font-semibold truncate">{p.full_name ?? "Paciente"}</p>
-                      <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${meta.cls}`}>{meta.label}</span>
+                <div key={r.id} role="button" tabIndex={0}
+                  onClick={() => openContact(contactId)}
+                  onKeyDown={(e) => { if (e.key === "Enter") openContact(contactId); }}
+                  className="livvo-card livvo-card-hover group relative w-full text-left p-3.5 cursor-pointer">
+                  <div className="flex items-start gap-3">
+                    <div className="size-12 rounded-full bg-primary-soft text-primary grid place-items-center font-bold border border-border overflow-hidden shrink-0">
+                      {p.avatar_url ? <img src={p.avatar_url} className="size-full object-cover" alt="" /> : (p.full_name ?? "?").charAt(0).toUpperCase()}
                     </div>
-                    <div className="mt-1 flex items-center gap-3 text-xs text-muted-foreground flex-wrap">
-                      <span className="flex items-center gap-1"><Calendar className="size-3" />
-                        {r.next_appointment_at ? `Próx: ${new Date(r.next_appointment_at).toLocaleDateString("pt-BR")}` :
-                         r.last_appointment_at ? `Últ: ${new Date(r.last_appointment_at).toLocaleDateString("pt-BR")}` : "Sem histórico"}
-                      </span>
-                      {(() => {
-                        const ref = r.next_appointment_at;
-                        if (!ref) return null;
-                        const diffMs = Date.now() - new Date(ref).getTime();
-                        const days = Math.floor(diffMs / 86400000);
-                        if (days <= 0) return null;
-                        return (
-                          <span className="inline-flex items-center gap-1 text-warning font-semibold">
-                            <AlertTriangle className="size-3" /> Atrasado há {days} {days === 1 ? "dia" : "dias"}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <p className="text-sm font-semibold truncate">{p.full_name ?? "Paciente"}</p>
+                        <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${meta.cls}`}>{meta.label}</span>
+                        {overdueDays > 0 && (
+                          <span className="inline-flex items-center gap-1 text-warning font-semibold text-[11px]">
+                            <AlertTriangle className="size-3" /> Atrasado {overdueDays}d
                           </span>
-                        );
-                      })()}
-                      <span>R$ {Number(r.total_revenue ?? 0).toFixed(0)}</span>
-                    </div>
+                        )}
+                      </div>
 
+                      {/* linha 1: contato */}
+                      <div className="mt-1 flex items-center gap-x-3 gap-y-0.5 text-xs text-muted-foreground flex-wrap">
+                        {p.phone && <span className="inline-flex items-center gap-1"><Phone className="size-3" />{p.phone}</span>}
+                        {p.email && <span className="inline-flex items-center gap-1 truncate max-w-[180px]"><Mail className="size-3" />{p.email}</span>}
+                        {p.city && <span className="inline-flex items-center gap-1"><MapPin className="size-3" />{p.city}</span>}
+                      </div>
+
+                      {/* linha 2: convênio + origem + tags */}
+                      {(p.insurance || originLabel) && (
+                        <div className="mt-1 flex items-center gap-2 flex-wrap">
+                          {p.insurance && (
+                            <span className="inline-flex items-center gap-1 text-[10px] font-semibold px-1.5 py-0.5 rounded-md bg-muted text-muted-foreground">
+                              <Building2 className="size-2.5" />{p.insurance}
+                            </span>
+                          )}
+                          {originLabel && (
+                            <span className="inline-flex items-center gap-1 text-[10px] font-semibold px-1.5 py-0.5 rounded-md bg-muted text-muted-foreground">
+                              <Tag className="size-2.5" />{originLabel}
+                            </span>
+                          )}
+                        </div>
+                      )}
+
+                      {/* linha 3: histórico */}
+                      <div className="mt-1.5 flex items-center gap-x-3 gap-y-0.5 text-[11px] text-muted-foreground flex-wrap">
+                        {nextDate && (
+                          <span className="inline-flex items-center gap-1">
+                            <Calendar className="size-3 text-primary" /> Próx: <b className="text-foreground/80">{nextDate.toLocaleDateString("pt-BR")}</b>
+                          </span>
+                        )}
+                        {!nextDate && lastDate && (
+                          <span className="inline-flex items-center gap-1">
+                            <Calendar className="size-3" /> Últ: <b className="text-foreground/80">{lastDate.toLocaleDateString("pt-BR")}</b>
+                          </span>
+                        )}
+                        {!nextDate && !lastDate && (
+                          <span className="inline-flex items-center gap-1"><Sparkles className="size-3" />Sem histórico</span>
+                        )}
+                        {Number(r.total_revenue ?? 0) > 0 && (
+                          <span className="inline-flex items-center gap-1 text-health font-semibold tabular-nums">
+                            <DollarSign className="size-3" />R$ {Number(r.total_revenue).toFixed(0)}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    <ChevronRight className="size-4 text-muted-foreground shrink-0 mt-1 group-hover:text-primary group-hover:translate-x-0.5 transition-all" />
                   </div>
-                  <ChevronRight className="size-4 text-muted-foreground shrink-0 pointer-events-none" />
-                </button>
+
+                  {/* Ações contextuais */}
+                  <div className="mt-3 pt-3 border-t border-border/60 flex items-center gap-1 opacity-70 group-hover:opacity-100 transition-opacity overflow-x-auto scrollbar-hide">
+                    <QuickAction icon={MessageCircle} label="WhatsApp" onClick={stop(() => openWhatsApp(whatsappRaw, p.full_name))} disabled={!whatsappRaw} tone="health" />
+                    <QuickAction icon={CalendarPlus} label="Agendar" onClick={stop(() => openContact(contactId, "schedule"))} />
+                    <QuickAction icon={DollarSign} label="Cobrar" onClick={stop(() => openContact(contactId, "charge"))} tone="health" />
+                    <QuickAction icon={FileText} label="Orçamento" onClick={stop(() => openContact(contactId, "quote"))} />
+                    <QuickAction icon={Pencil} label="Editar" onClick={stop(() => openContact(contactId, "edit"))} />
+                  </div>
+                </div>
               );
             })}
             {rows.length === 0 && (
-              <div className="rounded-2xl border border-dashed border-border p-10 text-center">
-                <Users className="size-8 mx-auto text-muted-foreground mb-3" />
-                <p className="text-sm text-muted-foreground">Nenhum paciente encontrado.</p>
+              <div className="livvo-card border-dashed p-10 text-center space-y-3">
+                <div className="size-14 mx-auto rounded-2xl bg-primary-soft text-primary grid place-items-center">
+                  <Users className="size-6" />
+                </div>
+                <div>
+                  <p className="text-sm font-semibold">Nenhum paciente {q || filter ? "encontrado" : "no funil"}</p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {q || filter ? "Ajuste sua busca ou os filtros." : "Cadastre seu primeiro paciente para começar."}
+                  </p>
+                </div>
+                {!q && !filter && (
+                  <Button size="sm" onClick={() => setOpenNew(true)}>Cadastrar paciente</Button>
+                )}
               </div>
             )}
           </div>
+
         </>
       )}
 
@@ -210,7 +307,7 @@ function CrmPage() {
                       const p = (r as { patient?: { full_name?: string; avatar_url?: string } }).patient ?? {};
                       const contactId = (p as { id?: string }).id ?? r.patient_id;
                       return (
-                        <button key={r.id} type="button" onClick={() => openContact(contactId, r)}
+                        <button key={r.id} type="button" onClick={() => openContact(contactId)}
                           className="relative z-0 w-full text-left bg-card border border-border rounded-xl p-2.5 hover:border-primary/30 cursor-pointer pointer-events-auto">
                           <div className="flex items-center gap-2">
                             <div className="size-8 rounded-full bg-primary-soft text-primary grid place-items-center text-xs font-bold overflow-hidden">
@@ -238,28 +335,34 @@ function CrmPage() {
 
       <CRMContactDetailModal
         open={!!selectedContactId}
-        onOpenChange={(open: boolean) => { if (!open) setSelectedContactId(null); }}
+        onOpenChange={(open: boolean) => { if (!open) { setSelectedContactId(null); setPendingAction(null); } }}
         detail={detailQuery.data ?? null}
         isLoading={detailQuery.isLoading || detailQuery.isFetching}
         error={detailQuery.error as Error | null}
+        initialAction={pendingAction}
+        onActionConsumed={() => setPendingAction(null)}
         onSaved={() => {
           detailQuery.refetch();
           qc.invalidateQueries({ queryKey: ["crm-patients"] });
           qc.invalidateQueries({ queryKey: ["pro-agenda"] });
         }}
+
       />
     </div>
   );
 }
 
-function CRMContactDetailModal({ open, onOpenChange, detail, isLoading, error, onSaved }: {
+function CRMContactDetailModal({ open, onOpenChange, detail, isLoading, error, onSaved, initialAction, onActionConsumed }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   detail: ContactDetail | null;
   isLoading: boolean;
   error: Error | null;
   onSaved: () => void;
+  initialAction?: "edit" | "schedule" | "charge" | "quote" | null;
+  onActionConsumed?: () => void;
 }) {
+
   const navigate = useNavigate();
   const editFn = useServerFn(updateCrmContact);
   const apptFn = useServerFn(createManualAppointment);
@@ -289,6 +392,17 @@ function CRMContactDetailModal({ open, onOpenChange, detail, isLoading, error, o
       status: detail.relationship?.status ?? "novo_lead",
     });
   }, [open, detail]);
+
+  // Auto-trigger a pending action once the ficha loads
+  useEffect(() => {
+    if (!open || !detail?.contact || !initialAction) return;
+    if (initialAction === "schedule") setScheduleOpen(true);
+    else if (initialAction === "charge") setChargeOpen(true);
+    else if (initialAction === "quote") quoteMut.mutate();
+    onActionConsumed?.();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, detail?.contact?.id, initialAction]);
+
 
   const set = (key: keyof typeof form, value: string) => setForm((current) => ({ ...current, [key]: value }));
   const contact = detail?.contact ?? null;
