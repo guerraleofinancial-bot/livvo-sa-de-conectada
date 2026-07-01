@@ -102,13 +102,17 @@ export function ProfessionalCard({ data, variant = "featured", onClick, showActi
             {data.isVerified && (
               <VerifiedBadge council={data.council} number={data.councilNumber} uf={data.councilState} />
             )}
+            {data.isTopRated && <LivvoBadge variant="top" label="Top avaliado" />}
+            {data.isHotToday && <LivvoBadge variant="hot" label="Em alta hoje" />}
+            {data.isFastResponder && <LivvoBadge variant="fast" label="Responde rápido" />}
+            {data.isNewPartner && <LivvoBadge variant="new" label="Novo parceiro" />}
             {location && (
               <span className="livvo-chip">
                 <MapPin className="size-3" />
                 {location}
               </span>
             )}
-            {data.agendaOpen && (
+            {data.agendaOpen && !data.isHotToday && (
               <span className="livvo-chip-health">
                 <Calendar className="size-3" />
                 Agenda aberta
