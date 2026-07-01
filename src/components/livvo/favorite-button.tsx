@@ -46,10 +46,15 @@ export function FavoriteButton({ professionalId, companyId, variant = "outline",
         setFavId(null);
         toast.success("Removido dos favoritos");
       } else {
-        const payload: Record<string, string> = { patient_id: user.id };
-        if (professionalId) payload.professional_id = professionalId;
-        if (companyId) payload.company_id = companyId;
-        const { data } = await supabase.from("favorites").insert(payload).select("id").maybeSingle();
+        const { data } = await supabase
+          .from("favorites")
+          .insert({
+            patient_id: user.id,
+            professional_id: professionalId ?? null,
+            company_id: companyId ?? null,
+          })
+          .select("id")
+          .maybeSingle();
         setFavId(data?.id ?? null);
         toast.success("Salvo nos favoritos");
       }
