@@ -233,7 +233,7 @@ function Buscar() {
         {companies && companies.length > 0 && (
           <section>
             <SectionHeader eyebrow="Estabelecimentos" title="Clínicas & laboratórios" />
-            <div className="-mx-5 mt-3 flex gap-3 overflow-x-auto scrollbar-hide px-5 pb-1">
+            <HorizontalScroller className="mt-3" snap="start">
               {companies.map((c) => (
                 <CompanyCard
                   key={c.id}
@@ -247,7 +247,8 @@ function Buscar() {
                   }}
                 />
               ))}
-            </div>
+            </HorizontalScroller>
+
           </section>
         )}
 
