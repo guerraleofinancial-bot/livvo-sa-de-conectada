@@ -52,9 +52,9 @@ function MarketingHub() {
         supabase.from("professional_business_hours").select("weekday", { count: "exact", head: true }).eq("professional_id", user!.id).eq("closed", false),
         supabase.from("reviews").select("id", { count: "exact", head: true }).eq("professional_id", user!.id).eq("status", "publicada"),
         supabase.from("appointments").select("id, scheduled_at, status", { count: "exact" }).eq("professional_id", user!.id),
-        supabase.from("payments").select("id", { count: "exact", head: true }).eq("professional_id", user!.id),
+        supabase.from("payments").select("id", { count: "exact", head: true }).eq("provider_id", user!.id),
         supabase.from("wallet_transactions").select("id", { count: "exact", head: true }).eq("provider_id", user!.id),
-        supabase.from("audit_logs").select("id", { count: "exact", head: true }).eq("actor_id", user!.id).eq("action", "profile_shared"),
+        supabase.from("audit_logs").select("id", { count: "exact", head: true }).eq("actor_id", user!.id).eq("event", "profile_shared"),
       ]);
       const now = new Date();
       const emptySlotsToday = 0; // placeholder — cálculo real seria por availability minus appts

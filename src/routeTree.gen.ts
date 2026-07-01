@@ -32,6 +32,7 @@ import { Route as AuthenticatedProServicosRouteImport } from './routes/_authenti
 import { Route as AuthenticatedProPacientesRouteImport } from './routes/_authenticated/pro.pacientes'
 import { Route as AuthenticatedProOrcamentosRouteImport } from './routes/_authenticated/pro.orcamentos'
 import { Route as AuthenticatedProNotificacoesRouteImport } from './routes/_authenticated/pro.notificacoes'
+import { Route as AuthenticatedProMarketingRouteImport } from './routes/_authenticated/pro.marketing'
 import { Route as AuthenticatedProImpulsionarRouteImport } from './routes/_authenticated/pro.impulsionar'
 import { Route as AuthenticatedProFinanceiroRouteImport } from './routes/_authenticated/pro.financeiro'
 import { Route as AuthenticatedProCrmRouteImport } from './routes/_authenticated/pro.crm'
@@ -172,6 +173,12 @@ const AuthenticatedProNotificacoesRoute =
   AuthenticatedProNotificacoesRouteImport.update({
     id: '/notificacoes',
     path: '/notificacoes',
+    getParentRoute: () => AuthenticatedProRoute,
+  } as any)
+const AuthenticatedProMarketingRoute =
+  AuthenticatedProMarketingRouteImport.update({
+    id: '/marketing',
+    path: '/marketing',
     getParentRoute: () => AuthenticatedProRoute,
   } as any)
 const AuthenticatedProImpulsionarRoute =
@@ -323,6 +330,7 @@ export interface FileRoutesByFullPath {
   '/pro/crm': typeof AuthenticatedProCrmRouteWithChildren
   '/pro/financeiro': typeof AuthenticatedProFinanceiroRoute
   '/pro/impulsionar': typeof AuthenticatedProImpulsionarRoute
+  '/pro/marketing': typeof AuthenticatedProMarketingRoute
   '/pro/notificacoes': typeof AuthenticatedProNotificacoesRoute
   '/pro/orcamentos': typeof AuthenticatedProOrcamentosRouteWithChildren
   '/pro/pacientes': typeof AuthenticatedProPacientesRoute
@@ -366,6 +374,7 @@ export interface FileRoutesByTo {
   '/pro/crm': typeof AuthenticatedProCrmRouteWithChildren
   '/pro/financeiro': typeof AuthenticatedProFinanceiroRoute
   '/pro/impulsionar': typeof AuthenticatedProImpulsionarRoute
+  '/pro/marketing': typeof AuthenticatedProMarketingRoute
   '/pro/notificacoes': typeof AuthenticatedProNotificacoesRoute
   '/pro/orcamentos': typeof AuthenticatedProOrcamentosRouteWithChildren
   '/pro/pacientes': typeof AuthenticatedProPacientesRoute
@@ -413,6 +422,7 @@ export interface FileRoutesById {
   '/_authenticated/pro/crm': typeof AuthenticatedProCrmRouteWithChildren
   '/_authenticated/pro/financeiro': typeof AuthenticatedProFinanceiroRoute
   '/_authenticated/pro/impulsionar': typeof AuthenticatedProImpulsionarRoute
+  '/_authenticated/pro/marketing': typeof AuthenticatedProMarketingRoute
   '/_authenticated/pro/notificacoes': typeof AuthenticatedProNotificacoesRoute
   '/_authenticated/pro/orcamentos': typeof AuthenticatedProOrcamentosRouteWithChildren
   '/_authenticated/pro/pacientes': typeof AuthenticatedProPacientesRoute
@@ -460,6 +470,7 @@ export interface FileRouteTypes {
     | '/pro/crm'
     | '/pro/financeiro'
     | '/pro/impulsionar'
+    | '/pro/marketing'
     | '/pro/notificacoes'
     | '/pro/orcamentos'
     | '/pro/pacientes'
@@ -503,6 +514,7 @@ export interface FileRouteTypes {
     | '/pro/crm'
     | '/pro/financeiro'
     | '/pro/impulsionar'
+    | '/pro/marketing'
     | '/pro/notificacoes'
     | '/pro/orcamentos'
     | '/pro/pacientes'
@@ -549,6 +561,7 @@ export interface FileRouteTypes {
     | '/_authenticated/pro/crm'
     | '/_authenticated/pro/financeiro'
     | '/_authenticated/pro/impulsionar'
+    | '/_authenticated/pro/marketing'
     | '/_authenticated/pro/notificacoes'
     | '/_authenticated/pro/orcamentos'
     | '/_authenticated/pro/pacientes'
@@ -743,6 +756,13 @@ declare module '@tanstack/react-router' {
       path: '/notificacoes'
       fullPath: '/pro/notificacoes'
       preLoaderRoute: typeof AuthenticatedProNotificacoesRouteImport
+      parentRoute: typeof AuthenticatedProRoute
+    }
+    '/_authenticated/pro/marketing': {
+      id: '/_authenticated/pro/marketing'
+      path: '/marketing'
+      fullPath: '/pro/marketing'
+      preLoaderRoute: typeof AuthenticatedProMarketingRouteImport
       parentRoute: typeof AuthenticatedProRoute
     }
     '/_authenticated/pro/impulsionar': {
@@ -974,6 +994,7 @@ interface AuthenticatedProRouteChildren {
   AuthenticatedProCrmRoute: typeof AuthenticatedProCrmRouteWithChildren
   AuthenticatedProFinanceiroRoute: typeof AuthenticatedProFinanceiroRoute
   AuthenticatedProImpulsionarRoute: typeof AuthenticatedProImpulsionarRoute
+  AuthenticatedProMarketingRoute: typeof AuthenticatedProMarketingRoute
   AuthenticatedProNotificacoesRoute: typeof AuthenticatedProNotificacoesRoute
   AuthenticatedProOrcamentosRoute: typeof AuthenticatedProOrcamentosRouteWithChildren
   AuthenticatedProPacientesRoute: typeof AuthenticatedProPacientesRoute
@@ -986,6 +1007,7 @@ const AuthenticatedProRouteChildren: AuthenticatedProRouteChildren = {
   AuthenticatedProCrmRoute: AuthenticatedProCrmRouteWithChildren,
   AuthenticatedProFinanceiroRoute: AuthenticatedProFinanceiroRoute,
   AuthenticatedProImpulsionarRoute: AuthenticatedProImpulsionarRoute,
+  AuthenticatedProMarketingRoute: AuthenticatedProMarketingRoute,
   AuthenticatedProNotificacoesRoute: AuthenticatedProNotificacoesRoute,
   AuthenticatedProOrcamentosRoute: AuthenticatedProOrcamentosRouteWithChildren,
   AuthenticatedProPacientesRoute: AuthenticatedProPacientesRoute,
