@@ -2,7 +2,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { LogOut, User as UserIcon, Bell, ChevronDown } from "lucide-react";
+import { LogOut, User as UserIcon, Bell, ChevronDown, HelpCircle } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { toast } from "sonner";
 
@@ -37,6 +37,9 @@ export function ProHeader({ title }: { title?: string }) {
               <DropdownMenuSeparator />
               <DropdownMenuItem asChild>
                 <Link to="/app/perfil"><UserIcon className="size-4 mr-2" /> Meu perfil</Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link to="/ajuda"><HelpCircle className="size-4 mr-2" /> Central de Ajuda</Link>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={signOut} className="text-destructive focus:text-destructive">
