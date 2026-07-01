@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as VerificacaoRouteImport } from './routes/verificacao'
 import { Route as PlanosEPrecosRouteImport } from './routes/planos-e-precos'
 import { Route as ParaParceirosRouteImport } from './routes/para-parceiros'
 import { Route as ParaEmpresasRouteImport } from './routes/para-empresas'
@@ -60,6 +61,11 @@ import { Route as AuthenticatedAppBuscarLaboratoriosRouteImport } from './routes
 import { Route as AuthenticatedAppBuscarExamesRouteImport } from './routes/_authenticated/app.buscar.exames'
 import { Route as AuthenticatedAppBuscarClinicasRouteImport } from './routes/_authenticated/app.buscar.clinicas'
 
+const VerificacaoRoute = VerificacaoRouteImport.update({
+  id: '/verificacao',
+  path: '/verificacao',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PlanosEPrecosRoute = PlanosEPrecosRouteImport.update({
   id: '/planos-e-precos',
   path: '/planos-e-precos',
@@ -344,6 +350,7 @@ export interface FileRoutesByFullPath {
   '/para-empresas': typeof ParaEmpresasRoute
   '/para-parceiros': typeof ParaParceirosRoute
   '/planos-e-precos': typeof PlanosEPrecosRoute
+  '/verificacao': typeof VerificacaoRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/app': typeof AuthenticatedAppRouteWithChildren
   '/onboarding-empresa': typeof AuthenticatedOnboardingEmpresaRoute
@@ -395,6 +402,7 @@ export interface FileRoutesByTo {
   '/para-empresas': typeof ParaEmpresasRoute
   '/para-parceiros': typeof ParaParceirosRoute
   '/planos-e-precos': typeof PlanosEPrecosRoute
+  '/verificacao': typeof VerificacaoRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/onboarding-empresa': typeof AuthenticatedOnboardingEmpresaRoute
   '/onboarding-pro': typeof AuthenticatedOnboardingProRoute
@@ -445,6 +453,7 @@ export interface FileRoutesById {
   '/para-empresas': typeof ParaEmpresasRoute
   '/para-parceiros': typeof ParaParceirosRoute
   '/planos-e-precos': typeof PlanosEPrecosRoute
+  '/verificacao': typeof VerificacaoRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/app': typeof AuthenticatedAppRouteWithChildren
   '/_authenticated/onboarding-empresa': typeof AuthenticatedOnboardingEmpresaRoute
@@ -498,6 +507,7 @@ export interface FileRouteTypes {
     | '/para-empresas'
     | '/para-parceiros'
     | '/planos-e-precos'
+    | '/verificacao'
     | '/admin'
     | '/app'
     | '/onboarding-empresa'
@@ -549,6 +559,7 @@ export interface FileRouteTypes {
     | '/para-empresas'
     | '/para-parceiros'
     | '/planos-e-precos'
+    | '/verificacao'
     | '/admin'
     | '/onboarding-empresa'
     | '/onboarding-pro'
@@ -598,6 +609,7 @@ export interface FileRouteTypes {
     | '/para-empresas'
     | '/para-parceiros'
     | '/planos-e-precos'
+    | '/verificacao'
     | '/_authenticated/admin'
     | '/_authenticated/app'
     | '/_authenticated/onboarding-empresa'
@@ -651,6 +663,7 @@ export interface RootRouteChildren {
   ParaEmpresasRoute: typeof ParaEmpresasRoute
   ParaParceirosRoute: typeof ParaParceirosRoute
   PlanosEPrecosRoute: typeof PlanosEPrecosRoute
+  VerificacaoRoute: typeof VerificacaoRoute
   ESlugRoute: typeof ESlugRoute
   PSlugRoute: typeof PSlugRoute
   PayTokenRoute: typeof PayTokenRoute
@@ -660,6 +673,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/verificacao': {
+      id: '/verificacao'
+      path: '/verificacao'
+      fullPath: '/verificacao'
+      preLoaderRoute: typeof VerificacaoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/planos-e-precos': {
       id: '/planos-e-precos'
       path: '/planos-e-precos'
@@ -1179,6 +1199,7 @@ const rootRouteChildren: RootRouteChildren = {
   ParaEmpresasRoute: ParaEmpresasRoute,
   ParaParceirosRoute: ParaParceirosRoute,
   PlanosEPrecosRoute: PlanosEPrecosRoute,
+  VerificacaoRoute: VerificacaoRoute,
   ESlugRoute: ESlugRoute,
   PSlugRoute: PSlugRoute,
   PayTokenRoute: PayTokenRoute,

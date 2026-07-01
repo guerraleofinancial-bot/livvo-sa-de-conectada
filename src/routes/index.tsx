@@ -70,7 +70,7 @@ const categories: { name: string; Icon: typeof Stethoscope }[] = [
 const benefits = [
   { Icon: CalendarClock, title: "Agendamento em tempo real", desc: "Veja horários disponíveis e confirme em segundos." },
   { Icon: CreditCard, title: "Pagamento seguro", desc: "Pague direto na plataforma, sem surpresas." },
-  { Icon: BadgeCheck, title: "Parceiros verificados", desc: "Todo cadastro é aprovado pela equipe Livvo." },
+  { Icon: BadgeCheck, title: "Profissionais com documentação verificada", desc: "Nossa equipe analisa documentos e registros profissionais antes da aprovação na plataforma." },
   { Icon: Sparkles, title: "Tudo em um só lugar", desc: "Consultas, exames, procedimentos e pacotes." },
 ];
 
