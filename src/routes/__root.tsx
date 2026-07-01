@@ -153,7 +153,7 @@ function SuperAdminGate() {
       const path = typeof window !== "undefined" ? window.location.pathname : "";
       const isAdminPath = path === "/admin" || path.startsWith("/admin/");
       const isAuthPath = path === "/auth" || path.startsWith("/auth/");
-      if (grant && !isAdminPath && !isAuthPath) {
+      if (grant?.level === "super_admin" && !isAdminPath && !isAuthPath) {
         router.navigate({ to: "/admin" });
       }
     }
