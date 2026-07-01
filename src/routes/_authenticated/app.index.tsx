@@ -619,27 +619,49 @@ function ProRail({
           />
         </div>
       ) : (
-        <HorizontalScroller className="mt-3" snap="start">
-          {loading &&
-            Array.from({ length: 3 }).map((_, i) => (
-              <div key={i} className="w-[300px]">
-                <ProfessionalCardSkeleton />
-              </div>
-            ))}
-          {!loading &&
-            (pros ?? []).map((p) => (
-              <div key={p.id} className="w-[300px]">
+        <>
+          {/* Desktop grid */}
+          <div className="mt-3 hidden md:grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {loading &&
+              Array.from({ length: 4 }).map((_, i) => <ProfessionalCardSkeleton key={i} />)}
+            {!loading &&
+              (pros ?? []).map((p) => (
                 <ProfessionalCard
+                  key={p.id}
                   data={toCard(p, {
                     isPremium: highlight === "premium",
                     isHotToday: highlight === "hot",
                     isNewPartner: highlight === "new" ? true : undefined,
                   })}
                 />
-              </div>
-            ))}
-        </HorizontalScroller>
+              ))}
+          </div>
+          {/* Mobile carousel */}
+          <div className="md:hidden">
+            <HorizontalScroller className="mt-3" snap="start">
+              {loading &&
+                Array.from({ length: 3 }).map((_, i) => (
+                  <div key={i} className="w-[300px]">
+                    <ProfessionalCardSkeleton />
+                  </div>
+                ))}
+              {!loading &&
+                (pros ?? []).map((p) => (
+                  <div key={p.id} className="w-[300px]">
+                    <ProfessionalCard
+                      data={toCard(p, {
+                        isPremium: highlight === "premium",
+                        isHotToday: highlight === "hot",
+                        isNewPartner: highlight === "new" ? true : undefined,
+                      })}
+                    />
+                  </div>
+                ))}
+            </HorizontalScroller>
+          </div>
+        </>
       )}
+
     </section>
 
   );
