@@ -405,12 +405,20 @@ function AdminPanel() {
           </section>
         )}
 
+        {tab === "identidades" && (
+          <section className="space-y-4">
+            <h2 className="text-sm font-bold">Contas com múltiplos papéis</h2>
+            <MultiRoleAccountsTab />
+          </section>
+        )}
+
         {tab === "audit" && (
           <section className="space-y-4">
             <h2 className="text-sm font-bold">Logs de auditoria</h2>
             <AuditLogsTab />
           </section>
         )}
+
       </main>
     </div>
   );
