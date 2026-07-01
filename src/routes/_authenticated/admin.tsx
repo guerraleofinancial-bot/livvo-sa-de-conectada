@@ -465,12 +465,57 @@ function AdminPanel() {
         {tab === "settings" && settings && (
           <section className="space-y-4">
             <h2 className="text-sm font-bold">Central de configurações</h2>
+
+            {/* Modo Demonstração */}
+            <div className={`rounded-2xl border p-5 ${demoMode ? "border-amber-300 bg-amber-50/60" : "border-border bg-card"}`}>
+              <div className="flex items-start justify-between gap-4">
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className={`size-2 rounded-full ${demoMode ? "bg-amber-500" : "bg-emerald-500"}`} />
+                    <h3 className="text-sm font-bold">Modo Demonstração</h3>
+                    <span className={`text-[10px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded ${demoMode ? "bg-amber-200/70 text-amber-800" : "bg-emerald-100 text-emerald-700"}`}>
+                      {demoMode ? "Ativado" : "Desativado"}
+                    </span>
+                  </div>
+                  <p className="text-xs text-muted-foreground max-w-2xl">
+                    Quando ativado, a plataforma pode exibir dados fictícios (contas <code>@livvo.demo</code>) para testes e apresentações.
+                    <strong> Não usar em produção.</strong> Ao desativar, todas as contas demo são removidas automaticamente e a plataforma passa a exibir somente dados reais aprovados.
+                  </p>
+                </div>
+                <div className="flex flex-col items-end gap-2 shrink-0">
+                  <Button
+                    size="sm"
+                    variant={demoMode ? "outline" : "default"}
+                    onClick={() => {
+                      if (demoMode) {
+                        if (!confirm("Desativar o Modo Demonstração vai remover TODAS as contas @livvo.demo (profissionais, clínicas e pacientes de teste). Continuar?")) return;
+                      }
+                      toggleDemoMut.mutate(!demoMode);
+                    }}
+                    disabled={toggleDemoMut.isPending}
+                  >
+                    {toggleDemoMut.isPending ? "..." : demoMode ? "Desativar modo demo" : "Ativar modo demo"}
+                  </Button>
+                  {demoMode && (
+                    <button
+                      onClick={() => { if (confirm("Remover apenas as contas demo, mantendo o modo ativo?")) purgeDemoMut.mutate(); }}
+                      disabled={purgeDemoMut.isPending}
+                      className="text-[11px] text-muted-foreground underline underline-offset-2 hover:text-foreground"
+                    >
+                      {purgeDemoMut.isPending ? "purgando..." : "Purgar dados demo agora"}
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+
             <SettingsCenter
               initial={settings as never}
               onSave={async (v) => { await updSettings({ data: v }); qc.invalidateQueries({ queryKey: ["settings"] }); }}
             />
           </section>
         )}
+
 
         {tab === "identidades" && (
           <section className="space-y-4">
