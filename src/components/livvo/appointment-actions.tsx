@@ -41,7 +41,28 @@ export function AppointmentActions({ appt, onOpenTimeline, invalidateKeys }: {
   invalidateKeys?: string[];
 }) {
   const qc = useQueryClient();
-  const [open, setOpen] = useState<null | "reschedule" | "cancel" | "noshow" | "complete">(null);
+  const [open, setOpen] = useState<null | "reschedule" | "cancel" | "noshow" | "complete" | "return">(null);
+  const createApptFn = useServerFn(createManualAppointment);
+
+  const returnMut = useMutation({
+    mutationFn: async ({ when }: { when: string }) => {
+      if (!appt.patient_id) throw new Error("Paciente não vinculado");
+      await createApptFn({
+        data: {
+          patient_id: appt.patient_id,
+          professional_id: appt.professional_id,
+          scheduled_at: new Date(when).toISOString(),
+          duration_minutes: appt.duration_minutes ?? 30,
+          service_id: appt.service_id ?? null,
+          price: appt.price ?? 0,
+          notes: "Retorno da consulta anterior",
+        },
+      });
+    },
+    onSuccess: () => { toast.success("Retorno agendado"); invalidate(); setOpen(null); },
+    onError: (e: Error) => toast.error(e.message ?? "Erro ao agendar retorno"),
+  });
+
 
   const invalidate = () => {
     (invalidateKeys ?? ["pro-agenda", "pro-next", "crm-dashboard", "pro-pending"]).forEach((k) =>
