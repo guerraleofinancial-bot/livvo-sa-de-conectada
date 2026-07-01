@@ -526,7 +526,7 @@ function PatientHome() {
       {reviews && reviews.length > 0 && (
         <section className="px-5 md:px-8 mt-8 md:mt-12 livvo-slide-up">
           <SectionHeader eyebrow="Comunidade" title="Avaliações recentes" />
-          <div className="mt-3 grid gap-3 sm:grid-cols-2">
+          <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {reviews.map((r, i) => {
               const pro = (r as any).professionals;
               return (
