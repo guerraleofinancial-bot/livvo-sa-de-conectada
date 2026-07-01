@@ -256,9 +256,10 @@ function PatientHome() {
   const firstName = profile?.full_name?.split(" ")[0] ?? "";
 
   return (
-    <div className="pb-10 livvo-fade-in">
+    <div className="pb-10 livvo-fade-in mx-auto w-full max-w-7xl">
       {/* Header */}
-      <header className="px-5 pt-10 pb-4 flex items-center justify-between">
+      <header className="px-5 md:px-8 pt-10 flex items-center justify-between">
+
         <div className="flex items-center gap-3 min-w-0">
           <div className="size-11 shrink-0 rounded-full bg-primary-soft grid place-items-center text-primary font-bold ring-1 ring-border overflow-hidden">
             {profile?.avatar_url ? (
