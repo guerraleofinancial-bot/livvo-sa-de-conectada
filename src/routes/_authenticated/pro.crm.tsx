@@ -309,15 +309,18 @@ function CrmPage() {
 
       <CRMContactDetailModal
         open={!!selectedContactId}
-        onOpenChange={(open: boolean) => { if (!open) setSelectedContactId(null); }}
+        onOpenChange={(open: boolean) => { if (!open) { setSelectedContactId(null); setPendingAction(null); } }}
         detail={detailQuery.data ?? null}
         isLoading={detailQuery.isLoading || detailQuery.isFetching}
         error={detailQuery.error as Error | null}
+        initialAction={pendingAction}
+        onActionConsumed={() => setPendingAction(null)}
         onSaved={() => {
           detailQuery.refetch();
           qc.invalidateQueries({ queryKey: ["crm-patients"] });
           qc.invalidateQueries({ queryKey: ["pro-agenda"] });
         }}
+
       />
     </div>
   );
