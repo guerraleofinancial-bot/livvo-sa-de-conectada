@@ -199,12 +199,15 @@ function AdminPanel() {
             )}
             <Button size="sm" variant="ghost" onClick={signOut}><LogOut className="size-4" /></Button>
           </div>
-
+        </div>
+        <nav className="max-w-6xl mx-auto px-5 flex gap-1 overflow-x-auto scrollbar-hide">
+          {tabs.map((t) => (
             <button key={t.id} onClick={() => setTab(t.id)} className={`px-3 py-2 text-xs font-semibold border-b-2 shrink-0 flex items-center gap-1.5 ${tab === t.id ? "border-primary text-primary" : "border-transparent text-muted-foreground"}`}>
               <t.icon className="size-3.5" /> {t.label}
             </button>
           ))}
         </nav>
+
       </header>
 
       <main className="max-w-6xl mx-auto px-5 py-6 space-y-6">
