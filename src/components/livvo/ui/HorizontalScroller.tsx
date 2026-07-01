@@ -9,38 +9,33 @@ import {
   useRef,
   useState,
   type HTMLAttributes,
+  type KeyboardEvent,
   type ReactElement,
   type ReactNode,
 } from "react";
 
 /**
- * HorizontalScroller — Livvo premium horizontal list primitive.
+ * HorizontalScroller — Livvo Design System primitive premium.
  *
- * Recursos:
- *  - Gradient fade nas extremidades quando há mais conteúdo
- *  - Setas discretas no desktop (hover-reveal)
- *  - Snap scroll + swipe natural no mobile
- *  - Roda do mouse / trackpad convertido em scroll horizontal
- *  - Preview do próximo item por padrão (mostra "peek")
- *  - Auto-centraliza item marcado com data-active="true"
- *  - Bleed lateral (negative margin) para tocar as bordas do container pai
+ * • Setas persistentes (não hover-only) que aparecem/somem conforme overflow
+ * • Fade lateral evidente (largura maior + gradient mais denso)
+ * • Preview do próximo item (peek ~30%) — via scroll-padding + item spacing
+ * • Snap + swipe natural (mobile) / arrows + wheel (desktop)
+ * • Navegação por teclado ← → quando o scroller tem foco
+ * • Auto-centraliza item marcado com data-active="true"
+ * • Bleed lateral para colar às bordas do container pai
  */
 export interface HorizontalScrollerProps extends HTMLAttributes<HTMLDivElement> {
   children: ReactNode;
-  /** gap em px entre itens */
   gap?: number;
-  /** habilita snap encaixe */
   snap?: "start" | "center" | "none";
-  /** ativa "bleed" lateral (-mx-5 px-5) para colar às bordas do card pai */
   bleed?: boolean;
-  /** exibe setas no desktop */
   showArrows?: boolean;
-  /** converte scroll vertical do mouse em horizontal */
   wheelToHorizontal?: boolean;
-  /** distância (px) por clique de seta */
   scrollStep?: number;
-  /** classe extra no track (viewport rolável) */
   trackClassName?: string;
+  /** aria-label do scroller (acessibilidade) */
+  ariaLabel?: string;
 }
 
 export function HorizontalScroller({
@@ -53,6 +48,7 @@ export function HorizontalScroller({
   scrollStep,
   trackClassName = "",
   className = "",
+  ariaLabel,
   ...rest
 }: HorizontalScrollerProps) {
   const trackRef = useRef<HTMLDivElement | null>(null);
@@ -88,7 +84,6 @@ export function HorizontalScroller({
     };
   }, [compute, children]);
 
-  // Wheel → horizontal (desktop apenas, respeitando movimento diagonal)
   useEffect(() => {
     if (!wheelToHorizontal) return;
     const el = trackRef.current;
@@ -96,7 +91,6 @@ export function HorizontalScroller({
     const onWheel = (e: WheelEvent) => {
       if (e.deltaY === 0) return;
       if (Math.abs(e.deltaY) < Math.abs(e.deltaX)) return;
-      // só sequestra se realmente há overflow horizontal
       if (el.scrollWidth <= el.clientWidth) return;
       el.scrollLeft += e.deltaY;
       e.preventDefault();
@@ -105,7 +99,6 @@ export function HorizontalScroller({
     return () => el.removeEventListener("wheel", onWheel);
   }, [wheelToHorizontal]);
 
-  // Auto center do item ativo
   useEffect(() => {
     const el = trackRef.current;
     if (!el) return;
@@ -121,6 +114,16 @@ export function HorizontalScroller({
     if (!el) return;
     const step = scrollStep ?? Math.max(240, Math.round(el.clientWidth * 0.8));
     el.scrollBy({ left: dir * step, behavior: "smooth" });
+  };
+
+  const onKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === "ArrowRight") {
+      e.preventDefault();
+      scrollBy(1);
+    } else if (e.key === "ArrowLeft") {
+      e.preventDefault();
+      scrollBy(-1);
+    }
   };
 
   const snapItem =
@@ -144,22 +147,21 @@ export function HorizontalScroller({
       className={`relative group/scroller ${bleed ? "-mx-5" : ""} ${className}`}
       {...rest}
     >
-      {/* Fade esquerdo */}
+      {/* Fade esquerdo — mais evidente */}
       <div
         aria-hidden
-        className={`pointer-events-none absolute inset-y-0 left-0 z-10 w-10 bg-gradient-to-r from-background to-transparent transition-opacity duration-200 ${
+        className={`pointer-events-none absolute inset-y-0 left-0 z-10 w-16 md:w-20 bg-gradient-to-r from-background via-background/85 to-transparent transition-opacity duration-300 ${
           canLeft ? "opacity-100" : "opacity-0"
-        } ${bleed ? "" : "rounded-l-2xl"}`}
+        }`}
       />
-      {/* Fade direito */}
+      {/* Fade direito — mais evidente */}
       <div
         aria-hidden
-        className={`pointer-events-none absolute inset-y-0 right-0 z-10 w-12 bg-gradient-to-l from-background to-transparent transition-opacity duration-200 ${
+        className={`pointer-events-none absolute inset-y-0 right-0 z-10 w-20 md:w-28 bg-gradient-to-l from-background via-background/85 to-transparent transition-opacity duration-300 ${
           canRight ? "opacity-100" : "opacity-0"
-        } ${bleed ? "" : "rounded-r-2xl"}`}
+        }`}
       />
 
-      {/* Setas — só desktop, aparecem quando há overflow */}
       {showArrows && (
         <>
           <button
@@ -167,10 +169,8 @@ export function HorizontalScroller({
             aria-label="Rolar para a esquerda"
             onClick={() => scrollBy(-1)}
             tabIndex={canLeft ? 0 : -1}
-            className={`hidden md:grid absolute left-2 top-1/2 -translate-y-1/2 z-20 size-9 place-items-center rounded-full border border-border bg-card/95 backdrop-blur shadow-lg text-foreground transition-all duration-200 hover:scale-105 hover:bg-card ${
-              canLeft
-                ? "opacity-0 group-hover/scroller:opacity-100 focus-visible:opacity-100"
-                : "opacity-0 pointer-events-none"
+            className={`hidden md:grid absolute left-2 top-1/2 -translate-y-1/2 z-20 size-10 place-items-center rounded-full border border-border/70 bg-card/95 backdrop-blur shadow-[0_6px_20px_-6px_rgba(0,0,0,0.15)] text-foreground transition-all duration-300 hover:scale-105 hover:border-primary/40 hover:text-primary ${
+              canLeft ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-2 pointer-events-none"
             }`}
           >
             <ChevronLeft className="size-4" />
@@ -180,10 +180,8 @@ export function HorizontalScroller({
             aria-label="Rolar para a direita"
             onClick={() => scrollBy(1)}
             tabIndex={canRight ? 0 : -1}
-            className={`hidden md:grid absolute right-2 top-1/2 -translate-y-1/2 z-20 size-9 place-items-center rounded-full border border-border bg-card/95 backdrop-blur shadow-lg text-foreground transition-all duration-200 hover:scale-105 hover:bg-card ${
-              canRight
-                ? "opacity-0 group-hover/scroller:opacity-100 focus-visible:opacity-100"
-                : "opacity-0 pointer-events-none"
+            className={`hidden md:grid absolute right-2 top-1/2 -translate-y-1/2 z-20 size-10 place-items-center rounded-full border border-border/70 bg-card/95 backdrop-blur shadow-[0_6px_20px_-6px_rgba(0,0,0,0.15)] text-foreground transition-all duration-300 hover:scale-105 hover:border-primary/40 hover:text-primary ${
+              canRight ? "opacity-100 translate-x-0" : "opacity-0 translate-x-2 pointer-events-none"
             }`}
           >
             <ChevronRight className="size-4" />
@@ -191,17 +189,25 @@ export function HorizontalScroller({
         </>
       )}
 
-      {/* Track */}
       <div
         ref={trackRef}
-        className={`flex overflow-x-auto scrollbar-hide scroll-smooth ${
+        role="region"
+        aria-label={ariaLabel}
+        tabIndex={0}
+        onKeyDown={onKeyDown}
+        className={`flex overflow-x-auto scrollbar-hide scroll-smooth outline-none focus-visible:ring-2 focus-visible:ring-primary/30 rounded-lg ${
           snap !== "none" ? "snap-x snap-mandatory" : ""
         } ${bleed ? "px-5" : ""} ${trackClassName}`}
-        style={{ scrollPaddingLeft: bleed ? 20 : 0, scrollPaddingRight: bleed ? 20 : 0 }}
+        style={{
+          scrollPaddingLeft: bleed ? 20 : 8,
+          // scroll-padding-right maior => item nunca encosta na borda direita,
+          // deixando ~30% do próximo visível (peek premium).
+          scrollPaddingRight: 72,
+        }}
       >
         {items}
-        {/* peek final: pequeno spacer para dar respiro no snap */}
-        <div aria-hidden className="shrink-0 w-2" />
+        {/* Spacer para garantir peek do último item e respiro no snap */}
+        <div aria-hidden className="shrink-0 w-6 md:w-10" />
       </div>
     </div>
   );
