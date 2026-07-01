@@ -123,7 +123,7 @@ function Landing() {
 
               <div className="mt-5 flex flex-wrap items-center gap-x-6 gap-y-2 text-xs text-muted-foreground">
                 <div className="flex items-center gap-2"><ShieldCheck className="size-4 text-health" /> Pagamento seguro</div>
-                <div className="flex items-center gap-2"><BadgeCheck className="size-4 text-health" /> Parceiros verificados</div>
+                <div className="flex items-center gap-2"><BadgeCheck className="size-4 text-health" /> Documentação verificada</div>
                 <div className="flex items-center gap-2"><Stethoscope className="size-4 text-health" /> Apenas presencial</div>
               </div>
             </div>
