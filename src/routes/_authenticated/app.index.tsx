@@ -61,12 +61,12 @@ function PatientHome() {
     },
   });
 
-  const { data: pros } = useQuery({
+  const { data: pros, isLoading: prosLoading } = useQuery({
     queryKey: ["pros-near"],
     queryFn: async () => {
       const { data } = await supabase
         .from("professionals")
-        .select("id, consultation_price, rating_average, address_city, profiles:profiles!professionals_profile_fkey(full_name, avatar_url), specialties(name)")
+        .select("id, consultation_price, rating_average, rating_count, address_city, address_state, council, council_number, council_state, council_verified_at, profiles:profiles!professionals_profile_fkey(full_name, avatar_url), specialties(name)")
         .eq("status", "aprovado")
         .order("rating_average", { ascending: false })
         .limit(5);
