@@ -112,7 +112,8 @@ export function HorizontalScroller({
   const scrollBy = (dir: 1 | -1) => {
     const el = trackRef.current;
     if (!el) return;
-    const step = scrollStep ?? Math.max(240, Math.round(el.clientWidth * 0.8));
+    // ~70% da largura visível por clique de seta
+    const step = scrollStep ?? Math.max(200, Math.round(el.clientWidth * 0.7));
     el.scrollBy({ left: dir * step, behavior: "smooth" });
   };
 
@@ -167,24 +168,30 @@ export function HorizontalScroller({
           <button
             type="button"
             aria-label="Rolar para a esquerda"
+            aria-hidden={!canLeft}
             onClick={() => scrollBy(-1)}
             tabIndex={canLeft ? 0 : -1}
-            className={`hidden md:grid absolute left-2 top-1/2 -translate-y-1/2 z-20 size-10 place-items-center rounded-full border border-border/70 bg-card/95 backdrop-blur shadow-[0_6px_20px_-6px_rgba(0,0,0,0.15)] text-foreground transition-all duration-300 hover:scale-105 hover:border-primary/40 hover:text-primary ${
-              canLeft ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-2 pointer-events-none"
+            className={`grid absolute left-1.5 md:left-2 top-1/2 -translate-y-1/2 z-20 size-9 md:size-11 place-items-center rounded-full border border-border/70 bg-card/95 backdrop-blur shadow-[0_6px_20px_-6px_rgba(0,0,0,0.20)] text-foreground transition-all duration-300 hover:scale-105 hover:border-primary/50 hover:text-primary active:scale-95 ${
+              canLeft
+                ? "opacity-100 translate-x-0"
+                : "opacity-0 -translate-x-2 pointer-events-none"
             }`}
           >
-            <ChevronLeft className="size-4" />
+            <ChevronLeft className="size-4 md:size-5" />
           </button>
           <button
             type="button"
             aria-label="Rolar para a direita"
+            aria-hidden={!canRight}
             onClick={() => scrollBy(1)}
             tabIndex={canRight ? 0 : -1}
-            className={`hidden md:grid absolute right-2 top-1/2 -translate-y-1/2 z-20 size-10 place-items-center rounded-full border border-border/70 bg-card/95 backdrop-blur shadow-[0_6px_20px_-6px_rgba(0,0,0,0.15)] text-foreground transition-all duration-300 hover:scale-105 hover:border-primary/40 hover:text-primary ${
-              canRight ? "opacity-100 translate-x-0" : "opacity-0 translate-x-2 pointer-events-none"
+            className={`grid absolute right-1.5 md:right-2 top-1/2 -translate-y-1/2 z-20 size-9 md:size-11 place-items-center rounded-full border border-border/70 bg-card/95 backdrop-blur shadow-[0_6px_20px_-6px_rgba(0,0,0,0.20)] text-foreground transition-all duration-300 hover:scale-105 hover:border-primary/50 hover:text-primary active:scale-95 ${
+              canRight
+                ? "opacity-100 translate-x-0"
+                : "opacity-0 translate-x-2 pointer-events-none"
             }`}
           >
-            <ChevronRight className="size-4" />
+            <ChevronRight className="size-4 md:size-5" />
           </button>
         </>
       )}
