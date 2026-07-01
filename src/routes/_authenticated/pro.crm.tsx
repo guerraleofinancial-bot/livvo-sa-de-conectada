@@ -65,6 +65,7 @@ function CrmPage() {
   const [openNew, setOpenNew] = useState(false);
   const [openImport, setOpenImport] = useState(false);
   const [selectedContactId, setSelectedContactId] = useState<string | null>(null);
+  const [pendingAction, setPendingAction] = useState<null | "edit" | "schedule" | "charge" | "quote">(null);
 
   const detailQuery = useQuery({
     queryKey: ["crm-contact-detail", selectedContactId],
@@ -73,9 +74,19 @@ function CrmPage() {
     retry: false,
   });
 
-  const openContact = (contactId: string, row?: CrmRow) => {
+  const openContact = (contactId: string, action: typeof pendingAction = null) => {
+    setPendingAction(action);
     setSelectedContactId(contactId);
   };
+
+  const openWhatsApp = (raw: string | null | undefined, name?: string | null) => {
+    if (!raw) { toast.error("Paciente sem WhatsApp/telefone"); return; }
+    const digits = raw.replace(/\D/g, "");
+    const phone = digits.length <= 11 ? `55${digits}` : digits;
+    const text = encodeURIComponent(`Olá ${name?.split(" ")[0] ?? ""}, tudo bem?`);
+    window.open(`https://wa.me/${phone}?text=${text}`, "_blank");
+  };
+
 
   const rows = useMemo(() => {
     const all = data ?? [];
