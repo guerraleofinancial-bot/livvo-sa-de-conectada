@@ -45,21 +45,30 @@ function ProHome() {
       const start = new Date(); start.setHours(0, 0, 0, 0);
       const end = new Date(start); end.setDate(end.getDate() + 1);
       const nowIso = new Date().toISOString();
-      const [{ data: dayRows }, { data: pendRows }] = await Promise.all([
-        supabase.from("appointments").select("status").eq("professional_id", user!.id).gte("scheduled_at", start.toISOString()).lt("scheduled_at", end.toISOString()),
-        supabase.from("appointments").select("id").eq("professional_id", user!.id).eq("status", "agendada").lt("scheduled_at", nowIso),
+      const back30 = new Date(); back30.setDate(back30.getDate() - 30);
+      const [{ data: dayRows }, { data: pendRows }, { data: doneRows }, { data: futureRows }] = await Promise.all([
+        supabase.from("appointments").select("status, scheduled_at").eq("professional_id", user!.id).gte("scheduled_at", start.toISOString()).lt("scheduled_at", end.toISOString()),
+        supabase.from("appointments").select("id").eq("professional_id", user!.id).in("status", ["agendada", "confirmada"]).lt("scheduled_at", nowIso),
+        supabase.from("appointments").select("patient_id").eq("professional_id", user!.id).eq("status", "realizada").gte("scheduled_at", back30.toISOString()),
+        supabase.from("appointments").select("patient_id").eq("professional_id", user!.id).in("status", ["agendada", "confirmada"]).gte("scheduled_at", nowIso),
       ]);
       const rows = dayRows ?? [];
       const count = (s: string) => rows.filter((r) => r.status === s).length;
+      const awaiting = rows.filter((r) => r.status === "agendada" && new Date(r.scheduled_at) >= new Date()).length;
+      const futureIds = new Set((futureRows ?? []).map((r) => r.patient_id).filter(Boolean));
+      const returnsIds = new Set((doneRows ?? []).map((r) => r.patient_id).filter((p) => p && !futureIds.has(p)));
       return {
         total: rows.length,
         done: count("realizada"),
         cancelled: count("cancelada"),
         noShow: count("nao_compareceu"),
         pending: (pendRows ?? []).length,
+        awaiting,
+        returns: returnsIds.size,
       };
     },
   });
+
 
 
   const p = pro as (typeof pro & { profiles: { full_name?: string } | null; specialties: { name?: string } | null }) | null;
