@@ -20,6 +20,7 @@ import {
   Star,
   Calendar,
   ChevronRight,
+  ClipboardList,
 } from "lucide-react";
 import { useEffect } from "react";
 import {
