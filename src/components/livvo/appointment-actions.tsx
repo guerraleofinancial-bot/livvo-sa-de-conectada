@@ -47,13 +47,14 @@ export function AppointmentActions({ appt, onOpenTimeline, invalidateKeys }: {
   };
 
   const setStatus = useMutation({
-    mutationFn: async (patch: { status: "agendada" | "confirmada" | "em_andamento" | "realizada" | "cancelada" | "nao_compareceu"; [k: string]: unknown }) => {
+    mutationFn: async (patch: TablesUpdate<"appointments">) => {
       const { error } = await supabase.from("appointments").update(patch).eq("id", appt.id);
       if (error) throw error;
     },
     onSuccess: () => { toast.success("Agendamento atualizado"); invalidate(); setOpen(null); },
     onError: (e: Error) => toast.error(e.message ?? "Erro ao atualizar"),
   });
+
 
 
   const rescheduleMut = useMutation({
