@@ -5,7 +5,7 @@ import { getCrmContactDetail, listCrmPatients, updateCrmStatus } from "@/lib/liv
 import { createQuote } from "@/lib/livvo/quotes.functions";
 import { createManualAppointment, updateCrmContact } from "@/lib/livvo/patients.functions";
 import { createCharge, listChargesForContact } from "@/lib/livvo/charges.functions";
-import { Users, Calendar, ChevronRight, LayoutGrid, List, FileText, CalendarPlus, Phone, Mail, MapPin, Pencil, DollarSign, Copy, CheckCircle2 } from "lucide-react";
+import { Users, Calendar, ChevronRight, LayoutGrid, List, FileText, CalendarPlus, Phone, Mail, MapPin, Pencil, DollarSign, Copy, CheckCircle2, AlertTriangle } from "lucide-react";
 import { useEffect, useState, useMemo } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -158,13 +158,26 @@ function CrmPage() {
                       <p className="text-sm font-semibold truncate">{p.full_name ?? "Paciente"}</p>
                       <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${meta.cls}`}>{meta.label}</span>
                     </div>
-                    <div className="mt-1 flex items-center gap-3 text-xs text-muted-foreground">
+                    <div className="mt-1 flex items-center gap-3 text-xs text-muted-foreground flex-wrap">
                       <span className="flex items-center gap-1"><Calendar className="size-3" />
                         {r.next_appointment_at ? `Próx: ${new Date(r.next_appointment_at).toLocaleDateString("pt-BR")}` :
                          r.last_appointment_at ? `Últ: ${new Date(r.last_appointment_at).toLocaleDateString("pt-BR")}` : "Sem histórico"}
                       </span>
+                      {(() => {
+                        const ref = r.next_appointment_at;
+                        if (!ref) return null;
+                        const diffMs = Date.now() - new Date(ref).getTime();
+                        const days = Math.floor(diffMs / 86400000);
+                        if (days <= 0) return null;
+                        return (
+                          <span className="inline-flex items-center gap-1 text-warning font-semibold">
+                            <AlertTriangle className="size-3" /> Atrasado há {days} {days === 1 ? "dia" : "dias"}
+                          </span>
+                        );
+                      })()}
                       <span>R$ {Number(r.total_revenue ?? 0).toFixed(0)}</span>
                     </div>
+
                   </div>
                   <ChevronRight className="size-4 text-muted-foreground shrink-0 pointer-events-none" />
                 </button>

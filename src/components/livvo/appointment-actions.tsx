@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { CheckCircle2, XCircle, Clock, MoreVertical, UserX, Play, RotateCcw, History } from "lucide-react";
+import { CheckCircle2, XCircle, Clock, MoreVertical, UserX, Play, RotateCcw, History, AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
 import { createManualAppointment } from "@/lib/livvo/patients.functions";
 
@@ -96,8 +96,32 @@ export function AppointmentActions({ appt, onOpenTimeline, invalidateKeys }: {
     onError: (e: Error) => toast.error(e.message ?? "Erro ao reagendar"),
   });
 
+  const overdue = isPending(appt);
+
   return (
     <>
+      {overdue && (
+        <div className="w-full basis-full order-last rounded-xl border border-warning/30 bg-warning-soft/40 p-2 mt-2 flex flex-col gap-2">
+          <p className="text-[11px] font-semibold text-warning flex items-center gap-1">
+            <AlertTriangle className="size-3" /> Esta consulta já passou. Escolha o desfecho:
+          </p>
+          <div className="grid grid-cols-2 gap-1.5">
+            <Button size="sm" variant="outline" className="h-8 text-xs" onClick={() => setOpen("complete")}>
+              <CheckCircle2 className="size-3 mr-1" /> Realizada
+            </Button>
+            <Button size="sm" variant="outline" className="h-8 text-xs" onClick={() => setOpen("noshow")}>
+              <UserX className="size-3 mr-1" /> Não compareceu
+            </Button>
+            <Button size="sm" variant="outline" className="h-8 text-xs" onClick={() => setOpen("reschedule")}>
+              <Clock className="size-3 mr-1" /> Reagendar
+            </Button>
+            <Button size="sm" variant="outline" className="h-8 text-xs text-destructive" onClick={() => setOpen("cancel")}>
+              <XCircle className="size-3 mr-1" /> Cancelar
+            </Button>
+          </div>
+        </div>
+      )}
+
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <button className="p-1.5 rounded-lg hover:bg-muted" aria-label="Ações">
