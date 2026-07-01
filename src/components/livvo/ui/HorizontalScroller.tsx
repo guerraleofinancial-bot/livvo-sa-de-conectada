@@ -116,7 +116,6 @@ export function HorizontalScroller({
     const step = scrollStep ?? Math.max(200, Math.round(el.clientWidth * 0.7));
     el.scrollBy({ left: dir * step, behavior: "smooth" });
   };
-  };
 
   const onKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
     if (e.key === "ArrowRight") {
