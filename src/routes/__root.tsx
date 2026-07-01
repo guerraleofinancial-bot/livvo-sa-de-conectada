@@ -130,8 +130,38 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
+      <SuperAdminGate />
       <Outlet />
       <Toaster position="top-center" richColors />
     </QueryClientProvider>
   );
+}
+
+function SuperAdminGate() {
+  const router = useRouter();
+  useEffect(() => {
+    let cancelled = false;
+    async function check() {
+      const { data } = await supabase.auth.getUser();
+      if (!data.user || cancelled) return;
+      const { data: grant } = await supabase
+        .from("admin_grants")
+        .select("level")
+        .eq("user_id", data.user.id)
+        .maybeSingle();
+      if (cancelled) return;
+      const path = typeof window !== "undefined" ? window.location.pathname : "";
+      const isAdminPath = path === "/admin" || path.startsWith("/admin/");
+      const isAuthPath = path === "/auth" || path.startsWith("/auth/");
+      if (grant?.level === "super_admin" && !isAdminPath && !isAuthPath) {
+        router.navigate({ to: "/admin" });
+      }
+    }
+    check();
+    const { data: sub } = supabase.auth.onAuthStateChange((event) => {
+      if (event === "SIGNED_IN" || event === "USER_UPDATED") check();
+    });
+    return () => { cancelled = true; sub.subscription.unsubscribe(); };
+  }, [router]);
+  return null;
 }
