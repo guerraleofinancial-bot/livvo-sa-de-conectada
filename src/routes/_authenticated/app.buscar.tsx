@@ -134,106 +134,138 @@ function Buscar() {
   const totalCount = ranked?.length ?? 0;
 
   return (
-    <div className="pb-10 livvo-fade-in">
-      {/* Hero */}
-      <header className="livvo-hero-gradient px-5 pt-10 pb-6 rounded-b-[28px] border-b border-border/60">
-        <div className="mb-4 flex items-center justify-between">
-          <Link
-            to="/app"
-            className="inline-flex size-10 items-center justify-center rounded-full border border-border bg-card/80 backdrop-blur hover:border-primary/40 transition-colors"
-          >
-            <ArrowLeft className="size-4" />
-          </Link>
-          <span className="livvo-eyebrow">Marketplace</span>
-        </div>
-        <h1 className="livvo-h1">Encontre o profissional certo</h1>
-        <p className="livvo-subtle mt-1">Especialidades, clínicas e laboratórios verificados — perto de você.</p>
-
-        <div className="relative mt-5">
-          <SearchIcon className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
-          <Input
-            value={q}
-            onChange={(e) => setQ(e.target.value)}
-            placeholder="Nome, especialidade, clínica ou exame"
-            className="h-12 pl-11 pr-14 rounded-2xl bg-card border-border/70 shadow-sm text-[15px] placeholder:text-muted-foreground/80"
-          />
-          <button
-            onClick={() => setShowFilters(!showFilters)}
-            aria-label="Abrir filtros"
-            className={`absolute right-2 top-1/2 -translate-y-1/2 grid size-9 place-items-center rounded-xl transition-colors ${showFilters ? "bg-primary text-primary-foreground" : "bg-primary-soft text-primary hover:bg-primary/10"}`}
-          >
-            <SlidersHorizontal className="size-4" />
-          </button>
-        </div>
-
-        {activeFilters.length > 0 && (
-          <div className="mt-3 flex flex-wrap gap-1.5">
-            {activeFilters.map((f) => (
-              <span key={f} className="livvo-chip-primary">
-                {f}
-              </span>
-            ))}
-            <button
-              onClick={() => { setSpecSlug(undefined); setCity(""); setState(""); }}
-              className="inline-flex items-center gap-1 rounded-full border border-border bg-card px-2.5 py-1 text-[11px] font-semibold text-muted-foreground hover:text-foreground"
+    <div className="pb-16 livvo-fade-in">
+      {/* Hero — full-bleed com container interno para largura útil em desktop */}
+      <header className="livvo-hero-gradient border-b border-border/60 rounded-b-[28px] md:rounded-b-[40px]">
+        <div className="mx-auto w-full max-w-6xl px-5 md:px-8 pt-10 md:pt-14 pb-7 md:pb-10">
+          <div className="mb-5 flex items-center justify-between">
+            <Link
+              to="/app"
+              className="inline-flex size-10 items-center justify-center rounded-full border border-border bg-card/80 backdrop-blur hover:border-primary/40 transition-colors"
+              aria-label="Voltar"
             >
-              <X className="size-3" /> Limpar
+              <ArrowLeft className="size-4" />
+            </Link>
+            <span className="livvo-eyebrow">Marketplace de saúde</span>
+          </div>
+
+          <div className="max-w-3xl">
+            <h1 className="livvo-h1 md:text-[38px] md:leading-[1.1]">Encontre o profissional certo</h1>
+            <p className="livvo-subtle mt-2 md:text-base">
+              Especialidades, clínicas e laboratórios verificados — perto de você, com agenda aberta.
+            </p>
+          </div>
+
+          <div className="relative mt-6 md:mt-8 max-w-3xl">
+            <SearchIcon className="pointer-events-none absolute left-4 md:left-5 top-1/2 -translate-y-1/2 size-4 md:size-5 text-muted-foreground" />
+            <Input
+              value={q}
+              onChange={(e) => setQ(e.target.value)}
+              placeholder="Nome, especialidade, clínica ou exame"
+              className="h-12 md:h-14 pl-11 md:pl-14 pr-14 md:pr-16 rounded-2xl bg-card border-border/70 shadow-[0_6px_24px_-10px_rgba(0,0,0,0.15)] text-[15px] md:text-base placeholder:text-muted-foreground/80"
+            />
+            <button
+              onClick={() => setShowFilters(!showFilters)}
+              aria-label="Abrir filtros"
+              className={`absolute right-2 md:right-2.5 top-1/2 -translate-y-1/2 grid size-9 md:size-10 place-items-center rounded-xl transition-all ${
+                showFilters
+                  ? "bg-primary text-primary-foreground shadow-md"
+                  : "bg-primary-soft text-primary hover:bg-primary/10"
+              }`}
+            >
+              <SlidersHorizontal className="size-4" />
             </button>
           </div>
-        )}
+
+          {activeFilters.length > 0 && (
+            <div className="mt-4 flex flex-wrap gap-1.5 max-w-3xl">
+              {activeFilters.map((f) => (
+                <span key={f} className="livvo-chip-primary">
+                  {f}
+                </span>
+              ))}
+              <button
+                onClick={() => {
+                  setSpecSlug(undefined);
+                  setCity("");
+                  setState("");
+                }}
+                className="inline-flex items-center gap-1 rounded-full border border-border bg-card px-2.5 py-1 text-[11px] font-semibold text-muted-foreground hover:text-foreground"
+              >
+                <X className="size-3" /> Limpar
+              </button>
+            </div>
+          )}
+        </div>
       </header>
 
-      <div className="px-5 pt-5 space-y-6">
+      <div className="mx-auto w-full max-w-6xl px-5 md:px-8 pt-6 md:pt-8 space-y-8 md:space-y-10">
         {showFilters && (
-          <div className="rounded-2xl border border-border bg-card p-4 shadow-[var(--shadow-soft)] livvo-slide-up">
+          <div className="rounded-2xl border border-border bg-card p-4 md:p-5 shadow-[var(--shadow-soft)] livvo-slide-up">
             <p className="livvo-eyebrow mb-3">Localização</p>
-            <div className="grid grid-cols-[80px_1fr] gap-2 text-sm">
+            <div className="grid grid-cols-[80px_1fr] md:grid-cols-[100px_1fr_1fr] gap-3 text-sm">
               <div>
                 <label className="text-[11px] font-semibold text-muted-foreground">UF</label>
-                <Input value={state} onChange={(e) => setState(e.target.value.toUpperCase())} placeholder="MA" maxLength={2} className="h-10" />
+                <Input
+                  value={state}
+                  onChange={(e) => setState(e.target.value.toUpperCase())}
+                  placeholder="MA"
+                  maxLength={2}
+                  className="h-10"
+                />
               </div>
               <div>
                 <label className="text-[11px] font-semibold text-muted-foreground">Cidade</label>
                 <div className="relative">
                   <MapPin className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground" />
-                  <Input value={city} onChange={(e) => setCity(e.target.value)} placeholder="São Luís" className="h-10 pl-8" />
+                  <Input
+                    value={city}
+                    onChange={(e) => setCity(e.target.value)}
+                    placeholder="São Luís"
+                    className="h-10 pl-8"
+                  />
                 </div>
               </div>
             </div>
           </div>
         )}
 
-        {/* Chip row: specialties */}
-        <HorizontalScroller snap="center" showArrows>
-          <button
-            data-active={!specSlug || undefined}
-            onClick={() => setSpecSlug(undefined)}
-            className={`rounded-full border px-4 py-2 text-xs font-semibold transition-all ${
-              !specSlug ? "bg-foreground text-background border-foreground" : "bg-card border-border text-muted-foreground hover:border-primary/30 hover:text-foreground"
-            }`}
-          >
-            Todas
-          </button>
-          {(specs ?? []).map((s) => (
+        {/* Chips de especialidades */}
+        <section aria-label="Especialidades">
+          <HorizontalScroller snap="center" showArrows ariaLabel="Especialidades">
             <button
-              key={s.id}
-              data-active={specSlug === s.slug || undefined}
-              onClick={() => setSpecSlug(s.slug)}
+              data-active={!specSlug || undefined}
+              onClick={() => setSpecSlug(undefined)}
               className={`rounded-full border px-4 py-2 text-xs font-semibold transition-all ${
-                specSlug === s.slug ? "bg-foreground text-background border-foreground" : "bg-card border-border text-muted-foreground hover:border-primary/30 hover:text-foreground"
+                !specSlug
+                  ? "bg-foreground text-background border-foreground shadow-sm"
+                  : "bg-card border-border text-muted-foreground hover:border-primary/40 hover:text-foreground"
               }`}
             >
-              {s.name}
+              Todas
             </button>
-          ))}
-        </HorizontalScroller>
-
+            {(specs ?? []).map((s) => (
+              <button
+                key={s.id}
+                data-active={specSlug === s.slug || undefined}
+                onClick={() => setSpecSlug(s.slug)}
+                className={`rounded-full border px-4 py-2 text-xs font-semibold transition-all ${
+                  specSlug === s.slug
+                    ? "bg-foreground text-background border-foreground shadow-sm"
+                    : "bg-card border-border text-muted-foreground hover:border-primary/40 hover:text-foreground"
+                }`}
+              >
+                {s.name}
+              </button>
+            ))}
+          </HorizontalScroller>
+        </section>
 
         {/* Companies rail */}
         {companies && companies.length > 0 && (
-          <section>
+          <section className="rounded-3xl border border-border/60 bg-card/40 px-5 py-5 md:px-6 md:py-6 shadow-[var(--shadow-soft)]">
             <SectionHeader eyebrow="Estabelecimentos" title="Clínicas & laboratórios" />
-            <HorizontalScroller className="mt-3" snap="start">
+            <HorizontalScroller className="mt-4" snap="start" ariaLabel="Clínicas e laboratórios">
               {companies.map((c) => (
                 <CompanyCard
                   key={c.id}
@@ -248,44 +280,77 @@ function Buscar() {
                 />
               ))}
             </HorizontalScroller>
-
           </section>
         )}
 
-        {/* Result groups */}
+        {/* Resultados */}
         {isLoading && (
-          <section className="space-y-3">
-            {Array.from({ length: 4 }).map((_, i) => <ProfessionalCardSkeleton key={i} />)}
+          <section className="grid gap-3 md:grid-cols-2">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <ProfessionalCardSkeleton key={i} />
+            ))}
           </section>
         )}
 
-        {!isLoading && groups.map((g) => g.items.length > 0 && (
-          <section key={g.rank} className="livvo-slide-up">
-            <SectionHeader
-              eyebrow={g.sponsored ? undefined : "Resultados"}
-              title={g.title}
-              badge={g.sponsored ? <span className="livvo-chip-sponsored"><Sparkles className="size-3" /> {g.label}</span> : undefined}
-              trailing={!g.sponsored && totalCount > 0 ? <span className="livvo-subtle">{g.items.length} resultado{g.items.length !== 1 ? "s" : ""}</span> : undefined}
-            />
-            <div className="mt-3 space-y-3">
-              {g.items.map((p) => (
-                <ProfessionalCard
-                  key={p.professional_id}
-                  data={toCardData(p, g.label)}
-                  onClick={() => onSponsoredClick(p)}
-                />
-              ))}
-            </div>
-          </section>
-        ))}
+        {!isLoading &&
+          groups.map(
+            (g) =>
+              g.items.length > 0 && (
+                <section key={g.rank} className="livvo-slide-up">
+                  <SectionHeader
+                    eyebrow={g.sponsored ? undefined : "Resultados"}
+                    title={g.title}
+                    badge={
+                      g.sponsored ? (
+                        <span className="livvo-chip-sponsored">
+                          <Sparkles className="size-3" /> {g.label}
+                        </span>
+                      ) : undefined
+                    }
+                    trailing={
+                      !g.sponsored && totalCount > 0 ? (
+                        <span className="livvo-subtle">
+                          {g.items.length} resultado{g.items.length !== 1 ? "s" : ""}
+                        </span>
+                      ) : undefined
+                    }
+                  />
+                  <div className="mt-4 grid gap-3 md:grid-cols-2">
+                    {g.items.map((p) => (
+                      <ProfessionalCard
+                        key={p.professional_id}
+                        data={toCardData(p, g.label)}
+                        onClick={() => onSponsoredClick(p)}
+                      />
+                    ))}
+                  </div>
+                </section>
+              )
+          )}
 
         {!isLoading && totalCount === 0 && (
-          <div className="rounded-2xl border border-dashed border-border bg-card p-10 text-center">
-            <div className="mx-auto grid size-12 place-items-center rounded-2xl bg-primary-soft text-primary">
-              <SearchIcon className="size-5" />
+          <div className="rounded-3xl border border-dashed border-border bg-card p-10 md:p-14 text-center">
+            <div className="mx-auto grid size-14 place-items-center rounded-2xl bg-primary-soft text-primary">
+              <SearchIcon className="size-6" />
             </div>
-            <p className="mt-3 text-sm font-semibold text-foreground">Nenhum profissional encontrado</p>
-            <p className="livvo-subtle mt-1">Tente ajustar filtros ou o termo de busca.</p>
+            <p className="mt-4 text-base font-semibold text-foreground">
+              Nenhum profissional encontrado
+            </p>
+            <p className="livvo-subtle mt-1 max-w-sm mx-auto">
+              Tente ajustar os filtros, remover a cidade ou buscar por outra especialidade.
+            </p>
+            {activeFilters.length > 0 && (
+              <button
+                onClick={() => {
+                  setSpecSlug(undefined);
+                  setCity("");
+                  setState("");
+                }}
+                className="mt-5 inline-flex items-center gap-1.5 rounded-full bg-foreground px-4 py-2 text-xs font-semibold text-background hover:opacity-90 transition"
+              >
+                <X className="size-3.5" /> Limpar filtros
+              </button>
+            )}
           </div>
         )}
       </div>
