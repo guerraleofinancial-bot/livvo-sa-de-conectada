@@ -149,6 +149,7 @@ function AdminPanel() {
     { id: "reviews", label: "Avaliações", icon: MessageSquareWarning },
     { id: "users", label: "Usuários", icon: Users },
     { id: "settings", label: "Configurações", icon: Percent },
+    { id: "audit", label: "Auditoria", icon: FileText },
   ];
 
   return (
