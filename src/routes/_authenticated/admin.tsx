@@ -402,7 +402,7 @@ function AdminPanel() {
                       : s.endsWith("_pendente") ? "bg-warning-soft text-warning-foreground"
                       : "bg-muted text-foreground/80";
                     const set = async (status: string, reason?: string | null) => {
-                      const { error } = await supabase.rpc("admin_set_account_status", { _user_id: u.id, _status: status as never, _reason: reason ?? null });
+                      const { error } = await supabase.rpc("admin_set_account_status", { _user_id: u.id, _status: status as never, _reason: reason ?? undefined });
 
                       if (error) return toast.error(error.message);
                       toast.success("Status atualizado");
