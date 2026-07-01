@@ -125,6 +125,8 @@
   --destructive-foreground: hsl(0 0% 100%);
   --warning: hsl(38 90% 55%);
   --warning-foreground: hsl(38 90% 12%);
+  --warning-soft: hsl(38 50% 18%);
+
   --health: hsl(162 55% 50%);
   --health-foreground: hsl(215 40% 8%);
   --health-soft: hsl(162 50% 18%);
