@@ -326,14 +326,17 @@ function CrmPage() {
   );
 }
 
-function CRMContactDetailModal({ open, onOpenChange, detail, isLoading, error, onSaved }: {
+function CRMContactDetailModal({ open, onOpenChange, detail, isLoading, error, onSaved, initialAction, onActionConsumed }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   detail: ContactDetail | null;
   isLoading: boolean;
   error: Error | null;
   onSaved: () => void;
+  initialAction?: "edit" | "schedule" | "charge" | "quote" | null;
+  onActionConsumed?: () => void;
 }) {
+
   const navigate = useNavigate();
   const editFn = useServerFn(updateCrmContact);
   const apptFn = useServerFn(createManualAppointment);
