@@ -45,6 +45,7 @@ import { Route as AuthenticatedAppDocumentosRouteImport } from './routes/_authen
 import { Route as AuthenticatedAppConsultasRouteImport } from './routes/_authenticated/app.consultas'
 import { Route as AuthenticatedAppCarteiraRouteImport } from './routes/_authenticated/app.carteira'
 import { Route as AuthenticatedAppBuscarRouteImport } from './routes/_authenticated/app.buscar'
+import { Route as AuthenticatedAppBuscarIndexRouteImport } from './routes/_authenticated/app.buscar.index'
 import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments.webhook'
 import { Route as ApiPublicAutomationRunRouteImport } from './routes/api/public/automation.run'
 import { Route as AuthenticatedProOrcamentosIdRouteImport } from './routes/_authenticated/pro.orcamentos.$id'
@@ -54,6 +55,10 @@ import { Route as AuthenticatedAppOrcamentosIdRouteImport } from './routes/_auth
 import { Route as AuthenticatedAppEmpresaIdRouteImport } from './routes/_authenticated/app.empresa.$id'
 import { Route as AuthenticatedAppCheckoutIdRouteImport } from './routes/_authenticated/app.checkout.$id'
 import { Route as AuthenticatedAppChatIdRouteImport } from './routes/_authenticated/app.chat.$id'
+import { Route as AuthenticatedAppBuscarProfissionaisRouteImport } from './routes/_authenticated/app.buscar.profissionais'
+import { Route as AuthenticatedAppBuscarLaboratoriosRouteImport } from './routes/_authenticated/app.buscar.laboratorios'
+import { Route as AuthenticatedAppBuscarExamesRouteImport } from './routes/_authenticated/app.buscar.exames'
+import { Route as AuthenticatedAppBuscarClinicasRouteImport } from './routes/_authenticated/app.buscar.clinicas'
 
 const PlanosEPrecosRoute = PlanosEPrecosRouteImport.update({
   id: '/planos-e-precos',
@@ -249,6 +254,12 @@ const AuthenticatedAppBuscarRoute = AuthenticatedAppBuscarRouteImport.update({
   path: '/buscar',
   getParentRoute: () => AuthenticatedAppRoute,
 } as any)
+const AuthenticatedAppBuscarIndexRoute =
+  AuthenticatedAppBuscarIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedAppBuscarRoute,
+  } as any)
 const ApiPublicPaymentsWebhookRoute =
   ApiPublicPaymentsWebhookRouteImport.update({
     id: '/api/public/payments/webhook',
@@ -300,6 +311,30 @@ const AuthenticatedAppChatIdRoute = AuthenticatedAppChatIdRouteImport.update({
   path: '/chat/$id',
   getParentRoute: () => AuthenticatedAppRoute,
 } as any)
+const AuthenticatedAppBuscarProfissionaisRoute =
+  AuthenticatedAppBuscarProfissionaisRouteImport.update({
+    id: '/profissionais',
+    path: '/profissionais',
+    getParentRoute: () => AuthenticatedAppBuscarRoute,
+  } as any)
+const AuthenticatedAppBuscarLaboratoriosRoute =
+  AuthenticatedAppBuscarLaboratoriosRouteImport.update({
+    id: '/laboratorios',
+    path: '/laboratorios',
+    getParentRoute: () => AuthenticatedAppBuscarRoute,
+  } as any)
+const AuthenticatedAppBuscarExamesRoute =
+  AuthenticatedAppBuscarExamesRouteImport.update({
+    id: '/exames',
+    path: '/exames',
+    getParentRoute: () => AuthenticatedAppBuscarRoute,
+  } as any)
+const AuthenticatedAppBuscarClinicasRoute =
+  AuthenticatedAppBuscarClinicasRouteImport.update({
+    id: '/clinicas',
+    path: '/clinicas',
+    getParentRoute: () => AuthenticatedAppBuscarRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -318,7 +353,7 @@ export interface FileRoutesByFullPath {
   '/e/$slug': typeof ESlugRoute
   '/p/$slug': typeof PSlugRoute
   '/pay/$token': typeof PayTokenRoute
-  '/app/buscar': typeof AuthenticatedAppBuscarRoute
+  '/app/buscar': typeof AuthenticatedAppBuscarRouteWithChildren
   '/app/carteira': typeof AuthenticatedAppCarteiraRoute
   '/app/consultas': typeof AuthenticatedAppConsultasRoute
   '/app/documentos': typeof AuthenticatedAppDocumentosRoute
@@ -337,6 +372,10 @@ export interface FileRoutesByFullPath {
   '/pro/servicos': typeof AuthenticatedProServicosRoute
   '/app/': typeof AuthenticatedAppIndexRoute
   '/pro/': typeof AuthenticatedProIndexRoute
+  '/app/buscar/clinicas': typeof AuthenticatedAppBuscarClinicasRoute
+  '/app/buscar/exames': typeof AuthenticatedAppBuscarExamesRoute
+  '/app/buscar/laboratorios': typeof AuthenticatedAppBuscarLaboratoriosRoute
+  '/app/buscar/profissionais': typeof AuthenticatedAppBuscarProfissionaisRoute
   '/app/chat/$id': typeof AuthenticatedAppChatIdRoute
   '/app/checkout/$id': typeof AuthenticatedAppCheckoutIdRoute
   '/app/empresa/$id': typeof AuthenticatedAppEmpresaIdRoute
@@ -346,6 +385,7 @@ export interface FileRoutesByFullPath {
   '/pro/orcamentos/$id': typeof AuthenticatedProOrcamentosIdRoute
   '/api/public/automation/run': typeof ApiPublicAutomationRunRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
+  '/app/buscar/': typeof AuthenticatedAppBuscarIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -362,7 +402,6 @@ export interface FileRoutesByTo {
   '/e/$slug': typeof ESlugRoute
   '/p/$slug': typeof PSlugRoute
   '/pay/$token': typeof PayTokenRoute
-  '/app/buscar': typeof AuthenticatedAppBuscarRoute
   '/app/carteira': typeof AuthenticatedAppCarteiraRoute
   '/app/consultas': typeof AuthenticatedAppConsultasRoute
   '/app/documentos': typeof AuthenticatedAppDocumentosRoute
@@ -381,6 +420,10 @@ export interface FileRoutesByTo {
   '/pro/servicos': typeof AuthenticatedProServicosRoute
   '/app': typeof AuthenticatedAppIndexRoute
   '/pro': typeof AuthenticatedProIndexRoute
+  '/app/buscar/clinicas': typeof AuthenticatedAppBuscarClinicasRoute
+  '/app/buscar/exames': typeof AuthenticatedAppBuscarExamesRoute
+  '/app/buscar/laboratorios': typeof AuthenticatedAppBuscarLaboratoriosRoute
+  '/app/buscar/profissionais': typeof AuthenticatedAppBuscarProfissionaisRoute
   '/app/chat/$id': typeof AuthenticatedAppChatIdRoute
   '/app/checkout/$id': typeof AuthenticatedAppCheckoutIdRoute
   '/app/empresa/$id': typeof AuthenticatedAppEmpresaIdRoute
@@ -390,6 +433,7 @@ export interface FileRoutesByTo {
   '/pro/orcamentos/$id': typeof AuthenticatedProOrcamentosIdRoute
   '/api/public/automation/run': typeof ApiPublicAutomationRunRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
+  '/app/buscar': typeof AuthenticatedAppBuscarIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -410,7 +454,7 @@ export interface FileRoutesById {
   '/e/$slug': typeof ESlugRoute
   '/p/$slug': typeof PSlugRoute
   '/pay/$token': typeof PayTokenRoute
-  '/_authenticated/app/buscar': typeof AuthenticatedAppBuscarRoute
+  '/_authenticated/app/buscar': typeof AuthenticatedAppBuscarRouteWithChildren
   '/_authenticated/app/carteira': typeof AuthenticatedAppCarteiraRoute
   '/_authenticated/app/consultas': typeof AuthenticatedAppConsultasRoute
   '/_authenticated/app/documentos': typeof AuthenticatedAppDocumentosRoute
@@ -429,6 +473,10 @@ export interface FileRoutesById {
   '/_authenticated/pro/servicos': typeof AuthenticatedProServicosRoute
   '/_authenticated/app/': typeof AuthenticatedAppIndexRoute
   '/_authenticated/pro/': typeof AuthenticatedProIndexRoute
+  '/_authenticated/app/buscar/clinicas': typeof AuthenticatedAppBuscarClinicasRoute
+  '/_authenticated/app/buscar/exames': typeof AuthenticatedAppBuscarExamesRoute
+  '/_authenticated/app/buscar/laboratorios': typeof AuthenticatedAppBuscarLaboratoriosRoute
+  '/_authenticated/app/buscar/profissionais': typeof AuthenticatedAppBuscarProfissionaisRoute
   '/_authenticated/app/chat/$id': typeof AuthenticatedAppChatIdRoute
   '/_authenticated/app/checkout/$id': typeof AuthenticatedAppCheckoutIdRoute
   '/_authenticated/app/empresa/$id': typeof AuthenticatedAppEmpresaIdRoute
@@ -438,6 +486,7 @@ export interface FileRoutesById {
   '/_authenticated/pro/orcamentos/$id': typeof AuthenticatedProOrcamentosIdRoute
   '/api/public/automation/run': typeof ApiPublicAutomationRunRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
+  '/_authenticated/app/buscar/': typeof AuthenticatedAppBuscarIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -477,6 +526,10 @@ export interface FileRouteTypes {
     | '/pro/servicos'
     | '/app/'
     | '/pro/'
+    | '/app/buscar/clinicas'
+    | '/app/buscar/exames'
+    | '/app/buscar/laboratorios'
+    | '/app/buscar/profissionais'
     | '/app/chat/$id'
     | '/app/checkout/$id'
     | '/app/empresa/$id'
@@ -486,6 +539,7 @@ export interface FileRouteTypes {
     | '/pro/orcamentos/$id'
     | '/api/public/automation/run'
     | '/api/public/payments/webhook'
+    | '/app/buscar/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -502,7 +556,6 @@ export interface FileRouteTypes {
     | '/e/$slug'
     | '/p/$slug'
     | '/pay/$token'
-    | '/app/buscar'
     | '/app/carteira'
     | '/app/consultas'
     | '/app/documentos'
@@ -521,6 +574,10 @@ export interface FileRouteTypes {
     | '/pro/servicos'
     | '/app'
     | '/pro'
+    | '/app/buscar/clinicas'
+    | '/app/buscar/exames'
+    | '/app/buscar/laboratorios'
+    | '/app/buscar/profissionais'
     | '/app/chat/$id'
     | '/app/checkout/$id'
     | '/app/empresa/$id'
@@ -530,6 +587,7 @@ export interface FileRouteTypes {
     | '/pro/orcamentos/$id'
     | '/api/public/automation/run'
     | '/api/public/payments/webhook'
+    | '/app/buscar'
   id:
     | '__root__'
     | '/'
@@ -568,6 +626,10 @@ export interface FileRouteTypes {
     | '/_authenticated/pro/servicos'
     | '/_authenticated/app/'
     | '/_authenticated/pro/'
+    | '/_authenticated/app/buscar/clinicas'
+    | '/_authenticated/app/buscar/exames'
+    | '/_authenticated/app/buscar/laboratorios'
+    | '/_authenticated/app/buscar/profissionais'
     | '/_authenticated/app/chat/$id'
     | '/_authenticated/app/checkout/$id'
     | '/_authenticated/app/empresa/$id'
@@ -577,6 +639,7 @@ export interface FileRouteTypes {
     | '/_authenticated/pro/orcamentos/$id'
     | '/api/public/automation/run'
     | '/api/public/payments/webhook'
+    | '/_authenticated/app/buscar/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -849,6 +912,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAppBuscarRouteImport
       parentRoute: typeof AuthenticatedAppRoute
     }
+    '/_authenticated/app/buscar/': {
+      id: '/_authenticated/app/buscar/'
+      path: '/'
+      fullPath: '/app/buscar/'
+      preLoaderRoute: typeof AuthenticatedAppBuscarIndexRouteImport
+      parentRoute: typeof AuthenticatedAppBuscarRoute
+    }
     '/api/public/payments/webhook': {
       id: '/api/public/payments/webhook'
       path: '/api/public/payments/webhook'
@@ -912,8 +982,60 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAppChatIdRouteImport
       parentRoute: typeof AuthenticatedAppRoute
     }
+    '/_authenticated/app/buscar/profissionais': {
+      id: '/_authenticated/app/buscar/profissionais'
+      path: '/profissionais'
+      fullPath: '/app/buscar/profissionais'
+      preLoaderRoute: typeof AuthenticatedAppBuscarProfissionaisRouteImport
+      parentRoute: typeof AuthenticatedAppBuscarRoute
+    }
+    '/_authenticated/app/buscar/laboratorios': {
+      id: '/_authenticated/app/buscar/laboratorios'
+      path: '/laboratorios'
+      fullPath: '/app/buscar/laboratorios'
+      preLoaderRoute: typeof AuthenticatedAppBuscarLaboratoriosRouteImport
+      parentRoute: typeof AuthenticatedAppBuscarRoute
+    }
+    '/_authenticated/app/buscar/exames': {
+      id: '/_authenticated/app/buscar/exames'
+      path: '/exames'
+      fullPath: '/app/buscar/exames'
+      preLoaderRoute: typeof AuthenticatedAppBuscarExamesRouteImport
+      parentRoute: typeof AuthenticatedAppBuscarRoute
+    }
+    '/_authenticated/app/buscar/clinicas': {
+      id: '/_authenticated/app/buscar/clinicas'
+      path: '/clinicas'
+      fullPath: '/app/buscar/clinicas'
+      preLoaderRoute: typeof AuthenticatedAppBuscarClinicasRouteImport
+      parentRoute: typeof AuthenticatedAppBuscarRoute
+    }
   }
 }
+
+interface AuthenticatedAppBuscarRouteChildren {
+  AuthenticatedAppBuscarClinicasRoute: typeof AuthenticatedAppBuscarClinicasRoute
+  AuthenticatedAppBuscarExamesRoute: typeof AuthenticatedAppBuscarExamesRoute
+  AuthenticatedAppBuscarLaboratoriosRoute: typeof AuthenticatedAppBuscarLaboratoriosRoute
+  AuthenticatedAppBuscarProfissionaisRoute: typeof AuthenticatedAppBuscarProfissionaisRoute
+  AuthenticatedAppBuscarIndexRoute: typeof AuthenticatedAppBuscarIndexRoute
+}
+
+const AuthenticatedAppBuscarRouteChildren: AuthenticatedAppBuscarRouteChildren =
+  {
+    AuthenticatedAppBuscarClinicasRoute: AuthenticatedAppBuscarClinicasRoute,
+    AuthenticatedAppBuscarExamesRoute: AuthenticatedAppBuscarExamesRoute,
+    AuthenticatedAppBuscarLaboratoriosRoute:
+      AuthenticatedAppBuscarLaboratoriosRoute,
+    AuthenticatedAppBuscarProfissionaisRoute:
+      AuthenticatedAppBuscarProfissionaisRoute,
+    AuthenticatedAppBuscarIndexRoute: AuthenticatedAppBuscarIndexRoute,
+  }
+
+const AuthenticatedAppBuscarRouteWithChildren =
+  AuthenticatedAppBuscarRoute._addFileChildren(
+    AuthenticatedAppBuscarRouteChildren,
+  )
 
 interface AuthenticatedAppOrcamentosRouteChildren {
   AuthenticatedAppOrcamentosIdRoute: typeof AuthenticatedAppOrcamentosIdRoute
@@ -930,7 +1052,7 @@ const AuthenticatedAppOrcamentosRouteWithChildren =
   )
 
 interface AuthenticatedAppRouteChildren {
-  AuthenticatedAppBuscarRoute: typeof AuthenticatedAppBuscarRoute
+  AuthenticatedAppBuscarRoute: typeof AuthenticatedAppBuscarRouteWithChildren
   AuthenticatedAppCarteiraRoute: typeof AuthenticatedAppCarteiraRoute
   AuthenticatedAppConsultasRoute: typeof AuthenticatedAppConsultasRoute
   AuthenticatedAppDocumentosRoute: typeof AuthenticatedAppDocumentosRoute
@@ -946,7 +1068,7 @@ interface AuthenticatedAppRouteChildren {
 }
 
 const AuthenticatedAppRouteChildren: AuthenticatedAppRouteChildren = {
-  AuthenticatedAppBuscarRoute: AuthenticatedAppBuscarRoute,
+  AuthenticatedAppBuscarRoute: AuthenticatedAppBuscarRouteWithChildren,
   AuthenticatedAppCarteiraRoute: AuthenticatedAppCarteiraRoute,
   AuthenticatedAppConsultasRoute: AuthenticatedAppConsultasRoute,
   AuthenticatedAppDocumentosRoute: AuthenticatedAppDocumentosRoute,

@@ -20,6 +20,7 @@ import {
   Star,
   Calendar,
   ChevronRight,
+  ClipboardList,
 } from "lucide-react";
 import { useEffect } from "react";
 import {
@@ -303,7 +304,33 @@ function PatientHome() {
             </p>
           </div>
         </Link>
+
+        {/* Atalhos por tipo de parceiro */}
+        <div className="mt-3 grid grid-cols-4 gap-2">
+          {[
+            { to: "/app/buscar/profissionais", label: "Profissionais", Icon: Stethoscope, tone: "primary" },
+            { to: "/app/buscar/clinicas", label: "Clínicas", Icon: Building2, tone: "health" },
+            { to: "/app/buscar/laboratorios", label: "Laboratórios", Icon: FlaskConical, tone: "primary" },
+            { to: "/app/buscar/exames", label: "Exames", Icon: ClipboardList, tone: "health" },
+          ].map(({ to, label, Icon, tone }) => (
+            <Link
+              key={to}
+              to={to}
+              className="group flex flex-col items-center gap-1.5 rounded-2xl border border-border/70 bg-card p-3 text-center transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-[var(--shadow-soft)]"
+            >
+              <div
+                className={`grid size-10 place-items-center rounded-xl transition-transform group-hover:scale-105 ${
+                  tone === "primary" ? "bg-primary-soft text-primary" : "bg-health-soft text-health"
+                }`}
+              >
+                <Icon className="size-5" />
+              </div>
+              <span className="text-[11px] font-semibold text-foreground leading-tight">{label}</span>
+            </Link>
+          ))}
+        </div>
       </section>
+
 
       {/* Specialties */}
       <section className="px-5 mt-6 livvo-slide-up">
