@@ -186,9 +186,22 @@ export function AppointmentActions({ appt, onOpenTimeline, invalidateKeys }: {
         onConfirm={() => setStatus.mutate({ status: "realizada", completed_at: new Date().toISOString() })}
         loading={setStatus.isPending}
       />
+      {/* Return visit */}
+      <RescheduleDialog
+        open={open === "return"}
+        onOpenChange={(v) => setOpen(v ? "return" : null)}
+        initial={new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()}
+        title="Agendar retorno"
+        description="Um novo agendamento será criado para este paciente."
+        confirmLabel="Agendar retorno"
+        showReason={false}
+        onConfirm={(when) => returnMut.mutate({ when })}
+        loading={returnMut.isPending}
+      />
     </>
   );
 }
+
 
 function RescheduleDialog({ open, onOpenChange, initial, onConfirm, loading }: {
   open: boolean; onOpenChange: (v: boolean) => void; initial: string;
