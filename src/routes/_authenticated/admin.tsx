@@ -15,6 +15,7 @@ import { AdminGrowthCharts } from "@/components/livvo/admin/AdminGrowthCharts";
 import { SettingsCenter } from "@/components/livvo/admin/SettingsCenter";
 import { AuditLogsTab } from "@/components/livvo/admin/AuditLogsTab";
 import { MultiRoleAccountsTab } from "@/components/livvo/admin/MultiRoleAccountsTab";
+import { UserProfileMenu } from "@/components/livvo/user-profile-menu";
 import { FileText, UsersRound } from "lucide-react";
 
 
