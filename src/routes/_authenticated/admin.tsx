@@ -197,7 +197,7 @@ function AdminPanel() {
                 <Database className="size-4 mr-1" /> {seedNow.isPending ? "..." : "Popular demo"}
               </Button>
             )}
-            <Button size="sm" variant="ghost" onClick={signOut}><LogOut className="size-4" /></Button>
+            <UserProfileMenu />
           </div>
         </div>
         <nav className="max-w-6xl mx-auto px-5 flex gap-1 overflow-x-auto scrollbar-hide">
