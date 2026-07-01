@@ -54,7 +54,33 @@ const ORIGINS = [
 type CrmRow = Awaited<ReturnType<typeof listCrmPatients>>[number];
 type ContactDetail = Awaited<ReturnType<typeof getCrmContactDetail>>;
 
+function QuickAction({ icon: Icon, label, onClick, disabled, tone = "default" }: {
+  icon: React.ComponentType<{ className?: string }>;
+  label: string;
+  onClick: (e: React.MouseEvent) => void;
+  disabled?: boolean;
+  tone?: "default" | "health";
+}) {
+  const cls = tone === "health"
+    ? "hover:bg-health-soft hover:text-health"
+    : "hover:bg-primary-soft hover:text-primary";
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      title={label}
+      aria-label={label}
+      className={`shrink-0 inline-flex items-center gap-1 px-2 py-1 rounded-lg text-[11px] font-semibold text-muted-foreground transition-colors disabled:opacity-40 disabled:cursor-not-allowed ${cls}`}
+    >
+      <Icon className="size-3.5" />
+      <span className="hidden sm:inline">{label}</span>
+    </button>
+  );
+}
+
 function CrmPage() {
+
   const fetchFn = useServerFn(listCrmPatients);
   const detailFn = useServerFn(getCrmContactDetail);
   const qc = useQueryClient();
