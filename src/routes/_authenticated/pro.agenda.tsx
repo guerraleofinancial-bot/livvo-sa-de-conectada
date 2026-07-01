@@ -10,7 +10,9 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AppointmentActions, isPending, type ApptForActions } from "@/components/livvo/appointment-actions";
 import { AppointmentTimelineDialog } from "@/components/livvo/appointment-timeline";
+import { StatusBadge } from "@/components/livvo/status-badge";
 import { toast } from "sonner";
+
 
 export const Route = createFileRoute("/_authenticated/pro/agenda")({
   component: Agenda,
