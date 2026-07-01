@@ -126,7 +126,7 @@
   --health-soft: hsl(162 50% 18%);
   --border: hsl(215 25% 22%);
   --input: hsl(215 25% 22%);
-  --ring: hsl(215 85% 60%);
+  --ring: hsl(173 70% 55%);
 }
 
 @layer base {
