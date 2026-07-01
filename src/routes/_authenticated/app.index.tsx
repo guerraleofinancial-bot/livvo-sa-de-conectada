@@ -285,26 +285,25 @@ function PatientHome() {
       </header>
 
       {/* Hero search */}
-      <section className="px-5">
+      <section className="px-5 md:px-8 mt-4">
         <Link to="/app/buscar" className="block">
-          <div className="livvo-hero-gradient rounded-3xl border border-border/70 p-5 shadow-[var(--shadow-soft)]">
+          <div className="livvo-hero-gradient rounded-3xl border border-border/70 p-5 md:p-10 shadow-[var(--shadow-soft)]">
             <p className="livvo-eyebrow">Marketplace de saúde</p>
-            <h2 className="livvo-h1 mt-1">
-              Encontre profissionais
-              <br />
-              verificados perto de você
+            <h2 className="livvo-h1 mt-1 md:text-4xl lg:text-5xl md:leading-[1.1] md:max-w-2xl">
+              Encontre profissionais verificados perto de você
             </h2>
-            <div className="relative mt-4">
-              <Search className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
-              <div className="h-12 pl-11 pr-4 bg-card border border-border rounded-2xl flex items-center text-sm text-muted-foreground shadow-sm">
+            <div className="relative mt-4 md:mt-6 md:max-w-2xl">
+              <Search className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 size-4 md:size-5 text-muted-foreground" />
+              <div className="h-12 md:h-14 pl-11 md:pl-14 pr-4 bg-card border border-border rounded-2xl flex items-center text-sm md:text-base text-muted-foreground shadow-sm">
                 Especialidade, nome ou exame
               </div>
             </div>
-            <p className="livvo-subtle mt-3 text-[11px]">
+            <p className="livvo-subtle mt-3 text-[11px] md:text-xs">
               Todos os profissionais têm registro do conselho verificado.
             </p>
           </div>
         </Link>
+
 
         {/* Atalhos por tipo de parceiro */}
         <div className="mt-3 grid grid-cols-4 gap-2">
