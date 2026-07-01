@@ -44,6 +44,8 @@ function AdminPanel() {
   const setCompany = useServerFn(setCompanyStatus);
   const setSusp = useServerFn(setUserSuspended);
   const seed = useServerFn(seedDemoData);
+  const toggleDemo = useServerFn(setDemoMode);
+  const purgeDemo = useServerFn(purgeDemoData);
   const updSettings = useServerFn(updatePlatformSettings);
   const setRev = useServerFn(setReviewStatus);
   const createBatch = useServerFn(createPayoutBatch);
