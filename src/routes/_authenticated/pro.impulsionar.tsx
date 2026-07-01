@@ -50,6 +50,12 @@ function Impulsionar() {
 
   return (
     <div className="px-5 pt-10 pb-8 space-y-6 livvo-fade-in">
+      <FirstVisitTip
+        id="pro-impulsionar"
+        title="Marketplace da Livvo"
+        message="Seu perfil aparece para pacientes após aprovação. Use o Impulsionar para ganhar destaque."
+        articleSlug="destacar-perfil"
+      />
       <header>
         <div className="flex items-center gap-2 mb-1">
           <Sparkles className="size-5 text-primary" />

@@ -38,6 +38,12 @@ function ProFinanceiro() {
 
   return (
     <div className="px-5 pt-10 pb-8 space-y-5 livvo-fade-in">
+      <FirstVisitTip
+        id="pro-financeiro"
+        title="Cobre pelo Livvo"
+        message="Envie cobranças por PIX ou cartão direto para o paciente. O valor cai na sua carteira."
+        articleSlug="criar-cobranca"
+      />
       <header className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Financeiro</h1>

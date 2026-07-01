@@ -220,6 +220,12 @@ function Agenda() {
 
   return (
     <div className="px-5 pt-10 pb-24 space-y-6 livvo-fade-in">
+      <FirstVisitTip
+        id="pro-agenda"
+        title="Sua agenda"
+        message="Configure seus horários disponíveis. Novos agendamentos aparecem aqui automaticamente."
+        articleSlug="criar-horario"
+      />
       <header>
         <h1 className="text-2xl font-bold tracking-tight">Minha agenda</h1>
         <p className="text-sm text-muted-foreground mt-1">Atendimentos do dia, calendário e configurações</p>

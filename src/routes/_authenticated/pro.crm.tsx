@@ -14,6 +14,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { NewPatientDialog } from "@/components/livvo/new-patient-dialog";
+import { FirstVisitTip } from "@/components/livvo/first-visit-tip";
 import { ImportPatientsDialog, NewPatientButtons } from "@/components/livvo/import-patients-dialog";
 import { toast } from "sonner";
 
