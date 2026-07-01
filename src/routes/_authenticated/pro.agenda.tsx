@@ -86,32 +86,18 @@ function Agenda() {
     },
   });
 
-  const setStatus = useMutation({
-    mutationFn: async ({ id, status }: { id: string; status: string }) => {
-      const patch: any = { status };
-      if (status === "cancelada") patch.cancelled_at = new Date().toISOString();
-      if (status === "realizada") patch.completed_at = new Date().toISOString();
-      const { error } = await supabase.from("appointments").update(patch).eq("id", id);
-      if (error) throw error;
-    },
-    onSuccess: () => { toast.success("Agendamento atualizado"); qc.invalidateQueries({ queryKey: ["pro-agenda"] }); },
-    onError: (e: any) => toast.error(e.message ?? "Erro ao atualizar"),
-  });
-
-  const reschedule = useMutation({
-    mutationFn: async ({ id, when }: { id: string; when: string }) => {
-      const { error } = await supabase.from("appointments").update({ scheduled_at: new Date(when).toISOString(), status: "agendada" }).eq("id", id);
-      if (error) throw error;
-    },
-    onSuccess: () => { toast.success("Reagendado"); qc.invalidateQueries({ queryKey: ["pro-agenda"] }); },
-    onError: (e: any) => toast.error(e.message ?? "Erro ao reagendar"),
-  });
-
   const now = useMemo(() => new Date(), []);
+  const [timelineId, setTimelineId] = useState<string | null>(null);
+
+  const pending = useMemo(
+    () => (appts ?? []).filter((a) => isPending(a)),
+    [appts]
+  );
   const upcoming = useMemo(
     () => (appts ?? []).filter((a) => new Date(a.scheduled_at) >= startOfDay(now) && !["cancelada", "realizada"].includes(a.status)).slice(0, 8),
     [appts, now]
   );
+
 
   // Calendar view
   const [view, setView] = useState<"dia" | "semana" | "mes">("dia");
