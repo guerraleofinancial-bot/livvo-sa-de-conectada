@@ -46,6 +46,7 @@ function AuthPage() {
     setLoading(false);
     if (error) return toast.error("Falha no login", { description: error.message });
     toast.success("Bem-vindo de volta!");
+    recordClientAudit({ data: { event: "auth.login", module: "auth", description: `Login com email ${email}` } }).catch(() => {});
     navigate({ to: "/app" });
   }
 
