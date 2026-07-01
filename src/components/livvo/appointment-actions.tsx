@@ -128,6 +128,12 @@ export function AppointmentActions({ appt, onOpenTimeline, invalidateKeys }: {
           <DropdownMenuItem onClick={() => setOpen("reschedule")}>
             <Clock className="size-4 mr-2" /> Reagendar
           </DropdownMenuItem>
+          {appt.status === "realizada" && appt.patient_id && (
+            <DropdownMenuItem onClick={() => setOpen("return")}>
+              <RotateCcw className="size-4 mr-2" /> Agendar retorno
+            </DropdownMenuItem>
+          )}
+
           <DropdownMenuSeparator />
           {onOpenTimeline && (
             <DropdownMenuItem onClick={onOpenTimeline}>
