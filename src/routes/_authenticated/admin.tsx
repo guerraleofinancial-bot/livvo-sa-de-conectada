@@ -11,6 +11,10 @@ import { setProfessionalStatus, setCompanyStatus, setUserSuspended, seedDemoData
 import { verifyProfessionalCouncil } from "@/lib/livvo/onboarding-pro.functions";
 import { adminAdsRevenueReport, adminListSubscriptions, cancelSubscription } from "@/lib/livvo/ads.functions";
 import { toast } from "sonner";
+import { AdminGrowthCharts } from "@/components/livvo/admin/AdminGrowthCharts";
+import { SettingsCenter } from "@/components/livvo/admin/SettingsCenter";
+import { AuditLogsTab } from "@/components/livvo/admin/AuditLogsTab";
+import { FileText } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/admin")({
   beforeLoad: async () => {
