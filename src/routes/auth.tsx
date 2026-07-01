@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { HeartPulse, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
+import { recordClientAudit } from "@/lib/livvo/audit.functions";
 
 const searchSchema = z.object({
   mode: z.enum(["login", "signup"]).default("login").catch("login"),
