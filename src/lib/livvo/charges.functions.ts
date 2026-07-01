@@ -133,6 +133,16 @@ export const createCharge = createServerFn({ method: "POST" })
       });
     }
 
+    await writeAudit({
+      event: "charge.create",
+      module: "billing",
+      actorId: userId,
+      entityType: "payment",
+      entityId: charge.id,
+      description: `Cobrança de R$ ${gross.toFixed(2)} criada (${data.paymentMethod})`,
+      after: { amount: gross, commission, net, method: data.paymentMethod, contactId: crmContactId, patientUserId, appointmentId: data.appointmentId, quoteId: data.quoteId },
+    });
+
     return {
       id: charge.id,
       token,
