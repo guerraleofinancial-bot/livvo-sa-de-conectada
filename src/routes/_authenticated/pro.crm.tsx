@@ -281,7 +281,7 @@ function CrmPage() {
                       const p = (r as { patient?: { full_name?: string; avatar_url?: string } }).patient ?? {};
                       const contactId = (p as { id?: string }).id ?? r.patient_id;
                       return (
-                        <button key={r.id} type="button" onClick={() => openContact(contactId, r)}
+                        <button key={r.id} type="button" onClick={() => openContact(contactId)}
                           className="relative z-0 w-full text-left bg-card border border-border rounded-xl p-2.5 hover:border-primary/30 cursor-pointer pointer-events-auto">
                           <div className="flex items-center gap-2">
                             <div className="size-8 rounded-full bg-primary-soft text-primary grid place-items-center text-xs font-bold overflow-hidden">
