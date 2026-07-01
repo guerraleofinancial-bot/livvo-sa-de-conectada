@@ -38,6 +38,30 @@ function ProHome() {
     queryFn: async () => (await supabase.from("appointments").select("*, profiles:patient_id(full_name)").eq("professional_id", user!.id).in("status", ["agendada", "confirmada"]).gte("scheduled_at", new Date().toISOString()).order("scheduled_at").limit(5)).data ?? [],
   });
 
+  const { data: today } = useQuery({
+    queryKey: ["pro-today", user?.id],
+    enabled: !!user,
+    queryFn: async () => {
+      const start = new Date(); start.setHours(0, 0, 0, 0);
+      const end = new Date(start); end.setDate(end.getDate() + 1);
+      const nowIso = new Date().toISOString();
+      const [{ data: dayRows }, { data: pendRows }] = await Promise.all([
+        supabase.from("appointments").select("status").eq("professional_id", user!.id).gte("scheduled_at", start.toISOString()).lt("scheduled_at", end.toISOString()),
+        supabase.from("appointments").select("id").eq("professional_id", user!.id).eq("status", "agendada").lt("scheduled_at", nowIso),
+      ]);
+      const rows = dayRows ?? [];
+      const count = (s: string) => rows.filter((r) => r.status === s).length;
+      return {
+        total: rows.length,
+        done: count("realizada"),
+        cancelled: count("cancelada"),
+        noShow: count("nao_compareceu"),
+        pending: (pendRows ?? []).length,
+      };
+    },
+  });
+
+
   const p = pro as (typeof pro & { profiles: { full_name?: string } | null; specialties: { name?: string } | null }) | null;
   const convRate = Number(dash?.conversion_rate ?? 0);
 
