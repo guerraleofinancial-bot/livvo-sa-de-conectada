@@ -57,6 +57,7 @@ import { Route as AuthenticatedAppCheckoutIdRouteImport } from './routes/_authen
 import { Route as AuthenticatedAppChatIdRouteImport } from './routes/_authenticated/app.chat.$id'
 import { Route as AuthenticatedAppBuscarProfissionaisRouteImport } from './routes/_authenticated/app.buscar.profissionais'
 import { Route as AuthenticatedAppBuscarLaboratoriosRouteImport } from './routes/_authenticated/app.buscar.laboratorios'
+import { Route as AuthenticatedAppBuscarExamesRouteImport } from './routes/_authenticated/app.buscar.exames'
 import { Route as AuthenticatedAppBuscarClinicasRouteImport } from './routes/_authenticated/app.buscar.clinicas'
 
 const PlanosEPrecosRoute = PlanosEPrecosRouteImport.update({
@@ -322,6 +323,12 @@ const AuthenticatedAppBuscarLaboratoriosRoute =
     path: '/laboratorios',
     getParentRoute: () => AuthenticatedAppBuscarRoute,
   } as any)
+const AuthenticatedAppBuscarExamesRoute =
+  AuthenticatedAppBuscarExamesRouteImport.update({
+    id: '/exames',
+    path: '/exames',
+    getParentRoute: () => AuthenticatedAppBuscarRoute,
+  } as any)
 const AuthenticatedAppBuscarClinicasRoute =
   AuthenticatedAppBuscarClinicasRouteImport.update({
     id: '/clinicas',
@@ -366,6 +373,7 @@ export interface FileRoutesByFullPath {
   '/app/': typeof AuthenticatedAppIndexRoute
   '/pro/': typeof AuthenticatedProIndexRoute
   '/app/buscar/clinicas': typeof AuthenticatedAppBuscarClinicasRoute
+  '/app/buscar/exames': typeof AuthenticatedAppBuscarExamesRoute
   '/app/buscar/laboratorios': typeof AuthenticatedAppBuscarLaboratoriosRoute
   '/app/buscar/profissionais': typeof AuthenticatedAppBuscarProfissionaisRoute
   '/app/chat/$id': typeof AuthenticatedAppChatIdRoute
@@ -413,6 +421,7 @@ export interface FileRoutesByTo {
   '/app': typeof AuthenticatedAppIndexRoute
   '/pro': typeof AuthenticatedProIndexRoute
   '/app/buscar/clinicas': typeof AuthenticatedAppBuscarClinicasRoute
+  '/app/buscar/exames': typeof AuthenticatedAppBuscarExamesRoute
   '/app/buscar/laboratorios': typeof AuthenticatedAppBuscarLaboratoriosRoute
   '/app/buscar/profissionais': typeof AuthenticatedAppBuscarProfissionaisRoute
   '/app/chat/$id': typeof AuthenticatedAppChatIdRoute
@@ -465,6 +474,7 @@ export interface FileRoutesById {
   '/_authenticated/app/': typeof AuthenticatedAppIndexRoute
   '/_authenticated/pro/': typeof AuthenticatedProIndexRoute
   '/_authenticated/app/buscar/clinicas': typeof AuthenticatedAppBuscarClinicasRoute
+  '/_authenticated/app/buscar/exames': typeof AuthenticatedAppBuscarExamesRoute
   '/_authenticated/app/buscar/laboratorios': typeof AuthenticatedAppBuscarLaboratoriosRoute
   '/_authenticated/app/buscar/profissionais': typeof AuthenticatedAppBuscarProfissionaisRoute
   '/_authenticated/app/chat/$id': typeof AuthenticatedAppChatIdRoute
@@ -517,6 +527,7 @@ export interface FileRouteTypes {
     | '/app/'
     | '/pro/'
     | '/app/buscar/clinicas'
+    | '/app/buscar/exames'
     | '/app/buscar/laboratorios'
     | '/app/buscar/profissionais'
     | '/app/chat/$id'
@@ -564,6 +575,7 @@ export interface FileRouteTypes {
     | '/app'
     | '/pro'
     | '/app/buscar/clinicas'
+    | '/app/buscar/exames'
     | '/app/buscar/laboratorios'
     | '/app/buscar/profissionais'
     | '/app/chat/$id'
@@ -615,6 +627,7 @@ export interface FileRouteTypes {
     | '/_authenticated/app/'
     | '/_authenticated/pro/'
     | '/_authenticated/app/buscar/clinicas'
+    | '/_authenticated/app/buscar/exames'
     | '/_authenticated/app/buscar/laboratorios'
     | '/_authenticated/app/buscar/profissionais'
     | '/_authenticated/app/chat/$id'
@@ -983,6 +996,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAppBuscarLaboratoriosRouteImport
       parentRoute: typeof AuthenticatedAppBuscarRoute
     }
+    '/_authenticated/app/buscar/exames': {
+      id: '/_authenticated/app/buscar/exames'
+      path: '/exames'
+      fullPath: '/app/buscar/exames'
+      preLoaderRoute: typeof AuthenticatedAppBuscarExamesRouteImport
+      parentRoute: typeof AuthenticatedAppBuscarRoute
+    }
     '/_authenticated/app/buscar/clinicas': {
       id: '/_authenticated/app/buscar/clinicas'
       path: '/clinicas'
@@ -995,6 +1015,7 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedAppBuscarRouteChildren {
   AuthenticatedAppBuscarClinicasRoute: typeof AuthenticatedAppBuscarClinicasRoute
+  AuthenticatedAppBuscarExamesRoute: typeof AuthenticatedAppBuscarExamesRoute
   AuthenticatedAppBuscarLaboratoriosRoute: typeof AuthenticatedAppBuscarLaboratoriosRoute
   AuthenticatedAppBuscarProfissionaisRoute: typeof AuthenticatedAppBuscarProfissionaisRoute
   AuthenticatedAppBuscarIndexRoute: typeof AuthenticatedAppBuscarIndexRoute
@@ -1003,6 +1024,7 @@ interface AuthenticatedAppBuscarRouteChildren {
 const AuthenticatedAppBuscarRouteChildren: AuthenticatedAppBuscarRouteChildren =
   {
     AuthenticatedAppBuscarClinicasRoute: AuthenticatedAppBuscarClinicasRoute,
+    AuthenticatedAppBuscarExamesRoute: AuthenticatedAppBuscarExamesRoute,
     AuthenticatedAppBuscarLaboratoriosRoute:
       AuthenticatedAppBuscarLaboratoriosRoute,
     AuthenticatedAppBuscarProfissionaisRoute:
