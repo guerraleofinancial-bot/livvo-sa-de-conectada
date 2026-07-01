@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { Bell, Search, HeartPulse, Baby, Sparkles, Brain, Stethoscope, Flower, Bone, Apple, Eye, BrainCircuit } from "lucide-react";
 import { useEffect } from "react";
+import { ProfessionalCard, ProfessionalCardSkeleton } from "@/components/livvo/ProfessionalCard";
 
 export const Route = createFileRoute("/_authenticated/app/")({
   component: PatientHome,
