@@ -89,88 +89,107 @@ function ProfileDetail() {
   }
 
   return (
-    <div className="pb-32">
-      <div className="bg-primary text-primary-foreground px-5 pt-10 pb-6 rounded-b-3xl">
-        <div className="flex justify-between items-center mb-5">
-          <Link to="/app/buscar" className="inline-flex size-9 items-center justify-center rounded-full bg-white/20">
+    <div className="pb-32 livvo-fade-in">
+      {/* Hero */}
+      <div className="livvo-hero-primary px-5 pt-10 pb-8 rounded-b-[28px] relative overflow-hidden shadow-[var(--shadow-hero)]">
+        <div className="absolute -right-20 -top-20 size-64 rounded-full bg-white/10 blur-3xl pointer-events-none" />
+        <div className="relative flex justify-between items-center mb-6">
+          <Link to="/app/buscar" className="inline-flex size-10 items-center justify-center rounded-full bg-white/15 backdrop-blur hover:bg-white/25 transition-colors">
             <ArrowLeft className="size-4" />
           </Link>
-          <button onClick={() => toggleFav.mutate()} className="size-9 rounded-full bg-white/20 grid place-items-center">
+          <button onClick={() => toggleFav.mutate()} className="size-10 rounded-full bg-white/15 backdrop-blur grid place-items-center hover:bg-white/25 transition-colors">
             <Heart className={`size-4 ${fav ? "fill-current" : ""}`} />
           </button>
         </div>
-        <div className="flex items-center gap-4">
-          <div className="size-20 rounded-full bg-white/20 grid place-items-center text-2xl font-bold border-2 border-white/30 overflow-hidden">
+        <div className="relative flex items-start gap-4">
+          <div className="size-24 rounded-3xl bg-white/15 ring-2 ring-white/25 grid place-items-center text-2xl font-bold overflow-hidden shrink-0 shadow-xl">
             {p.profiles?.avatar_url ? <img src={p.profiles.avatar_url} className="size-full object-cover" alt="" /> : (p.profiles?.full_name ?? "?").charAt(0)}
           </div>
-          <div className="min-w-0">
-            <h1 className="text-xl font-bold truncate">{p.profiles?.full_name}</h1>
-            <p className="text-sm opacity-90">{p.specialties?.name}</p>
-            {p.council_verified_at && <div className="mt-1.5"><VerifiedBadge council={p.council} number={p.council_number} uf={p.council_state} size="md" className="bg-white/15 text-white border-white/30" /></div>}
-            <p className="text-xs opacity-75 mt-1 flex items-center gap-1"><Star className="size-3 fill-current" /> {Number(p.rating_average).toFixed(1)} · {p.rating_count} avaliações</p>
+          <div className="min-w-0 pt-1">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] opacity-80">{p.specialties?.name ?? "Profissional"}</p>
+            <h1 className="text-[22px] font-semibold tracking-tight mt-0.5">{p.profiles?.full_name}</h1>
+            <div className="flex flex-wrap items-center gap-1.5 mt-2">
+              {p.council_verified_at && (
+                <VerifiedBadge council={p.council} number={p.council_number} uf={p.council_state} size="sm" className="bg-white/15 text-white border-white/30" />
+              )}
+              {Number(p.rating_count) > 0 && (
+                <span className="inline-flex items-center gap-1 rounded-full bg-white/15 px-2.5 py-1 text-[11px] font-semibold">
+                  <Star className="size-3 fill-current" /> {Number(p.rating_average).toFixed(1)}
+                  <span className="opacity-80">({p.rating_count})</span>
+                </span>
+              )}
+              {(p.address_city || p.address_state) && (
+                <span className="inline-flex items-center gap-1 rounded-full bg-white/15 px-2.5 py-1 text-[11px] font-semibold">
+                  <MapPin className="size-3" /> {[p.address_city, p.address_state].filter(Boolean).join(" · ")}
+                </span>
+              )}
+            </div>
           </div>
         </div>
       </div>
 
-      <div className="px-5 pt-6 space-y-6">
-        <div className="grid grid-cols-3 gap-2 text-center">
-          <div className="rounded-xl bg-card border border-border p-3">
-            <p className="text-[10px] uppercase font-bold text-muted-foreground">A partir de</p>
-            <p className="font-mono text-sm font-bold mt-1">R$ {Number(p.consultation_price).toFixed(0)}</p>
-          </div>
-          <div className="rounded-xl bg-card border border-border p-3">
-            <p className="text-[10px] uppercase font-bold text-muted-foreground">Modalidade</p>
-            <p className="text-sm font-semibold mt-1">Presencial</p>
-          </div>
-          <div className="rounded-xl bg-card border border-border p-3">
-            <p className="text-[10px] uppercase font-bold text-muted-foreground">Registro</p>
-            <p className="text-xs font-semibold mt-1 truncate">{p.professional_registry}</p>
-          </div>
+      <div className="px-5 pt-6 space-y-7">
+        {/* KPI cards */}
+        <div className="grid grid-cols-3 gap-2">
+          <StatCard label="A partir de" value={`R$ ${Number(p.consultation_price).toFixed(0)}`} mono />
+          <StatCard label="Modalidade" value="Presencial" />
+          <StatCard label="Registro" value={p.professional_registry} small />
         </div>
 
         {p.bio && (
-          <section>
-            <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2">Sobre</h2>
-            <p className="text-sm leading-relaxed">{p.bio}</p>
-          </section>
+          <Section title="Sobre o profissional">
+            <p className="text-sm leading-relaxed text-foreground/85">{p.bio}</p>
+          </Section>
         )}
 
         {(p.address_city || p.address_street) && (
-          <section>
-            <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2 flex items-center gap-2"><MapPin className="size-3" /> Endereço</h2>
-            <p className="text-sm">{[p.address_street, p.address_city, p.address_state].filter(Boolean).join(", ")}</p>
-          </section>
+          <Section title="Endereço" icon={<MapPin className="size-3.5" />}>
+            <p className="text-sm text-foreground/85">{[p.address_street, p.address_city, p.address_state].filter(Boolean).join(", ")}</p>
+          </Section>
         )}
 
         {services && services.length > 0 && (
-          <section>
-            <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-3 flex items-center gap-2"><Briefcase className="size-3" /> Serviços</h2>
+          <Section title="Serviços & valores" icon={<Briefcase className="size-3.5" />}>
             <div className="space-y-2">
-              {services.map((s) => (
-                <button key={s.id} onClick={() => setServiceId(serviceId === s.id ? undefined : s.id)} className={`w-full text-left p-3 rounded-xl border transition ${serviceId === s.id ? "border-primary bg-primary-soft" : "border-border bg-card"}`}>
-                  <div className="flex justify-between gap-3">
-                    <div className="min-w-0">
-                      <p className="text-sm font-semibold">{s.name}</p>
-                      <p className="text-[11px] text-muted-foreground flex items-center gap-1"><Clock className="size-3" /> {s.duration_minutes}min</p>
+              {services.map((s) => {
+                const active = serviceId === s.id;
+                return (
+                  <button
+                    key={s.id}
+                    onClick={() => setServiceId(active ? undefined : s.id)}
+                    className={`w-full rounded-2xl border p-3.5 text-left transition-all ${active ? "border-primary bg-primary-soft shadow-[var(--shadow-glow)]" : "border-border/70 bg-card hover:border-primary/30"}`}
+                  >
+                    <div className="flex justify-between gap-3">
+                      <div className="min-w-0">
+                        <p className="text-sm font-semibold">{s.name}</p>
+                        <p className="mt-0.5 flex items-center gap-1 text-[11px] text-muted-foreground">
+                          <Clock className="size-3" /> {s.duration_minutes} min
+                        </p>
+                      </div>
+                      <p className="font-mono text-sm font-bold">R$ {Number(s.price).toFixed(0)}</p>
                     </div>
-                    <p className="font-mono font-bold text-sm">R$ {Number(s.price).toFixed(0)}</p>
-                  </div>
-                </button>
-              ))}
+                  </button>
+                );
+              })}
             </div>
-          </section>
+          </Section>
         )}
 
-        <section>
-          <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-3 flex items-center gap-2"><Calendar className="size-3" /> Horários disponíveis</h2>
+        <Section title="Horários disponíveis" icon={<Calendar className="size-3.5" />}>
           {slots.length === 0 ? (
-            <p className="text-sm text-muted-foreground">Sem horários disponíveis no momento.</p>
+            <div className="rounded-2xl border border-dashed border-border bg-card p-6 text-center text-sm text-muted-foreground">
+              Sem horários disponíveis no momento.
+            </div>
           ) : (
             <div className="grid grid-cols-3 gap-2 max-h-72 overflow-y-auto pr-1">
               {slots.slice(0, 24).map((s, i) => {
                 const active = selectedSlot?.getTime() === s.getTime();
                 return (
-                  <button key={i} onClick={() => setSelectedSlot(s)} className={`p-3 rounded-xl border text-center text-xs font-semibold transition ${active ? "bg-primary text-primary-foreground border-primary" : "bg-card border-border hover:border-primary/30"}`}>
+                  <button
+                    key={i}
+                    onClick={() => setSelectedSlot(s)}
+                    className={`rounded-2xl border p-3 text-center text-xs font-semibold transition-all ${active ? "bg-primary text-primary-foreground border-primary shadow-[var(--shadow-elevated)]" : "bg-card border-border/70 hover:border-primary/40 hover:-translate-y-0.5"}`}
+                  >
                     <p className="font-bold">{s.toLocaleDateString("pt-BR", { day: "2-digit", month: "short" })}</p>
                     <p className="opacity-80 mt-0.5">{s.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}</p>
                   </button>
@@ -178,28 +197,53 @@ function ProfileDetail() {
               })}
             </div>
           )}
-        </section>
+        </Section>
 
         {reviews && reviews.length > 0 && (
-          <section>
-            <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-3">Avaliações</h2>
+          <Section title="Avaliações">
             <div className="space-y-2">
               {reviews.map((r, i) => (
-                <div key={i} className="rounded-xl bg-card border border-border p-3">
-                  <div className="flex gap-1 text-amber-500 text-xs">{"★".repeat(r.rating)}{"☆".repeat(5 - r.rating)}</div>
-                  {r.comment && <p className="text-sm mt-1">{r.comment}</p>}
+                <div key={i} className="rounded-2xl bg-card border border-border/70 p-4">
+                  <div className="flex gap-0.5 text-amber-500 text-xs">
+                    {"★".repeat(r.rating)}<span className="text-muted-foreground/50">{"★".repeat(5 - r.rating)}</span>
+                  </div>
+                  {r.comment && <p className="mt-1.5 text-sm leading-relaxed text-foreground/85">{r.comment}</p>}
                 </div>
               ))}
             </div>
-          </section>
+          </Section>
         )}
       </div>
 
+      {/* Sticky CTA */}
       <div className="fixed inset-x-0 bottom-20 z-30 px-5 max-w-md mx-auto">
-        <Button disabled={!selectedSlot} onClick={goCheckout} size="lg" className="w-full rounded-2xl shadow-[var(--shadow-elevated)]">
-          {selectedSlot ? `Continuar para pagamento` : "Selecione um horário"}
-        </Button>
+        <div className="rounded-2xl bg-card/95 backdrop-blur border border-border/80 shadow-[var(--shadow-hero)] p-2">
+          <Button disabled={!selectedSlot} onClick={goCheckout} size="lg" className="w-full rounded-xl h-12 text-[15px] font-semibold">
+            {selectedSlot ? `Continuar para pagamento` : "Selecione um horário"}
+          </Button>
+        </div>
       </div>
+    </div>
+  );
+}
+
+function Section({ title, icon, children }: { title: string; icon?: React.ReactNode; children: React.ReactNode }) {
+  return (
+    <section className="livvo-slide-up">
+      <h2 className="mb-3 flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
+        {icon}
+        {title}
+      </h2>
+      {children}
+    </section>
+  );
+}
+
+function StatCard({ label, value, mono, small }: { label: string; value: string; mono?: boolean; small?: boolean }) {
+  return (
+    <div className="rounded-2xl bg-card border border-border/70 p-3 shadow-[var(--shadow-soft)]">
+      <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">{label}</p>
+      <p className={`mt-1 font-semibold ${mono ? "font-mono text-sm" : small ? "text-xs truncate" : "text-sm"}`}>{value}</p>
     </div>
   );
 }
