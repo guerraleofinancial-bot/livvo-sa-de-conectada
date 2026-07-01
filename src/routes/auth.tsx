@@ -39,15 +39,28 @@ function AuthPage() {
   const [phone, setPhone] = useState("");
   const [loading, setLoading] = useState(false);
 
+  async function routeAfterLogin(userId: string) {
+    const [{ data: roles }, { data: grant }] = await Promise.all([
+      supabase.from("user_roles").select("role").eq("user_id", userId),
+      supabase.from("admin_grants").select("level").eq("user_id", userId).maybeSingle(),
+    ]);
+    const rs = (roles ?? []).map((r) => r.role);
+    if (grant || rs.includes("admin")) return navigate({ to: "/admin" });
+    if (rs.includes("profissional")) return navigate({ to: "/pro" });
+    if (rs.includes("empresa")) return navigate({ to: "/pro" });
+    navigate({ to: "/app" });
+  }
+
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const { data: authData, error } = await supabase.auth.signInWithPassword({ email, password });
     setLoading(false);
     if (error) return toast.error("Falha no login", { description: error.message });
     toast.success("Bem-vindo de volta!");
     recordClientAudit({ data: { event: "auth.login", module: "auth", description: `Login com email ${email}` } }).catch(() => {});
-    navigate({ to: "/app" });
+    if (authData.user) await routeAfterLogin(authData.user.id);
+    else navigate({ to: "/app" });
   }
 
   async function handleSignup(e: React.FormEvent) {

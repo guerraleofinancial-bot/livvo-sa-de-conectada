@@ -22,11 +22,11 @@ export const Route = createFileRoute("/_authenticated/admin")({
   beforeLoad: async () => {
     const { data } = await supabase.auth.getUser();
     if (!data.user) throw redirect({ to: "/auth" });
-    const { data: roles } = await supabase
-      .from("user_roles")
-      .select("role")
-      .eq("user_id", data.user.id);
-    const isAdmin = (roles ?? []).some((r) => r.role === "admin");
+    const [{ data: roles }, { data: grant }] = await Promise.all([
+      supabase.from("user_roles").select("role").eq("user_id", data.user.id),
+      supabase.from("admin_grants").select("level").eq("user_id", data.user.id).maybeSingle(),
+    ]);
+    const isAdmin = grant !== null || (roles ?? []).some((r) => r.role === "admin");
     if (!isAdmin) throw redirect({ to: "/app" });
   },
   component: AdminPanel,
