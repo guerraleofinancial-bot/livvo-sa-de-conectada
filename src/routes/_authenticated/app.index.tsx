@@ -431,7 +431,7 @@ function PatientHome() {
               </Link>
             }
           />
-          <div className="mt-3 flex gap-3 overflow-x-auto scrollbar-hide -mx-5 px-5 pb-1">
+          <HorizontalScroller className="mt-3" snap="start">
             {clinics.map((c) => (
               <CompanyCard
                 key={c.id}
@@ -445,7 +445,8 @@ function PatientHome() {
                 }}
               />
             ))}
-          </div>
+          </HorizontalScroller>
+
         </section>
       )}
 
