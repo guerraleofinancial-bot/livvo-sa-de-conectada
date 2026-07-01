@@ -2,7 +2,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { LogOut, User as UserIcon, Bell, ChevronDown, HelpCircle } from "lucide-react";
+import { LogOut, User as UserIcon, Bell, ChevronDown, HelpCircle, Megaphone } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { toast } from "sonner";
 
@@ -35,6 +35,9 @@ export function ProHeader({ title }: { title?: string }) {
             <DropdownMenuContent align="end" className="w-56">
               <DropdownMenuLabel className="truncate">{user?.email}</DropdownMenuLabel>
               <DropdownMenuSeparator />
+              <DropdownMenuItem asChild>
+                <Link to="/pro/marketing"><Megaphone className="size-4 mr-2" /> Marketing</Link>
+              </DropdownMenuItem>
               <DropdownMenuItem asChild>
                 <Link to="/app/perfil"><UserIcon className="size-4 mr-2" /> Meu perfil</Link>
               </DropdownMenuItem>
