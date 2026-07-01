@@ -18,6 +18,8 @@ import { Route as AjudaRouteImport } from './routes/ajuda'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as PayTokenRouteImport } from './routes/pay.$token'
+import { Route as PSlugRouteImport } from './routes/p.$slug'
+import { Route as ESlugRouteImport } from './routes/e.$slug'
 import { Route as AjudaSlugRouteImport } from './routes/ajuda.$slug'
 import { Route as AuthenticatedProRouteImport } from './routes/_authenticated/pro'
 import { Route as AuthenticatedOnboardingProRouteImport } from './routes/_authenticated/onboarding-pro'
@@ -94,6 +96,16 @@ const IndexRoute = IndexRouteImport.update({
 const PayTokenRoute = PayTokenRouteImport.update({
   id: '/pay/$token',
   path: '/pay/$token',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PSlugRoute = PSlugRouteImport.update({
+  id: '/p/$slug',
+  path: '/p/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ESlugRoute = ESlugRouteImport.update({
+  id: '/e/$slug',
+  path: '/e/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AjudaSlugRoute = AjudaSlugRouteImport.update({
@@ -296,6 +308,8 @@ export interface FileRoutesByFullPath {
   '/onboarding-pro': typeof AuthenticatedOnboardingProRoute
   '/pro': typeof AuthenticatedProRouteWithChildren
   '/ajuda/$slug': typeof AjudaSlugRoute
+  '/e/$slug': typeof ESlugRoute
+  '/p/$slug': typeof PSlugRoute
   '/pay/$token': typeof PayTokenRoute
   '/app/buscar': typeof AuthenticatedAppBuscarRoute
   '/app/carteira': typeof AuthenticatedAppCarteiraRoute
@@ -337,6 +351,8 @@ export interface FileRoutesByTo {
   '/onboarding-empresa': typeof AuthenticatedOnboardingEmpresaRoute
   '/onboarding-pro': typeof AuthenticatedOnboardingProRoute
   '/ajuda/$slug': typeof AjudaSlugRoute
+  '/e/$slug': typeof ESlugRoute
+  '/p/$slug': typeof PSlugRoute
   '/pay/$token': typeof PayTokenRoute
   '/app/buscar': typeof AuthenticatedAppBuscarRoute
   '/app/carteira': typeof AuthenticatedAppCarteiraRoute
@@ -382,6 +398,8 @@ export interface FileRoutesById {
   '/_authenticated/onboarding-pro': typeof AuthenticatedOnboardingProRoute
   '/_authenticated/pro': typeof AuthenticatedProRouteWithChildren
   '/ajuda/$slug': typeof AjudaSlugRoute
+  '/e/$slug': typeof ESlugRoute
+  '/p/$slug': typeof PSlugRoute
   '/pay/$token': typeof PayTokenRoute
   '/_authenticated/app/buscar': typeof AuthenticatedAppBuscarRoute
   '/_authenticated/app/carteira': typeof AuthenticatedAppCarteiraRoute
@@ -427,6 +445,8 @@ export interface FileRouteTypes {
     | '/onboarding-pro'
     | '/pro'
     | '/ajuda/$slug'
+    | '/e/$slug'
+    | '/p/$slug'
     | '/pay/$token'
     | '/app/buscar'
     | '/app/carteira'
@@ -468,6 +488,8 @@ export interface FileRouteTypes {
     | '/onboarding-empresa'
     | '/onboarding-pro'
     | '/ajuda/$slug'
+    | '/e/$slug'
+    | '/p/$slug'
     | '/pay/$token'
     | '/app/buscar'
     | '/app/carteira'
@@ -512,6 +534,8 @@ export interface FileRouteTypes {
     | '/_authenticated/onboarding-pro'
     | '/_authenticated/pro'
     | '/ajuda/$slug'
+    | '/e/$slug'
+    | '/p/$slug'
     | '/pay/$token'
     | '/_authenticated/app/buscar'
     | '/_authenticated/app/carteira'
@@ -551,6 +575,8 @@ export interface RootRouteChildren {
   ParaEmpresasRoute: typeof ParaEmpresasRoute
   ParaParceirosRoute: typeof ParaParceirosRoute
   PlanosEPrecosRoute: typeof PlanosEPrecosRoute
+  ESlugRoute: typeof ESlugRoute
+  PSlugRoute: typeof PSlugRoute
   PayTokenRoute: typeof PayTokenRoute
   ApiPublicAutomationRunRoute: typeof ApiPublicAutomationRunRoute
   ApiPublicPaymentsWebhookRoute: typeof ApiPublicPaymentsWebhookRoute
@@ -619,6 +645,20 @@ declare module '@tanstack/react-router' {
       path: '/pay/$token'
       fullPath: '/pay/$token'
       preLoaderRoute: typeof PayTokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/p/$slug': {
+      id: '/p/$slug'
+      path: '/p/$slug'
+      fullPath: '/p/$slug'
+      preLoaderRoute: typeof PSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/e/$slug': {
+      id: '/e/$slug'
+      path: '/e/$slug'
+      fullPath: '/e/$slug'
+      preLoaderRoute: typeof ESlugRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/ajuda/$slug': {
@@ -995,6 +1035,8 @@ const rootRouteChildren: RootRouteChildren = {
   ParaEmpresasRoute: ParaEmpresasRoute,
   ParaParceirosRoute: ParaParceirosRoute,
   PlanosEPrecosRoute: PlanosEPrecosRoute,
+  ESlugRoute: ESlugRoute,
+  PSlugRoute: PSlugRoute,
   PayTokenRoute: PayTokenRoute,
   ApiPublicAutomationRunRoute: ApiPublicAutomationRunRoute,
   ApiPublicPaymentsWebhookRoute: ApiPublicPaymentsWebhookRoute,

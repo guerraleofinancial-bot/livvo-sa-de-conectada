@@ -643,6 +643,7 @@ export type Database = {
           logo_url: string | null
           owner_id: string
           phone: string | null
+          slug: string | null
           status: Database["public"]["Enums"]["professional_status"]
           trade_name: string | null
           type: Database["public"]["Enums"]["company_type"]
@@ -666,6 +667,7 @@ export type Database = {
           logo_url?: string | null
           owner_id: string
           phone?: string | null
+          slug?: string | null
           status?: Database["public"]["Enums"]["professional_status"]
           trade_name?: string | null
           type?: Database["public"]["Enums"]["company_type"]
@@ -689,6 +691,7 @@ export type Database = {
           logo_url?: string | null
           owner_id?: string
           phone?: string | null
+          slug?: string | null
           status?: Database["public"]["Enums"]["professional_status"]
           trade_name?: string | null
           type?: Database["public"]["Enums"]["company_type"]
@@ -2091,6 +2094,7 @@ export type Database = {
           rating_average: number
           rating_count: number
           secondary_specialties: string[]
+          slug: string | null
           specialty_id: string | null
           status: Database["public"]["Enums"]["professional_status"]
           total_appointments: number
@@ -2147,6 +2151,7 @@ export type Database = {
           rating_average?: number
           rating_count?: number
           secondary_specialties?: string[]
+          slug?: string | null
           specialty_id?: string | null
           status?: Database["public"]["Enums"]["professional_status"]
           total_appointments?: number
@@ -2203,6 +2208,7 @@ export type Database = {
           rating_average?: number
           rating_count?: number
           secondary_specialties?: string[]
+          slug?: string | null
           specialty_id?: string | null
           status?: Database["public"]["Enums"]["professional_status"]
           total_appointments?: number
@@ -3055,6 +3061,7 @@ export type Database = {
           rating_average: number
           rating_count: number
           secondary_specialties: string[]
+          slug: string | null
           specialty_id: string | null
           status: Database["public"]["Enums"]["professional_status"]
           total_appointments: number
@@ -3143,6 +3150,10 @@ export type Database = {
         Args: { _company: string; _professional: string }
         Returns: number
       }
+      ensure_unique_slug: {
+        Args: { _base: string; _self_id: string; _table: string }
+        Returns: string
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -3218,6 +3229,7 @@ export type Database = {
           subscription_id: string
         }[]
       }
+      slugify: { Args: { _input: string }; Returns: string }
       verify_professional_council: {
         Args: { _approved: boolean; _id: string; _reason?: string }
         Returns: {
@@ -3266,6 +3278,7 @@ export type Database = {
           rating_average: number
           rating_count: number
           secondary_specialties: string[]
+          slug: string | null
           specialty_id: string | null
           status: Database["public"]["Enums"]["professional_status"]
           total_appointments: number
