@@ -1,99 +1,76 @@
-# Roadmap Livvo — Execução em 5 Ondas
 
-Mantenho identidade visual, navegação, paleta, tipografia e arquitetura atual. Cada onda é entregue como um lote pequeno, revisável e independente. Abaixo, o que já existe, o que falta, e a ordem de execução.
+# Fase 2 — Evolução do Ecossistema Livvo
 
----
+Escopo enorme (11 prioridades). Para respeitar a Regra de Ouro (alto impacto + baixa complexidade), não quebrar nada e evoluir de forma incremental, proponho **4 ondas** encadeadas. Cada onda compila, é testável e reaproveita máximo do que já existe (`professionals`, `companies`, `favorites`, `featured_*`, `audit_logs`, `search_providers_ranked`, `admin/*`, help-center, StatusBadge, livvo-card).
 
-## Diagnóstico rápido do que já existe
-
-| Item | Status |
-|---|---|
-| Separação Paciente x Profissional (roles `paciente`/`profissional`/`admin`, gate em `/pro`) | ✅ Feito |
-| Onboarding profissional 7 etapas + upload de documentos | ✅ Feito |
-| Tabela `professional_documents` + bucket privado `provider-documents` | ✅ Feito |
-| Status (`pendente`/`em_analise`/`aprovado`/`rejeitado`) + `approve_professional` + 90d zero comissão | ✅ Feito |
-| Novo paciente + importação CSV/XLSX + CRM Kanban + dashboard CRM + origem | ✅ Feito (Onda 2 majoritariamente pronta) |
-| Orçamentos com itens, descontos, total automático | ✅ Feito |
-| Destaques patrocinados (premium/regional/categoria) + ordenação ranqueada | ✅ Feito |
-| Avaliações verificadas (ligadas a `appointments.status='realizada'`) | ✅ Feito |
-| Notificações internas (agendamento, cancelamento, avaliação, retorno, orçamento) | ✅ Feito |
-
-Logo: o trabalho real concentra-se em **Onda 1 (validação documental forte + selo + responsável técnico + papéis)**, **Onda 3 (painel de desempenho de anúncios + Fundadores + comissão progressiva)** e **Onda 5 (resposta pública, denúncia, ranking)**. Ondas 2 e 4 já estão majoritariamente prontas — só faltam ajustes finos.
+Antes de começar quero seu OK na ordem — se preferir outra sequência, ajusto.
 
 ---
 
-## Onda 1 — Segurança, credibilidade e estrutura
+## Onda A — Perfis Públicos Premium + Compartilhamento (P1 + P3)
 
-**Lote 1.1 — Validação documental por conselho (alto impacto, baixa complexidade)**
-- Migration:
-  - Enum `professional_council` (`CRM`,`CRO`,`CRP`,`CRF`,`CRBM`,`COREN`,`CRN`,`CREFITO`,`CREFONO`,`OUTRO`).
-  - Em `professionals`: `council`, `council_number`, `council_state` (UF), `council_document_url`, `council_verified_at`, `council_rejection_reason`, `documents_expire_at`.
-  - Novo status `documentacao_vencida` no enum existente de status; job diário marca quem passou de `documents_expire_at`.
-  - `is_approved_professional` já existe — estender para também exigir `council_verified_at IS NOT NULL`.
-- UI:
-  - Etapa "Identificação" do onboarding passa a exigir conselho + número + UF + upload (bloqueia avanço).
-  - Admin ganha aba "Validação documental" com aprovar/rejeitar (com motivo).
-- Gate de acesso (já em `pro.tsx`) passa a bloquear também quando `council_verified_at` for nulo.
+Rotas públicas SSR-friendly com SEO, OG, JSON-LD, botões de ação sociais.
 
-**Lote 1.2 — Selo "Parceiro Verificado Livvo"**
-- Componente `<VerifiedBadge council number uf />` exibido em:
-  - Card do profissional na busca (`search_providers_ranked` já retorna campos suficientes — adicionar `council`, `council_number`, `council_state` no SELECT).
-  - Perfil público `app.profissional.$id.tsx` e `app.empresa.$id.tsx`.
-- Filtro "Somente parceiros verificados" na busca.
+- `src/routes/p.$slug.tsx` — perfil público do profissional
+  - Loader server-fn público → `professionals + profiles + specialty + business_hours + reviews + featured_subscriptions`
+  - Seções: hero (foto/banner/nome/especialidade/`VerifiedBadge`), bio, conselho+UF, idiomas, procedimentos, exames, convênios, horários, mapa (link `https://maps.google.com/?q=lat,lng` sem chave paga), avaliações, galeria (`provider-media`), FAQ, CTA "Agendar" → `/profissional/$id`, favoritar, share
+  - `head()`: title, description, og:*, canonical, JSON-LD `Physician`
+- `src/routes/e.$slug.tsx` — perfil público da empresa (mesmo padrão, JSON-LD `MedicalBusiness`)
+- `src/components/livvo/share-menu.tsx` — WhatsApp / Instagram / Facebook / LinkedIn / e-mail / copiar link / QR (usa `qrcode` já client-side)
+- `src/components/livvo/favorite-button.tsx` — toggle contra `favorites` (tabela já existe)
+- Slug: campo `slug text unique` em `professionals` e `companies` + migração para gerar retroativamente a partir de `full_name`/`name` (unaccent + kebab). Fallback: aceitar UUID em `p.$slug` para nunca 404.
 
-**Lote 1.3 — Responsável Técnico para PJ**
-- Migration: em `companies` adicionar `technical_responsible_name`, `technical_responsible_council`, `technical_responsible_number`, `technical_responsible_state`, `technical_responsible_document_url`.
-- Obrigatório quando `companies.type` ∈ {clínica, laboratório, diagnóstico, estética}.
-- UI: campo na criação/edição de empresa; bloqueia publicação sem RT validado.
+## Onda B — Busca Inteligente + Favoritos/Recentes (P2 + P4)
 
-**Lote 1.4 — Papéis operacionais**
-- `company_members.role` já tem `owner`/`admin`/`recepcionista`. Adicionar `profissional` e criar policies/UI:
-  - Owner/Admin: tudo.
-  - Recepcionista: agenda, CRM, orçamentos. Sem financeiro, sem impulsionar.
-  - Profissional vinculado: só própria agenda + próprios pacientes.
-- Tela "Equipe" em `/pro` (convite por email, definir papel).
+- Estender `search_providers_ranked` com params opcionais: `_gender`, `_language`, `_convenio`, `_price_min`, `_price_max`, `_child_friendly`, `_open_now`, `_available_today`, `_available_tomorrow`. Compatibilidade preservada (defaults NULL).
+- Nova `search_procedures(_q,_city,_state)` unindo `services` + `specialties`.
+- UI: refatorar `src/routes/buscar.tsx` (ou equivalente) com chips de filtro combináveis, ordenação (mais próximo, melhor avaliado, mais agendado).
+- `favorites`: adicionar `target_type` enum `professional|company|specialty|patient` (já tem `professional_id/company_id`; só ampliar). Views:
+  - Paciente: `/app/favoritos` (tabs Prof/Empresa/Especialidade + Recentes + Mais visitados via `audit_logs` já existente)
+  - Profissional: `/pro/favoritos` (pacientes salvos)
+  - Empresa: `/empresa/favoritos` (profissionais salvos)
 
-**Lote 1.5 — Regras de gating finais**
-- Bloquear `pro.impulsionar`, contratação Premium e aparição em `search_providers_ranked` para `status<>'aprovado'` OR `council_verified_at IS NULL` OR `documentacao_vencida`.
+## Onda C — Admin Master + Moderação + Analytics + CMS + Destaques (P5 + P6 + P7 + P8 + P11)
 
-**Lote 1.6 — Auditoria**
-- Gerar relatório `.lovable/audit-livvo.md` mapeando: botões dead, telas vazias, duplicações, textos repetidos, fluxos quebrados. Sem refactor — só lista priorizada.
+Consolida a área `/admin` reaproveitando `SettingsCenter`, `AuditLogsTab`, `AdminGrowthCharts`.
 
----
+- **Admin**: novas abas em `SettingsCenter` — Marketplace, Cobranças, Comissões, Assinaturas, Destaques, SEO, CMS, FAQ, Páginas, Integrações, Conselhos, Documentação. Cada aba é lazy component; sem breaking changes nas atuais.
+- **Moderação**: tabela nova `moderation_actions (id, target_type, target_id, action enum(approve|reject|request_docs|suspend|block), reason, created_by, created_at)` + `reports (id, reporter_id, target_type, target_id, reason, status, created_at)`. UI em `/admin/moderacao` com filtro por status. Todo action grava em `audit_logs` (já existe).
+- **CMS**: tabela `cms_blocks (key text pk, title, body jsonb, updated_at, updated_by)` + hook `useCmsBlock(key)` com fallback ao texto atual hardcoded (não quebra homepage se vazio). Editor rich-text simples (`textarea` + markdown render).
+- **Destaques (P7)**: já existe `featured_plans/subscriptions/regions/categories`. Só adicionar UI admin para criar planos e revisar campanhas ativas + slot "Banner Premium" na home usando `is_provider_premium`.
+- **Analytics (P8)**: `/pro/analytics` e `/empresa/analytics` agregando `ad_impressions`, `audit_logs` (page_view), `appointments`, `favorites`, `wallet_transactions`, `payments`. Gráficos com Recharts já usado em `AdminGrowthCharts`.
 
-## Onda 2 — Acertos finais no CRM (rápido)
-- Controle de duplicidade no import (Ignorar / Atualizar / Mesclar) — hoje só ignora.
-- Tela "Ficha do paciente" (`pro.crm.$id.tsx`) ganhar timeline unificada (agendamentos + orçamentos + pagamentos + notas) ordenada por data.
-- "Origem dos pacientes" virar enum padronizado (a lista oficial do brief) + permitir edição manual.
+## Onda D — Parceiros Fundadores + Central de Configurações (P9 + P10)
 
-## Onda 3 — Crescimento e monetização
-- Painel "Meus Destaques" (`pro.impulsionar.tsx`) com KPIs: impressões, cliques, contatos, agendamentos, taxa de conversão (já temos `ad_impressions`; falta agregar).
-- Programa Parceiros Fundadores: flag `is_founder` em `professionals`/`companies`. Primeiros 20 → 120d / demais → 90d. Função `effective_commission_percent` já cobre janela; só estender + contador.
-- Comissão progressiva por volume (10% / 8% / 5%) com base em `appointments` realizados nos últimos 30 dias — estender `effective_commission_percent`.
-
-## Onda 4 — Automações
-- Arquitetura já existe (`automation_jobs`, `notify_user`). Faltam apenas eventos faltantes (retorno pendente já está; revisar reagendamento) e contratos prontos p/ WhatsApp/Email (provider abstrato, sem integração agora).
-
-## Onda 5 — Reputação
-- Resposta pública do profissional em `reviews` (campo `reply_text`, `reply_at`).
-- Denúncia (`review_reports`) + moderação admin.
-- Ranking: estender `search_providers_ranked` com score (rating + completude + conversão) para desempate dentro de cada `rank_group`.
+- **Parceiros Fundadores (P9)**: já há `zero_commission_start/end` em `professionals`. Criar:
+  - View badge "Fundador" (mostrar quando `zero_commission_end > now()`)
+  - Página `/pro/fundador` — benefícios, tempo restante, exposição extra (bump em `search_providers_ranked` opcional com flag)
+  - Toggle admin em `/admin/parceiros-fundadores`
+- **Central de Configurações (P10)**: nova rota `/pro/configuracoes` (e `/empresa/configuracoes`) organizada em navegação lateral por módulos (Conta, Perfil, Empresa, Equipe, Agenda, CRM, Cobranças, Financeiro, Marketplace, Notificações, Segurança, Integrações, Assinatura, Privacidade). Cada aba é wrapper que **importa telas já existentes** (`pro.agenda config`, `notification_preferences`, `provider_payout_accounts`, etc.) — zero duplicação.
 
 ---
 
-## Ordem de execução proposta
+## Regras aplicadas em todas as ondas
 
-1. **Onda 1 — Lote 1.1 + 1.2** (validação documental + selo) — começo agora.
-2. Lote 1.3 (RT) + 1.4 (papéis) + 1.5 (gating).
-3. Lote 1.6 (relatório de auditoria — entregue como markdown).
-4. Onda 3 (monetização) antes da Onda 2 ajustes finais, porque tem impacto direto em faturamento.
-5. Onda 5 (reputação).
-6. Onda 2 + Onda 4 (ajustes finos restantes).
+- Reutilização: `VerifiedBadge`, `StatusBadge`, `livvo-card`, `EmptyState`, `HelpHint`, `SettingsCenter`, `AuditLogsTab`, `search_providers_ranked`, `favorites`, `featured_*`, `audit_logs`.
+- Sem alteração de RLS existente; toda nova tabela ganha RLS + GRANTs desde o INSERT.
+- Server-fns em `*.functions.ts`; loaders públicos usam client publishable + policies `TO anon` narrow.
+- SEO: `head()` por rota leaf com title/desc/og/canonical + JSON-LD.
+- Sem novas dependências pesadas (uso `qrcode` só se ainda não estiver instalado; caso não, faço fallback SVG in-house).
+
+## Detalhes técnicos por onda
+
+- **A**: 1 migração (slugs + índice unique), 2 rotas públicas, 3 componentes compartilháveis, ~600 linhas.
+- **B**: 1 migração (RPC ampliada), 1 refactor de página, 3 rotas de favoritos, ~500 linhas.
+- **C**: 2 migrações (`moderation_actions`, `reports`, `cms_blocks`), extensão do `SettingsCenter`, 2 dashboards analytics, ~1200 linhas.
+- **D**: 0 migrações, 2 novas centrais + página fundador, ~400 linhas.
+
+## Fora de escopo desta fase (para não inflar)
+
+- Integrações externas reais (Instagram/Facebook auth, WhatsApp Business API) — usamos apenas share links.
+- Pagamento real de destaques — mantém mock atual pronto para Paddle.
+- Editor visual drag-and-drop do CMS — entregue como markdown/JSON key-value.
 
 ---
 
-## Confirmação
-
-Posso começar pelos **Lotes 1.1 + 1.2** (migration + UI do onboarding + selo na busca/perfil)? São o passo de maior impacto jurídico e de credibilidade, e desbloqueiam o restante.
-
-Se preferir outra ordem (ex.: começar por Onda 3 para monetizar antes), me diga.
+**Confirma a ordem A → B → C → D?** Ou prefere começar por outra prioridade (ex.: Admin Master antes dos Perfis Públicos)?
