@@ -1,5 +1,6 @@
 import { createFileRoute, Outlet, useNavigate } from "@tanstack/react-router";
 import { ProBottomNav } from "@/components/livvo/bottom-nav";
+import { ProHeader } from "@/components/livvo/pro-header";
 import { useAuth } from "@/hooks/use-auth";
 import { Loader2 } from "lucide-react";
 import { useEffect } from "react";
@@ -29,9 +30,11 @@ function ProLayout() {
   return (
     <div className="min-h-screen bg-surface pb-24">
       <div className="mx-auto max-w-md">
+        <ProHeader />
         <Outlet />
       </div>
       <ProBottomNav />
     </div>
   );
 }
+

@@ -45,6 +45,8 @@
   --color-surface-elevated: var(--surface-elevated);
   --color-warning: var(--warning);
   --color-warning-foreground: var(--warning-foreground);
+  --color-warning-soft: var(--warning-soft);
+
 
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
@@ -87,6 +89,8 @@
 
   --warning: hsl(38 92% 50%);
   --warning-foreground: hsl(38 92% 15%);
+  --warning-soft: hsl(38 92% 92%);
+
 
   --health: hsl(142 71% 45%);
   --health-foreground: hsl(0 0% 100%);
@@ -121,6 +125,8 @@
   --destructive-foreground: hsl(0 0% 100%);
   --warning: hsl(38 90% 55%);
   --warning-foreground: hsl(38 90% 12%);
+  --warning-soft: hsl(38 50% 18%);
+
   --health: hsl(162 55% 50%);
   --health-foreground: hsl(215 40% 8%);
   --health-soft: hsl(162 50% 18%);

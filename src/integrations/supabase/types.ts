@@ -58,8 +58,47 @@ export type Database = {
           },
         ]
       }
+      appointment_events: {
+        Row: {
+          actor_id: string | null
+          appointment_id: string
+          created_at: string
+          description: string | null
+          event_type: string
+          id: string
+          metadata: Json
+        }
+        Insert: {
+          actor_id?: string | null
+          appointment_id: string
+          created_at?: string
+          description?: string | null
+          event_type: string
+          id?: string
+          metadata?: Json
+        }
+        Update: {
+          actor_id?: string | null
+          appointment_id?: string
+          created_at?: string
+          description?: string | null
+          event_type?: string
+          id?: string
+          metadata?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: "appointment_events_appointment_id_fkey"
+            columns: ["appointment_id"]
+            isOneToOne: false
+            referencedRelation: "appointments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       appointments: {
         Row: {
+          cancellation_reason: string | null
           cancelled_at: string | null
           cancelled_by: string | null
           commission_amount: number
@@ -75,6 +114,7 @@ export type Database = {
           id: string
           modality: Database["public"]["Enums"]["appointment_modality"]
           net_amount: number
+          no_show_at: string | null
           notes: string | null
           package_purchase_id: string | null
           patient_id: string
@@ -86,14 +126,20 @@ export type Database = {
           professional_id: string
           professional_notes: string | null
           released_at: string | null
+          reschedule_reason: string | null
+          rescheduled_by: string | null
+          rescheduled_from_id: string | null
+          rescheduled_to_id: string | null
           resource_id: string | null
           scheduled_at: string
           service_id: string | null
+          started_at: string | null
           status: Database["public"]["Enums"]["appointment_status"]
           unit_id: string | null
           updated_at: string
         }
         Insert: {
+          cancellation_reason?: string | null
           cancelled_at?: string | null
           cancelled_by?: string | null
           commission_amount?: number
@@ -109,6 +155,7 @@ export type Database = {
           id?: string
           modality?: Database["public"]["Enums"]["appointment_modality"]
           net_amount?: number
+          no_show_at?: string | null
           notes?: string | null
           package_purchase_id?: string | null
           patient_id: string
@@ -120,14 +167,20 @@ export type Database = {
           professional_id: string
           professional_notes?: string | null
           released_at?: string | null
+          reschedule_reason?: string | null
+          rescheduled_by?: string | null
+          rescheduled_from_id?: string | null
+          rescheduled_to_id?: string | null
           resource_id?: string | null
           scheduled_at: string
           service_id?: string | null
+          started_at?: string | null
           status?: Database["public"]["Enums"]["appointment_status"]
           unit_id?: string | null
           updated_at?: string
         }
         Update: {
+          cancellation_reason?: string | null
           cancelled_at?: string | null
           cancelled_by?: string | null
           commission_amount?: number
@@ -143,6 +196,7 @@ export type Database = {
           id?: string
           modality?: Database["public"]["Enums"]["appointment_modality"]
           net_amount?: number
+          no_show_at?: string | null
           notes?: string | null
           package_purchase_id?: string | null
           patient_id?: string
@@ -154,9 +208,14 @@ export type Database = {
           professional_id?: string
           professional_notes?: string | null
           released_at?: string | null
+          reschedule_reason?: string | null
+          rescheduled_by?: string | null
+          rescheduled_from_id?: string | null
+          rescheduled_to_id?: string | null
           resource_id?: string | null
           scheduled_at?: string
           service_id?: string | null
+          started_at?: string | null
           status?: Database["public"]["Enums"]["appointment_status"]
           unit_id?: string | null
           updated_at?: string
@@ -167,6 +226,20 @@ export type Database = {
             columns: ["professional_id"]
             isOneToOne: false
             referencedRelation: "professionals"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "appointments_rescheduled_from_id_fkey"
+            columns: ["rescheduled_from_id"]
+            isOneToOne: false
+            referencedRelation: "appointments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "appointments_rescheduled_to_id_fkey"
+            columns: ["rescheduled_to_id"]
+            isOneToOne: false
+            referencedRelation: "appointments"
             referencedColumns: ["id"]
           },
           {

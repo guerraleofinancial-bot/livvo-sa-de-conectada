@@ -4,7 +4,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { getCrmDashboard } from "@/lib/livvo/crm.functions";
-import { Calendar, Users, Star, Wallet, Clock, FileText, TrendingUp, UserCheck, UserX } from "lucide-react";
+import { Calendar, Users, Star, Wallet, Clock, FileText, TrendingUp, UserCheck, UserX, AlertTriangle, RefreshCw, CheckCircle2 } from "lucide-react";
 import { useState } from "react";
 import { NewPatientDialog } from "@/components/livvo/new-patient-dialog";
 import { ImportPatientsDialog, NewPatientButtons } from "@/components/livvo/import-patients-dialog";
@@ -38,6 +38,30 @@ function ProHome() {
     queryFn: async () => (await supabase.from("appointments").select("*, profiles:patient_id(full_name)").eq("professional_id", user!.id).in("status", ["agendada", "confirmada"]).gte("scheduled_at", new Date().toISOString()).order("scheduled_at").limit(5)).data ?? [],
   });
 
+  const { data: today } = useQuery({
+    queryKey: ["pro-today", user?.id],
+    enabled: !!user,
+    queryFn: async () => {
+      const start = new Date(); start.setHours(0, 0, 0, 0);
+      const end = new Date(start); end.setDate(end.getDate() + 1);
+      const nowIso = new Date().toISOString();
+      const [{ data: dayRows }, { data: pendRows }] = await Promise.all([
+        supabase.from("appointments").select("status").eq("professional_id", user!.id).gte("scheduled_at", start.toISOString()).lt("scheduled_at", end.toISOString()),
+        supabase.from("appointments").select("id").eq("professional_id", user!.id).eq("status", "agendada").lt("scheduled_at", nowIso),
+      ]);
+      const rows = dayRows ?? [];
+      const count = (s: string) => rows.filter((r) => r.status === s).length;
+      return {
+        total: rows.length,
+        done: count("realizada"),
+        cancelled: count("cancelada"),
+        noShow: count("nao_compareceu"),
+        pending: (pendRows ?? []).length,
+      };
+    },
+  });
+
+
   const p = pro as (typeof pro & { profiles: { full_name?: string } | null; specialties: { name?: string } | null }) | null;
   const convRate = Number(dash?.conversion_rate ?? 0);
 
@@ -52,6 +76,36 @@ function ProHome() {
       <ApprovalBanner />
 
       <section>
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="text-sm font-bold">Hoje</h2>
+          <Link to="/pro/agenda" className="text-xs font-semibold text-primary">Ver agenda</Link>
+        </div>
+        <div className="grid grid-cols-5 gap-2">
+          {[
+            { icon: Calendar, label: "Do dia", value: today?.total ?? 0, tone: "primary" as const },
+            { icon: CheckCircle2, label: "Feitas", value: today?.done ?? 0, tone: "health" as const },
+            { icon: UserX, label: "Faltas", value: today?.noShow ?? 0, tone: "warning" as const },
+            { icon: RefreshCw, label: "Cancel.", value: today?.cancelled ?? 0, tone: "primary" as const },
+            { icon: AlertTriangle, label: "Pend.", value: today?.pending ?? 0, tone: "warning" as const },
+          ].map((s) => {
+            const toneCls = s.tone === "health" ? "bg-health-soft text-health"
+              : s.tone === "warning" ? "bg-warning-soft text-warning"
+              : "bg-primary-soft text-primary";
+            return (
+              <div key={s.label} className="rounded-2xl bg-card border border-border p-2 flex flex-col items-center text-center">
+                <div className={`size-7 rounded-lg grid place-items-center mb-1 ${toneCls}`}>
+                  <s.icon className="size-3.5" />
+                </div>
+                <p className="font-mono text-base font-bold leading-none">{s.value}</p>
+                <p className="text-[10px] text-muted-foreground mt-1">{s.label}</p>
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
+      <section>
+
         <div className="flex items-center justify-between mb-3 gap-3 flex-wrap">
           <h2 className="text-sm font-bold">Visão comercial · últimos 30 dias</h2>
           <NewPatientButtons onNew={() => setOpenNew(true)} onImport={() => setOpenImport(true)} />

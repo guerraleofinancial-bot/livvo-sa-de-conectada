@@ -2,18 +2,20 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
-import { Calendar as CalendarIcon, Lock, Trash2, Plus, MoreVertical, CheckCircle2, XCircle, User, Clock } from "lucide-react";
+import { Calendar as CalendarIcon, Lock, Trash2, Plus, AlertTriangle } from "lucide-react";
 import { useMemo, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
+import { AppointmentActions, isPending, type ApptForActions } from "@/components/livvo/appointment-actions";
+import { AppointmentTimelineDialog } from "@/components/livvo/appointment-timeline";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/pro/agenda")({
   component: Agenda,
 });
+
 
 const DAYS = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
 
@@ -84,32 +86,18 @@ function Agenda() {
     },
   });
 
-  const setStatus = useMutation({
-    mutationFn: async ({ id, status }: { id: string; status: string }) => {
-      const patch: any = { status };
-      if (status === "cancelada") patch.cancelled_at = new Date().toISOString();
-      if (status === "realizada") patch.completed_at = new Date().toISOString();
-      const { error } = await supabase.from("appointments").update(patch).eq("id", id);
-      if (error) throw error;
-    },
-    onSuccess: () => { toast.success("Agendamento atualizado"); qc.invalidateQueries({ queryKey: ["pro-agenda"] }); },
-    onError: (e: any) => toast.error(e.message ?? "Erro ao atualizar"),
-  });
-
-  const reschedule = useMutation({
-    mutationFn: async ({ id, when }: { id: string; when: string }) => {
-      const { error } = await supabase.from("appointments").update({ scheduled_at: new Date(when).toISOString(), status: "agendada" }).eq("id", id);
-      if (error) throw error;
-    },
-    onSuccess: () => { toast.success("Reagendado"); qc.invalidateQueries({ queryKey: ["pro-agenda"] }); },
-    onError: (e: any) => toast.error(e.message ?? "Erro ao reagendar"),
-  });
-
   const now = useMemo(() => new Date(), []);
+  const [timelineId, setTimelineId] = useState<string | null>(null);
+
+  const pending = useMemo(
+    () => (appts ?? []).filter((a) => isPending(a)),
+    [appts]
+  );
   const upcoming = useMemo(
     () => (appts ?? []).filter((a) => new Date(a.scheduled_at) >= startOfDay(now) && !["cancelada", "realizada"].includes(a.status)).slice(0, 8),
     [appts, now]
   );
+
 
   // Calendar view
   const [view, setView] = useState<"dia" | "semana" | "mes">("dia");
@@ -184,53 +172,52 @@ function Agenda() {
     onSuccess: () => qc.invalidateQueries({ queryKey: ["my-blocked"] }),
   });
 
-  const renderActions = (a: ApptRow) => (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <button className="p-1.5 rounded-lg hover:bg-muted" aria-label="Ações"><MoreVertical className="size-4 text-muted-foreground" /></button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
-        {a.patient_id && (
-          <DropdownMenuItem asChild>
-            <Link to="/pro/crm/$id" params={{ id: a.patient_id }}><User className="size-4 mr-2" /> Ver paciente</Link>
-          </DropdownMenuItem>
-        )}
-        <DropdownMenuItem onClick={() => {
-          const cur = new Date(a.scheduled_at);
-          const iso = cur.toISOString().slice(0, 16);
-          const next = window.prompt("Reagendar para (AAAA-MM-DDTHH:MM)", iso);
-          if (next) reschedule.mutate({ id: a.id, when: next });
-        }}><Clock className="size-4 mr-2" /> Reagendar</DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setStatus.mutate({ id: a.id, status: "realizada" })}>
-          <CheckCircle2 className="size-4 mr-2" /> Marcar como atendido
-        </DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem className="text-destructive focus:text-destructive" onClick={() => setStatus.mutate({ id: a.id, status: "cancelada" })}>
-          <XCircle className="size-4 mr-2" /> Cancelar
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
-  );
+  const apptForActions = (a: ApptRow): ApptForActions => ({
+    id: a.id,
+    patient_id: a.patient_id,
+    professional_id: user!.id,
+    scheduled_at: a.scheduled_at,
+    duration_minutes: a.duration_minutes,
+    status: a.status,
+    service_id: a.service_id,
+  });
 
   const ApptItem = (a: ApptRow) => {
     const d = new Date(a.scheduled_at);
+    const overdue = isPending(a);
     return (
-      <div key={a.id} className="p-3 rounded-2xl bg-card border border-border flex items-center gap-3">
+      <div key={a.id} className={`p-3 rounded-2xl border flex items-center gap-3 ${overdue ? "bg-warning-soft/40 border-warning/40" : "bg-card border-border"}`}>
         <div className="flex flex-col items-center justify-center w-14 shrink-0">
           <span className="text-[10px] uppercase font-bold text-muted-foreground">{d.toLocaleDateString("pt-BR", { weekday: "short" }).replace(".", "")}</span>
           <span className="text-sm font-bold tabular-nums">{d.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}</span>
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-semibold truncate">{a.patient_name}</p>
+          <p className="text-sm font-semibold truncate">
+            {a.patient_id ? (
+              <Link to="/pro/crm/$id" params={{ id: a.patient_id }} className="hover:text-primary">{a.patient_name}</Link>
+            ) : a.patient_name}
+          </p>
           <p className="text-xs text-muted-foreground truncate">{a.service_name}</p>
+          {overdue && (
+            <p className="text-[10px] font-bold text-warning mt-0.5 flex items-center gap-1">
+              <AlertTriangle className="size-3" /> Pendente de definição
+            </p>
+          )}
         </div>
-        <span className={`px-2 py-0.5 text-[10px] uppercase font-bold rounded-full ${STATUS_STYLE[a.status] ?? "bg-muted text-muted-foreground"}`}>
-          {STATUS_LABEL[a.status] ?? a.status}
-        </span>
-        {renderActions(a)}
+        {!overdue && (
+          <span className={`px-2 py-0.5 text-[10px] uppercase font-bold rounded-full ${STATUS_STYLE[a.status] ?? "bg-muted text-muted-foreground"}`}>
+            {STATUS_LABEL[a.status] ?? a.status}
+          </span>
+        )}
+        <AppointmentActions
+          appt={apptForActions(a)}
+          onOpenTimeline={() => setTimelineId(a.id)}
+          invalidateKeys={["pro-agenda", "pro-next", "crm-dashboard", "pro-pending"]}
+        />
       </div>
     );
   };
+
 
   return (
     <div className="px-5 pt-10 pb-24 space-y-6 livvo-fade-in">
@@ -239,11 +226,65 @@ function Agenda() {
         <p className="text-sm text-muted-foreground mt-1">Atendimentos do dia, calendário e configurações</p>
       </header>
 
-      <Tabs defaultValue="agenda" className="space-y-6">
-        <TabsList className="w-full grid grid-cols-2">
+      <Tabs defaultValue={pending.length > 0 ? "pendencias" : "agenda"} className="space-y-6">
+        <TabsList className="w-full grid grid-cols-3">
+          <TabsTrigger value="pendencias" className="relative">
+            Pendências
+            {pending.length > 0 && (
+              <span className="ml-1.5 px-1.5 py-0.5 text-[10px] font-bold rounded-full bg-warning text-warning-foreground">
+                {pending.length}
+              </span>
+            )}
+          </TabsTrigger>
           <TabsTrigger value="agenda">Agenda</TabsTrigger>
-          <TabsTrigger value="config">Configurar horários</TabsTrigger>
+          <TabsTrigger value="config">Horários</TabsTrigger>
         </TabsList>
+
+        <TabsContent value="pendencias" className="space-y-4 mt-0">
+          <section>
+            <h2 className="text-base font-bold tracking-tight flex items-center gap-2">
+              <AlertTriangle className="size-4 text-warning" /> Consultas pendentes de definição
+            </h2>
+            <p className="text-xs text-muted-foreground mt-1 mb-3">
+              Atendimentos passados sem status final. Defina o desfecho para manter o histórico correto.
+            </p>
+            <div className="space-y-2">
+              {pending.length === 0 && (
+                <div className="p-6 rounded-2xl bg-card border border-border text-center text-sm text-muted-foreground">
+                  Tudo em dia — nenhuma consulta pendente. 🎉
+                </div>
+              )}
+              {pending.map((a) => {
+                const d = new Date(a.scheduled_at);
+                const days = Math.max(0, Math.floor((now.getTime() - d.getTime()) / 86400000));
+                return (
+                  <div key={a.id} className="p-3 rounded-2xl bg-warning-soft/40 border border-warning/40 flex items-center gap-3">
+                    <div className="flex flex-col items-center justify-center w-14 shrink-0">
+                      <span className="text-[10px] uppercase font-bold text-warning">{d.toLocaleDateString("pt-BR", { day: "2-digit", month: "short" }).replace(".", "")}</span>
+                      <span className="text-sm font-bold tabular-nums">{d.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}</span>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold truncate">
+                        {a.patient_id ? (
+                          <Link to="/pro/crm/$id" params={{ id: a.patient_id }} className="hover:text-primary">{a.patient_name}</Link>
+                        ) : a.patient_name}
+                      </p>
+                      <p className="text-xs text-muted-foreground truncate">{a.service_name}</p>
+                      <p className="text-[10px] font-bold text-warning mt-0.5">
+                        Pendente há {days === 0 ? "hoje" : `${days} dia${days > 1 ? "s" : ""}`}
+                      </p>
+                    </div>
+                    <AppointmentActions
+                      appt={apptForActions(a)}
+                      onOpenTimeline={() => setTimelineId(a.id)}
+                      invalidateKeys={["pro-agenda", "pro-next", "crm-dashboard", "pro-pending"]}
+                    />
+                  </div>
+                );
+              })}
+            </div>
+          </section>
+        </TabsContent>
 
         <TabsContent value="agenda" className="space-y-6 mt-0">
           {/* Seção 1 — Próximos agendamentos */}
@@ -401,6 +442,13 @@ function Agenda() {
           </section>
         </TabsContent>
       </Tabs>
+
+      <AppointmentTimelineDialog
+        appointmentId={timelineId}
+        open={!!timelineId}
+        onOpenChange={(v) => { if (!v) setTimelineId(null); }}
+      />
     </div>
   );
 }
+
