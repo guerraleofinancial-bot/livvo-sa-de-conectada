@@ -134,13 +134,14 @@ function Landing() {
               <div className="overflow-hidden rounded-[2.5rem] border-8 border-foreground/90 bg-surface shadow-2xl">
                 <div className="bg-primary px-6 pt-10 pb-8 text-primary-foreground">
                   <p className="text-xs opacity-80">Próximo atendimento presencial</p>
-                  <p className="mt-1 text-lg font-semibold">Dra. Helena Souza</p>
-                  <p className="text-xs opacity-80">Dermatologia · hoje 14h30</p>
+                  <p className="mt-1 text-lg font-semibold">Sua consulta na Livvo</p>
+                  <p className="text-xs opacity-80">Especialista da sua região</p>
                   <div className="mt-5 flex items-center gap-2 rounded-2xl bg-white/15 px-3 py-2 backdrop-blur">
                     <MapPin className="size-4" />
-                    <p className="text-xs">Clínica Renascença · São Luís</p>
+                    <p className="text-xs">Clínica parceira · sua cidade</p>
                   </div>
                 </div>
+
                 <div className="space-y-3 p-5">
                   {[
                     { s: "Hemograma completo", p: "R$ 38" },
