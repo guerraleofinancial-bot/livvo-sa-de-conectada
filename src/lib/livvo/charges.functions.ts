@@ -261,6 +261,16 @@ export const simulatePayCharge = createServerFn({ method: "POST" })
       });
     }
 
+    await writeAudit({
+      event: "payment.simulated",
+      module: "billing",
+      actorId: p.recipient_id,
+      entityType: "payment",
+      entityId: p.id,
+      description: `Pagamento simulado (${data.method}) confirmado — R$ ${Number(p.gross_amount ?? p.amount).toFixed(2)}`,
+      after: { method: data.method, amount: Number(p.amount), gross: Number(p.gross_amount ?? 0), commission: Number(p.commission_amount ?? 0) },
+    });
+
     return { ok: true };
   });
 
