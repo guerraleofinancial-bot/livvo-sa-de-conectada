@@ -334,7 +334,7 @@ function PatientHome() {
 
 
       {/* Specialties */}
-      <section className="px-5 mt-6 livvo-slide-up">
+      <section className="px-5 md:px-8 mt-6 md:mt-10 livvo-slide-up">
         <SectionHeader
           eyebrow="Categorias"
           title="Especialidades"
@@ -372,7 +372,7 @@ function PatientHome() {
 
       {/* Next appointment */}
       {nextAppt && (
-        <section className="px-5 mt-6 livvo-slide-up">
+        <section className="px-5 md:px-8 mt-6 md:mt-10 livvo-slide-up">
           <div className="rounded-3xl livvo-hero-primary p-5 shadow-[var(--shadow-hero)] relative overflow-hidden">
             <div className="relative z-10">
               <div className="flex justify-between items-start mb-5">
@@ -446,7 +446,7 @@ function PatientHome() {
 
       {/* Clinics */}
       {clinics && clinics.length > 0 && (
-        <section className="px-5 mt-8 livvo-slide-up">
+        <section className="px-5 md:px-8 mt-8 md:mt-12 livvo-slide-up">
           <SectionHeader
             eyebrow="Estabelecimentos"
             title="Clínicas em destaque"
@@ -480,7 +480,7 @@ function PatientHome() {
 
       {/* Labs */}
       {labs && labs.length > 0 && (
-        <section className="px-5 mt-8 livvo-slide-up">
+        <section className="px-5 md:px-8 mt-8 md:mt-12 livvo-slide-up">
           <SectionHeader
             eyebrow="Exames & diagnóstico"
             title="Laboratórios"
@@ -524,7 +524,7 @@ function PatientHome() {
 
       {/* Reviews rail */}
       {reviews && reviews.length > 0 && (
-        <section className="px-5 mt-8 livvo-slide-up">
+        <section className="px-5 md:px-8 mt-8 md:mt-12 livvo-slide-up">
           <SectionHeader eyebrow="Comunidade" title="Avaliações recentes" />
           <div className="mt-3 grid gap-3 sm:grid-cols-2">
             {reviews.map((r, i) => {
@@ -573,7 +573,7 @@ function PatientHome() {
       )}
 
       {/* Trust strip */}
-      <section className="px-5 mt-10">
+      <section className="px-5 md:px-8 mt-10 md:mt-14">
         <TrustStrip />
       </section>
     </div>
@@ -596,7 +596,7 @@ function ProRail({
   highlight?: "premium" | "hot" | "new";
 }) {
   return (
-    <section className="px-5 mt-8 livvo-slide-up">
+    <section className="px-5 md:px-8 mt-8 md:mt-12 livvo-slide-up">
       <SectionHeader
         eyebrow={eyebrow}
         title={title}
