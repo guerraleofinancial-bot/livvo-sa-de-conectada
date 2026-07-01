@@ -176,6 +176,15 @@ export const createManualPatient = createServerFn({ method: "POST" })
         context.supabase, professionalId, contact.id, data.origin, companyId
       );
     }
+    await writeAudit({
+      event: "patient.create",
+      module: "crm",
+      actorId: context.userId,
+      entityType: "crm_contact",
+      entityId: contact.id,
+      description: `Paciente cadastrado: ${data.full_name}`,
+      after: { contactId: contact.id, professionalId, companyId, origin: data.origin, source: data.source },
+    });
     return { contact, relationshipId: relId };
   });
 
