@@ -58,6 +58,30 @@ export type Database = {
           },
         ]
       }
+      admin_grants: {
+        Row: {
+          granted_at: string
+          granted_by: string | null
+          level: string
+          notes: string | null
+          user_id: string
+        }
+        Insert: {
+          granted_at?: string
+          granted_by?: string | null
+          level: string
+          notes?: string | null
+          user_id: string
+        }
+        Update: {
+          granted_at?: string
+          granted_by?: string | null
+          level?: string
+          notes?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       appointment_events: {
         Row: {
           actor_id: string | null
@@ -3024,6 +3048,22 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_grant_level: {
+        Args: { _level: string; _user_id: string }
+        Returns: {
+          granted_at: string
+          granted_by: string | null
+          level: string
+          notes: string | null
+          user_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "admin_grants"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       admin_multi_role_accounts: {
         Args: never
         Returns: {
@@ -3036,6 +3076,7 @@ export type Database = {
           user_id: string
         }[]
       }
+      admin_revoke_level: { Args: { _user_id: string }; Returns: boolean }
       admin_set_account_status: {
         Args: {
           _reason?: string
@@ -3232,6 +3273,7 @@ export type Database = {
         Returns: boolean
       }
       is_account_active: { Args: { _user: string }; Returns: boolean }
+      is_admin_master: { Args: { _user: string }; Returns: boolean }
       is_approved_professional: { Args: { _user: string }; Returns: boolean }
       is_company_owner: {
         Args: { _company: string; _user: string }
@@ -3241,6 +3283,7 @@ export type Database = {
         Args: { _company: string; _user: string }
         Returns: boolean
       }
+      is_platform_admin: { Args: { _user: string }; Returns: boolean }
       is_provider_premium: {
         Args: {
           _target_id: string
@@ -3248,6 +3291,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_super_admin: { Args: { _user: string }; Returns: boolean }
       nearby_units: {
         Args: { _lat: number; _lng: number; _radius_km?: number }
         Returns: {
