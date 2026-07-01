@@ -20,3 +20,4 @@ Design: Healthtech Refinado, mobile-first, paleta primary azul + health verde + 
 - [Orçamentos](mem://features/quotes) — Módulo de quotes+items, status, triggers que sincronizam CRM e notificações, RPC crm_dashboard, novos enums (crm_status/company_role/notification_event/patient_origin)
 - [PRD Master — Fundação](mem://preferences/prd-master) — Visão, princípios, personas, 5 regras permanentes, critério aquisição/retenção/faturamento
 - [Product Bible — Constituição](mem://preferences/product-bible) — 5 pilares, regras imutáveis, filosofias UX/Marketplace/CRM/Financeiro/IA, checklist pré-implementação (prevalece em conflitos)
+- [PRD Vol.2 — Marketplace](mem://features/prd-marketplace) — Jornadas, perfil premium, busca (especialidade/sintoma/procedimento/convênio), ranking, monetização, critérios (≤3 etapas, SEO por perfil)
