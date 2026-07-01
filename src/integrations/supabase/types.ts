@@ -1872,6 +1872,9 @@ export type Database = {
           commission_percent: number
           config: Json
           default_cancellation_policy_id: string | null
+          demo_mode: boolean
+          demo_mode_changed_at: string | null
+          demo_mode_changed_by: string | null
           id: number
           refund_policy: string
           release_after_days: number
@@ -1884,6 +1887,9 @@ export type Database = {
           commission_percent?: number
           config?: Json
           default_cancellation_policy_id?: string | null
+          demo_mode?: boolean
+          demo_mode_changed_at?: string | null
+          demo_mode_changed_by?: string | null
           id?: number
           refund_policy?: string
           release_after_days?: number
@@ -1896,6 +1902,9 @@ export type Database = {
           commission_percent?: number
           config?: Json
           default_cancellation_policy_id?: string | null
+          demo_mode?: boolean
+          demo_mode_changed_at?: string | null
+          demo_mode_changed_by?: string | null
           id?: number
           refund_policy?: string
           release_after_days?: number

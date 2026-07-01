@@ -7,7 +7,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { Users, Stethoscope, Calendar, Wallet, ShieldCheck, CheckCircle2, XCircle, Ban, Database, LogOut, Building2, Percent, MessageSquareWarning, Send, Sparkles, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { setProfessionalStatus, setCompanyStatus, setUserSuspended, seedDemoData, updatePlatformSettings, setReviewStatus, createPayoutBatch, markPayoutBatchPaid } from "@/lib/livvo/admin.functions";
+import { setProfessionalStatus, setCompanyStatus, setUserSuspended, seedDemoData, updatePlatformSettings, setReviewStatus, createPayoutBatch, markPayoutBatchPaid, setDemoMode, purgeDemoData } from "@/lib/livvo/admin.functions";
 import { verifyProfessionalCouncil } from "@/lib/livvo/onboarding-pro.functions";
 import { adminAdsRevenueReport, adminListSubscriptions, cancelSubscription } from "@/lib/livvo/ads.functions";
 import { toast } from "sonner";
@@ -44,6 +44,8 @@ function AdminPanel() {
   const setCompany = useServerFn(setCompanyStatus);
   const setSusp = useServerFn(setUserSuspended);
   const seed = useServerFn(seedDemoData);
+  const toggleDemo = useServerFn(setDemoMode);
+  const purgeDemo = useServerFn(purgeDemoData);
   const updSettings = useServerFn(updatePlatformSettings);
   const setRev = useServerFn(setReviewStatus);
   const createBatch = useServerFn(createPayoutBatch);
@@ -128,6 +130,24 @@ function AdminPanel() {
     onError: (e) => toast.error((e as Error).message),
   });
 
+  const demoMode = Boolean((settings as { demo_mode?: boolean } | null | undefined)?.demo_mode);
+  const toggleDemoMut = useMutation({
+    mutationFn: async (enabled: boolean) => toggleDemo({ data: { enabled, purge: true } }),
+    onSuccess: (r) => {
+      toast.success(r.current
+        ? "Modo Demonstração ATIVADO — dados fictícios podem aparecer."
+        : `Modo Demonstração DESATIVADO${r.purged ? ` — ${r.purged} contas demo removidas` : ""}.`);
+      qc.invalidateQueries();
+    },
+    onError: (e) => toast.error((e as Error).message),
+  });
+  const purgeDemoMut = useMutation({
+    mutationFn: async () => purgeDemo(),
+    onSuccess: (r) => { toast.success(`Purga concluída: ${r.purged} contas demo removidas.`); qc.invalidateQueries(); },
+    onError: (e) => toast.error((e as Error).message),
+  });
+
+
   async function signOut() {
     await qc.cancelQueries(); qc.clear();
     await supabase.auth.signOut();
@@ -167,8 +187,16 @@ function AdminPanel() {
               <h1 className="text-base font-bold">Painel da plataforma</h1>
             </div>
           </div>
-          <div className="flex gap-2">
-            <Button size="sm" variant="outline" onClick={() => seedNow.mutate()} disabled={seedNow.isPending}><Database className="size-4 mr-1" /> {seedNow.isPending ? "..." : "Popular demo"}</Button>
+          <div className="flex gap-2 items-center">
+            <span className={`hidden sm:inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wide px-2 py-1 rounded-full border ${demoMode ? "border-amber-400/60 bg-amber-50 text-amber-700" : "border-emerald-400/50 bg-emerald-50 text-emerald-700"}`}>
+              <span className={`size-1.5 rounded-full ${demoMode ? "bg-amber-500" : "bg-emerald-500"}`} />
+              {demoMode ? "Modo Demo ativo" : "Dados reais"}
+            </span>
+            {demoMode && (
+              <Button size="sm" variant="outline" onClick={() => seedNow.mutate()} disabled={seedNow.isPending}>
+                <Database className="size-4 mr-1" /> {seedNow.isPending ? "..." : "Popular demo"}
+              </Button>
+            )}
             <Button size="sm" variant="ghost" onClick={signOut}><LogOut className="size-4" /></Button>
           </div>
         </div>
@@ -179,6 +207,7 @@ function AdminPanel() {
             </button>
           ))}
         </nav>
+
       </header>
 
       <main className="max-w-6xl mx-auto px-5 py-6 space-y-6">
@@ -436,12 +465,57 @@ function AdminPanel() {
         {tab === "settings" && settings && (
           <section className="space-y-4">
             <h2 className="text-sm font-bold">Central de configurações</h2>
+
+            {/* Modo Demonstração */}
+            <div className={`rounded-2xl border p-5 ${demoMode ? "border-amber-300 bg-amber-50/60" : "border-border bg-card"}`}>
+              <div className="flex items-start justify-between gap-4">
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className={`size-2 rounded-full ${demoMode ? "bg-amber-500" : "bg-emerald-500"}`} />
+                    <h3 className="text-sm font-bold">Modo Demonstração</h3>
+                    <span className={`text-[10px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded ${demoMode ? "bg-amber-200/70 text-amber-800" : "bg-emerald-100 text-emerald-700"}`}>
+                      {demoMode ? "Ativado" : "Desativado"}
+                    </span>
+                  </div>
+                  <p className="text-xs text-muted-foreground max-w-2xl">
+                    Quando ativado, a plataforma pode exibir dados fictícios (contas <code>@livvo.demo</code>) para testes e apresentações.
+                    <strong> Não usar em produção.</strong> Ao desativar, todas as contas demo são removidas automaticamente e a plataforma passa a exibir somente dados reais aprovados.
+                  </p>
+                </div>
+                <div className="flex flex-col items-end gap-2 shrink-0">
+                  <Button
+                    size="sm"
+                    variant={demoMode ? "outline" : "default"}
+                    onClick={() => {
+                      if (demoMode) {
+                        if (!confirm("Desativar o Modo Demonstração vai remover TODAS as contas @livvo.demo (profissionais, clínicas e pacientes de teste). Continuar?")) return;
+                      }
+                      toggleDemoMut.mutate(!demoMode);
+                    }}
+                    disabled={toggleDemoMut.isPending}
+                  >
+                    {toggleDemoMut.isPending ? "..." : demoMode ? "Desativar modo demo" : "Ativar modo demo"}
+                  </Button>
+                  {demoMode && (
+                    <button
+                      onClick={() => { if (confirm("Remover apenas as contas demo, mantendo o modo ativo?")) purgeDemoMut.mutate(); }}
+                      disabled={purgeDemoMut.isPending}
+                      className="text-[11px] text-muted-foreground underline underline-offset-2 hover:text-foreground"
+                    >
+                      {purgeDemoMut.isPending ? "purgando..." : "Purgar dados demo agora"}
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+
             <SettingsCenter
               initial={settings as never}
               onSave={async (v) => { await updSettings({ data: v }); qc.invalidateQueries({ queryKey: ["settings"] }); }}
             />
           </section>
         )}
+
 
         {tab === "identidades" && (
           <section className="space-y-4">
