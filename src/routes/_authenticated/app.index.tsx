@@ -28,7 +28,7 @@ import {
   type ProfessionalCardData,
 } from "@/components/livvo/ProfessionalCard";
 import { CompanyCard } from "@/components/livvo/CompanyCard";
-import { SectionHeader, EmptyState, TrustStrip, SkeletonBlock } from "@/components/livvo/ui";
+import { SectionHeader, EmptyState, TrustStrip, SkeletonBlock, HorizontalScroller } from "@/components/livvo/ui";
 
 export const Route = createFileRoute("/_authenticated/app/")({
   component: PatientHome,
@@ -316,7 +316,7 @@ function PatientHome() {
             </Link>
           }
         />
-        <div className="mt-3 flex gap-3 overflow-x-auto pb-2 scrollbar-hide -mx-5 px-5">
+        <HorizontalScroller className="mt-3" snap="start">
           {(specs ?? []).map((s, i) => {
             const Icon = iconMap[s.icon ?? ""] ?? Stethoscope;
             const tinted = i % 2 === 0;
@@ -325,7 +325,7 @@ function PatientHome() {
                 key={s.id}
                 to="/app/buscar"
                 search={{ specialty: s.slug }}
-                className="flex flex-col items-center gap-2 shrink-0 w-20 group"
+                className="flex flex-col items-center gap-2 w-20 group"
               >
                 <div
                   className={`size-14 rounded-2xl border flex items-center justify-center transition-transform group-hover:-translate-y-0.5 ${tinted ? "bg-primary-soft border-primary/10 text-primary" : "bg-health-soft border-health/10 text-health"}`}
@@ -338,8 +338,9 @@ function PatientHome() {
               </Link>
             );
           })}
-        </div>
+        </HorizontalScroller>
       </section>
+
 
       {/* Next appointment */}
       {nextAppt && (
@@ -430,7 +431,7 @@ function PatientHome() {
               </Link>
             }
           />
-          <div className="mt-3 flex gap-3 overflow-x-auto scrollbar-hide -mx-5 px-5 pb-1">
+          <HorizontalScroller className="mt-3" snap="start">
             {clinics.map((c) => (
               <CompanyCard
                 key={c.id}
@@ -444,7 +445,8 @@ function PatientHome() {
                 }}
               />
             ))}
-          </div>
+          </HorizontalScroller>
+
         </section>
       )}
 
@@ -463,7 +465,7 @@ function PatientHome() {
               </Link>
             }
           />
-          <div className="mt-3 flex gap-3 overflow-x-auto scrollbar-hide -mx-5 px-5 pb-1">
+          <HorizontalScroller className="mt-3" snap="start">
             {labs.map((c) => (
               <CompanyCard
                 key={c.id}
@@ -477,7 +479,8 @@ function PatientHome() {
                 }}
               />
             ))}
-          </div>
+          </HorizontalScroller>
+
         </section>
       )}
 
@@ -579,35 +582,37 @@ function ProRail({
           </Link>
         }
       />
-      <div className="mt-3 flex gap-3 overflow-x-auto scrollbar-hide -mx-5 px-5 pb-2 snap-x snap-mandatory">
-        {loading &&
-          Array.from({ length: 3 }).map((_, i) => (
-            <div key={i} className="w-[300px] shrink-0 snap-start">
-              <ProfessionalCardSkeleton />
-            </div>
-          ))}
-        {!loading &&
-          (pros ?? []).map((p) => (
-            <div key={p.id} className="w-[300px] shrink-0 snap-start">
-              <ProfessionalCard
-                data={toCard(p, {
-                  isPremium: highlight === "premium",
-                  isHotToday: highlight === "hot",
-                  isNewPartner: highlight === "new" ? true : undefined,
-                })}
-              />
-            </div>
-          ))}
-        {!loading && (!pros || pros.length === 0) && (
-          <div className="w-full">
-            <EmptyState
-              icon={<Sparkles className="size-5" />}
-              title="Ainda sem parceiros nessa categoria"
-              description="Novos profissionais entram toda semana."
-            />
-          </div>
-        )}
-      </div>
+      {!loading && (!pros || pros.length === 0) ? (
+        <div className="mt-3">
+          <EmptyState
+            icon={<Sparkles className="size-5" />}
+            title="Ainda sem parceiros nessa categoria"
+            description="Novos profissionais entram toda semana."
+          />
+        </div>
+      ) : (
+        <HorizontalScroller className="mt-3" snap="start">
+          {loading &&
+            Array.from({ length: 3 }).map((_, i) => (
+              <div key={i} className="w-[300px]">
+                <ProfessionalCardSkeleton />
+              </div>
+            ))}
+          {!loading &&
+            (pros ?? []).map((p) => (
+              <div key={p.id} className="w-[300px]">
+                <ProfessionalCard
+                  data={toCard(p, {
+                    isPremium: highlight === "premium",
+                    isHotToday: highlight === "hot",
+                    isNewPartner: highlight === "new" ? true : undefined,
+                  })}
+                />
+              </div>
+            ))}
+        </HorizontalScroller>
+      )}
     </section>
+
   );
 }

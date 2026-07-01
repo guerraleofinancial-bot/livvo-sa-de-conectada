@@ -220,3 +220,7 @@ function TrustItem({ icon, title, desc }: { icon: ReactNode; title: string; desc
     </div>
   );
 }
+
+export { HorizontalScroller, default as HorizontalScrollerDefault } from "./HorizontalScroller";
+export type { HorizontalScrollerProps } from "./HorizontalScroller";
+

@@ -8,6 +8,7 @@ import { Search as SearchIcon, ArrowLeft, SlidersHorizontal, Sparkles, MapPin, X
 import { Input } from "@/components/ui/input";
 import { ProfessionalCard, ProfessionalCardSkeleton, type ProfessionalCardData } from "@/components/livvo/ProfessionalCard";
 import { CompanyCard } from "@/components/livvo/CompanyCard";
+import { HorizontalScroller } from "@/components/livvo/ui";
 import { trackAdEvent } from "@/lib/livvo/ads.functions";
 
 const searchSchema = z.object({
@@ -203,35 +204,36 @@ function Buscar() {
         )}
 
         {/* Chip row: specialties */}
-        <div className="-mx-5 px-5">
-          <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1">
+        <HorizontalScroller snap="center" showArrows>
+          <button
+            data-active={!specSlug || undefined}
+            onClick={() => setSpecSlug(undefined)}
+            className={`rounded-full border px-4 py-2 text-xs font-semibold transition-all ${
+              !specSlug ? "bg-foreground text-background border-foreground" : "bg-card border-border text-muted-foreground hover:border-primary/30 hover:text-foreground"
+            }`}
+          >
+            Todas
+          </button>
+          {(specs ?? []).map((s) => (
             <button
-              onClick={() => setSpecSlug(undefined)}
-              className={`shrink-0 rounded-full border px-4 py-2 text-xs font-semibold transition-all ${
-                !specSlug ? "bg-foreground text-background border-foreground" : "bg-card border-border text-muted-foreground hover:border-primary/30 hover:text-foreground"
+              key={s.id}
+              data-active={specSlug === s.slug || undefined}
+              onClick={() => setSpecSlug(s.slug)}
+              className={`rounded-full border px-4 py-2 text-xs font-semibold transition-all ${
+                specSlug === s.slug ? "bg-foreground text-background border-foreground" : "bg-card border-border text-muted-foreground hover:border-primary/30 hover:text-foreground"
               }`}
             >
-              Todas
+              {s.name}
             </button>
-            {(specs ?? []).map((s) => (
-              <button
-                key={s.id}
-                onClick={() => setSpecSlug(s.slug)}
-                className={`shrink-0 rounded-full border px-4 py-2 text-xs font-semibold transition-all ${
-                  specSlug === s.slug ? "bg-foreground text-background border-foreground" : "bg-card border-border text-muted-foreground hover:border-primary/30 hover:text-foreground"
-                }`}
-              >
-                {s.name}
-              </button>
-            ))}
-          </div>
-        </div>
+          ))}
+        </HorizontalScroller>
+
 
         {/* Companies rail */}
         {companies && companies.length > 0 && (
           <section>
             <SectionHeader eyebrow="Estabelecimentos" title="Clínicas & laboratórios" />
-            <div className="-mx-5 mt-3 flex gap-3 overflow-x-auto scrollbar-hide px-5 pb-1">
+            <HorizontalScroller className="mt-3" snap="start">
               {companies.map((c) => (
                 <CompanyCard
                   key={c.id}
@@ -245,7 +247,8 @@ function Buscar() {
                   }}
                 />
               ))}
-            </div>
+            </HorizontalScroller>
+
           </section>
         )}
 
