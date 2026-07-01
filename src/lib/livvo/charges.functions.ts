@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { z } from "zod";
+import { writeAudit } from "./audit.functions";
 
 /**
  * Cobrança Livvo: cria payment "avulso" (sem appointment obrigatório) a partir
@@ -132,6 +133,16 @@ export const createCharge = createServerFn({ method: "POST" })
       });
     }
 
+    await writeAudit({
+      event: "charge.create",
+      module: "billing",
+      actorId: userId,
+      entityType: "payment",
+      entityId: charge.id,
+      description: `Cobrança de R$ ${gross.toFixed(2)} criada (${data.paymentMethod})`,
+      after: { amount: gross, commission, net, method: data.paymentMethod, contactId: crmContactId, patientUserId, appointmentId: data.appointmentId, quoteId: data.quoteId },
+    });
+
     return {
       id: charge.id,
       token,
@@ -249,6 +260,16 @@ export const simulatePayCharge = createServerFn({ method: "POST" })
         _metadata: { payment_id: p.id },
       });
     }
+
+    await writeAudit({
+      event: "payment.simulated",
+      module: "billing",
+      actorId: p.recipient_id,
+      entityType: "payment",
+      entityId: p.id,
+      description: `Pagamento simulado (${data.method}) confirmado — R$ ${Number(p.gross_amount ?? p.amount).toFixed(2)}`,
+      after: { method: data.method, amount: Number(p.amount), gross: Number(p.gross_amount ?? 0), commission: Number(p.commission_amount ?? 0) },
+    });
 
     return { ok: true };
   });

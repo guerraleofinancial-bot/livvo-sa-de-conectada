@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { writeAudit } from "./audit.functions";
 
 export const listCrmScope = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
@@ -175,6 +176,15 @@ export const createManualPatient = createServerFn({ method: "POST" })
         context.supabase, professionalId, contact.id, data.origin, companyId
       );
     }
+    await writeAudit({
+      event: "patient.create",
+      module: "crm",
+      actorId: context.userId,
+      entityType: "crm_contact",
+      entityId: contact.id,
+      description: `Paciente cadastrado: ${data.full_name}`,
+      after: { contactId: contact.id, professionalId, companyId, origin: data.origin, source: data.source },
+    });
     return { contact, relationshipId: relId };
   });
 
@@ -224,6 +234,15 @@ export const updateCrmContact = createServerFn({ method: "POST" })
     const { data: row, error } = await context.supabase
       .from("crm_contacts").update(patch as never).eq("id", contactId).select().single();
     if (error) throw error;
+    await writeAudit({
+      event: "patient.update",
+      module: "crm",
+      actorId: context.userId,
+      entityType: "crm_contact",
+      entityId: contactId,
+      description: "Paciente atualizado",
+      after: patch,
+    });
     return row;
   });
 
@@ -268,6 +287,15 @@ export const createManualAppointment = createServerFn({ method: "POST" })
       })
       .eq("professional_id", data.professional_id)
       .eq("patient_id", data.patient_id);
+    await writeAudit({
+      event: "appointment.create",
+      module: "agenda",
+      actorId: context.userId,
+      entityType: "appointment",
+      entityId: row.id,
+      description: `Agendamento criado para ${data.scheduled_at}`,
+      after: { patient_id: data.patient_id, professional_id: data.professional_id, scheduled_at: data.scheduled_at, price: data.price },
+    });
     return row;
   });
 

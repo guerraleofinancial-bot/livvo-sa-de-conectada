@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { HeartPulse, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
+import { recordClientAudit } from "@/lib/livvo/audit.functions";
 
 const searchSchema = z.object({
   mode: z.enum(["login", "signup"]).default("login").catch("login"),
@@ -45,6 +46,7 @@ function AuthPage() {
     setLoading(false);
     if (error) return toast.error("Falha no login", { description: error.message });
     toast.success("Bem-vindo de volta!");
+    recordClientAudit({ data: { event: "auth.login", module: "auth", description: `Login com email ${email}` } }).catch(() => {});
     navigate({ to: "/app" });
   }
 
@@ -63,6 +65,7 @@ function AuthPage() {
     setLoading(false);
     if (error) return toast.error("Falha no cadastro", { description: error.message });
     toast.success("Conta criada!", { description: "Bem-vindo à Livvo." });
+    recordClientAudit({ data: { event: "auth.signup", module: "auth", description: `Novo cadastro (${chosenRole}) ${email}` } }).catch(() => {});
     if (chosenRole === "profissional") navigate({ to: "/onboarding-pro" });
     else if (chosenRole === "empresa") navigate({ to: "/onboarding-empresa" });
     else navigate({ to: "/app" });

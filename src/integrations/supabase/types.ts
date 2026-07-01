@@ -206,6 +206,57 @@ export type Database = {
           },
         ]
       }
+      audit_logs: {
+        Row: {
+          actor_email: string | null
+          actor_id: string | null
+          actor_role: string | null
+          after_data: Json | null
+          before_data: Json | null
+          created_at: string
+          description: string | null
+          entity_id: string | null
+          entity_type: string | null
+          event: string
+          id: string
+          ip_address: string | null
+          module: string
+          user_agent: string | null
+        }
+        Insert: {
+          actor_email?: string | null
+          actor_id?: string | null
+          actor_role?: string | null
+          after_data?: Json | null
+          before_data?: Json | null
+          created_at?: string
+          description?: string | null
+          entity_id?: string | null
+          entity_type?: string | null
+          event: string
+          id?: string
+          ip_address?: string | null
+          module: string
+          user_agent?: string | null
+        }
+        Update: {
+          actor_email?: string | null
+          actor_id?: string | null
+          actor_role?: string | null
+          after_data?: Json | null
+          before_data?: Json | null
+          created_at?: string
+          description?: string | null
+          entity_id?: string | null
+          entity_type?: string | null
+          event?: string
+          id?: string
+          ip_address?: string | null
+          module?: string
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
       automation_jobs: {
         Row: {
           appointment_id: string | null
@@ -1719,6 +1770,7 @@ export type Database = {
         Row: {
           cancellation_window_hours: number
           commission_percent: number
+          config: Json
           default_cancellation_policy_id: string | null
           id: number
           refund_policy: string
@@ -1729,6 +1781,7 @@ export type Database = {
         Insert: {
           cancellation_window_hours?: number
           commission_percent?: number
+          config?: Json
           default_cancellation_policy_id?: string | null
           id?: number
           refund_policy?: string
@@ -1739,6 +1792,7 @@ export type Database = {
         Update: {
           cancellation_window_hours?: number
           commission_percent?: number
+          config?: Json
           default_cancellation_policy_id?: string | null
           id?: number
           refund_policy?: string

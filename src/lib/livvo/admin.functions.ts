@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { z } from "zod";
+import { writeAudit } from "./audit.functions";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 async function assertAdmin(ctx: any) {
@@ -14,10 +15,21 @@ export const setProfessionalStatus = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     await assertAdmin(context);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: before } = await supabaseAdmin.from("professionals").select("id, status").eq("id", data.professionalId).maybeSingle();
     const patch: { status: typeof data.status; approved_at?: string; approved_by?: string } = { status: data.status };
     if (data.status === "aprovado") { patch.approved_at = new Date().toISOString(); patch.approved_by = context.userId; }
     const { error } = await supabaseAdmin.from("professionals").update(patch).eq("id", data.professionalId);
     if (error) throw error;
+    await writeAudit({
+      event: data.status === "aprovado" ? "partner.approve" : data.status === "rejeitado" ? "partner.reject" : "partner.status_change",
+      module: "admin",
+      actorId: context.userId,
+      entityType: "professional",
+      entityId: data.professionalId,
+      description: `Profissional ${data.status}`,
+      before: before ?? null,
+      after: patch,
+    });
     return { ok: true };
   });
 
@@ -27,10 +39,21 @@ export const setCompanyStatus = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     await assertAdmin(context);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: before } = await supabaseAdmin.from("companies").select("id, status").eq("id", data.companyId).maybeSingle();
     const patch: { status: typeof data.status; approved_at?: string; approved_by?: string } = { status: data.status };
     if (data.status === "aprovado") { patch.approved_at = new Date().toISOString(); patch.approved_by = context.userId; }
     const { error } = await supabaseAdmin.from("companies").update(patch).eq("id", data.companyId);
     if (error) throw error;
+    await writeAudit({
+      event: data.status === "aprovado" ? "partner.approve" : data.status === "rejeitado" ? "partner.reject" : "partner.status_change",
+      module: "admin",
+      actorId: context.userId,
+      entityType: "company",
+      entityId: data.companyId,
+      description: `Empresa ${data.status}`,
+      before: before ?? null,
+      after: patch,
+    });
     return { ok: true };
   });
 
@@ -42,26 +65,46 @@ export const setUserSuspended = createServerFn({ method: "POST" })
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { error } = await supabaseAdmin.from("profiles").update({ suspended: data.suspended }).eq("id", data.userId);
     if (error) throw error;
+    await writeAudit({
+      event: data.suspended ? "user.suspend" : "user.reactivate",
+      module: "admin",
+      actorId: context.userId,
+      entityType: "user",
+      entityId: data.userId,
+      description: data.suspended ? "Usuário suspenso" : "Usuário reativado",
+    });
     return { ok: true };
   });
 
 export const updatePlatformSettings = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d: { commission_percent?: number; cancellation_window_hours?: number; refund_policy?: string; release_after_days?: number }) =>
+  .inputValidator((d: { commission_percent?: number; cancellation_window_hours?: number; refund_policy?: string; release_after_days?: number; config?: Record<string, unknown> }) =>
     z.object({
       commission_percent: z.number().min(0).max(50).optional(),
       cancellation_window_hours: z.number().int().min(0).max(168).optional(),
       refund_policy: z.string().max(500).optional(),
       release_after_days: z.number().int().min(0).max(60).optional(),
+      config: z.record(z.string(), z.unknown()).optional(),
     }).parse(d),
   )
   .handler(async ({ data, context }) => {
     await assertAdmin(context);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: before } = await supabaseAdmin.from("platform_settings").select("*").eq("id", 1).maybeSingle();
     const { error } = await supabaseAdmin.from("platform_settings")
-      .update({ ...data, updated_at: new Date().toISOString(), updated_by: context.userId })
+      .update({ ...(data as Record<string, unknown>), updated_at: new Date().toISOString(), updated_by: context.userId } as never)
       .eq("id", 1);
     if (error) throw error;
+    await writeAudit({
+      event: "settings.update",
+      module: "settings",
+      actorId: context.userId,
+      entityType: "platform_settings",
+      entityId: "1",
+      description: "Configurações da plataforma atualizadas",
+      before: before ?? null,
+      after: data,
+    });
     return { ok: true };
   });
 
@@ -72,8 +115,19 @@ export const setPartnerCommission = createServerFn({ method: "POST" })
     await assertAdmin(context);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const tbl = data.target === "professional" ? "professionals" : "companies";
+    const { data: before } = await supabaseAdmin.from(tbl).select("id, commission_percent_override").eq("id", data.id).maybeSingle();
     const { error } = await supabaseAdmin.from(tbl).update({ commission_percent_override: data.percent }).eq("id", data.id);
     if (error) throw error;
+    await writeAudit({
+      event: "commission.update",
+      module: "admin",
+      actorId: context.userId,
+      entityType: data.target,
+      entityId: data.id,
+      description: `Comissão alterada para ${data.percent ?? "padrão"}`,
+      before: before ?? null,
+      after: { commission_percent_override: data.percent },
+    });
     return { ok: true };
   });
 
