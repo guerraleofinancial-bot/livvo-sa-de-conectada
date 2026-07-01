@@ -459,7 +459,7 @@ function PatientHome() {
               </Link>
             }
           />
-          <HorizontalScroller className="mt-3" snap="start">
+          <div className="mt-3 hidden md:grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {clinics.map((c) => (
               <CompanyCard
                 key={c.id}
@@ -473,7 +473,25 @@ function PatientHome() {
                 }}
               />
             ))}
-          </HorizontalScroller>
+          </div>
+          <div className="md:hidden">
+            <HorizontalScroller className="mt-3" snap="start">
+              {clinics.map((c) => (
+                <CompanyCard
+                  key={c.id}
+                  data={{
+                    id: c.id,
+                    name: c.trade_name ?? c.legal_name,
+                    type: c.type,
+                    city: c.address_city,
+                    state: c.address_state,
+                    logoUrl: c.logo_url,
+                  }}
+                />
+              ))}
+            </HorizontalScroller>
+          </div>
+
 
         </section>
       )}
