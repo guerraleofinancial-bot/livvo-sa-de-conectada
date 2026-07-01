@@ -367,6 +367,17 @@ function CRMContactDetailModal({ open, onOpenChange, detail, isLoading, error, o
     });
   }, [open, detail]);
 
+  // Auto-trigger a pending action once the ficha loads
+  useEffect(() => {
+    if (!open || !detail?.contact || !initialAction) return;
+    if (initialAction === "schedule") setScheduleOpen(true);
+    else if (initialAction === "charge") setChargeOpen(true);
+    else if (initialAction === "quote") quoteMut.mutate();
+    onActionConsumed?.();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, detail?.contact?.id, initialAction]);
+
+
   const set = (key: keyof typeof form, value: string) => setForm((current) => ({ ...current, [key]: value }));
   const contact = detail?.contact ?? null;
   const relationship = detail?.relationship ?? null;
