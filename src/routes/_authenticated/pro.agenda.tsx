@@ -226,11 +226,65 @@ function Agenda() {
         <p className="text-sm text-muted-foreground mt-1">Atendimentos do dia, calendário e configurações</p>
       </header>
 
-      <Tabs defaultValue="agenda" className="space-y-6">
-        <TabsList className="w-full grid grid-cols-2">
+      <Tabs defaultValue={pending.length > 0 ? "pendencias" : "agenda"} className="space-y-6">
+        <TabsList className="w-full grid grid-cols-3">
+          <TabsTrigger value="pendencias" className="relative">
+            Pendências
+            {pending.length > 0 && (
+              <span className="ml-1.5 px-1.5 py-0.5 text-[10px] font-bold rounded-full bg-warning text-warning-foreground">
+                {pending.length}
+              </span>
+            )}
+          </TabsTrigger>
           <TabsTrigger value="agenda">Agenda</TabsTrigger>
-          <TabsTrigger value="config">Configurar horários</TabsTrigger>
+          <TabsTrigger value="config">Horários</TabsTrigger>
         </TabsList>
+
+        <TabsContent value="pendencias" className="space-y-4 mt-0">
+          <section>
+            <h2 className="text-base font-bold tracking-tight flex items-center gap-2">
+              <AlertTriangle className="size-4 text-warning" /> Consultas pendentes de definição
+            </h2>
+            <p className="text-xs text-muted-foreground mt-1 mb-3">
+              Atendimentos passados sem status final. Defina o desfecho para manter o histórico correto.
+            </p>
+            <div className="space-y-2">
+              {pending.length === 0 && (
+                <div className="p-6 rounded-2xl bg-card border border-border text-center text-sm text-muted-foreground">
+                  Tudo em dia — nenhuma consulta pendente. 🎉
+                </div>
+              )}
+              {pending.map((a) => {
+                const d = new Date(a.scheduled_at);
+                const days = Math.max(0, Math.floor((now.getTime() - d.getTime()) / 86400000));
+                return (
+                  <div key={a.id} className="p-3 rounded-2xl bg-warning-soft/40 border border-warning/40 flex items-center gap-3">
+                    <div className="flex flex-col items-center justify-center w-14 shrink-0">
+                      <span className="text-[10px] uppercase font-bold text-warning">{d.toLocaleDateString("pt-BR", { day: "2-digit", month: "short" }).replace(".", "")}</span>
+                      <span className="text-sm font-bold tabular-nums">{d.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}</span>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold truncate">
+                        {a.patient_id ? (
+                          <Link to="/pro/crm/$id" params={{ id: a.patient_id }} className="hover:text-primary">{a.patient_name}</Link>
+                        ) : a.patient_name}
+                      </p>
+                      <p className="text-xs text-muted-foreground truncate">{a.service_name}</p>
+                      <p className="text-[10px] font-bold text-warning mt-0.5">
+                        Pendente há {days === 0 ? "hoje" : `${days} dia${days > 1 ? "s" : ""}`}
+                      </p>
+                    </div>
+                    <AppointmentActions
+                      appt={apptForActions(a)}
+                      onOpenTimeline={() => setTimelineId(a.id)}
+                      invalidateKeys={["pro-agenda", "pro-next", "crm-dashboard", "pro-pending"]}
+                    />
+                  </div>
+                );
+              })}
+            </div>
+          </section>
+        </TabsContent>
 
         <TabsContent value="agenda" className="space-y-6 mt-0">
           {/* Seção 1 — Próximos agendamentos */}
