@@ -5,7 +5,7 @@ import { getCrmContactDetail, listCrmPatients, updateCrmStatus } from "@/lib/liv
 import { createQuote } from "@/lib/livvo/quotes.functions";
 import { createManualAppointment, updateCrmContact } from "@/lib/livvo/patients.functions";
 import { createCharge, listChargesForContact } from "@/lib/livvo/charges.functions";
-import { Users, Calendar, ChevronRight, LayoutGrid, List, FileText, CalendarPlus, Phone, Mail, MapPin, Pencil, DollarSign, Copy, CheckCircle2 } from "lucide-react";
+import { Users, Calendar, ChevronRight, LayoutGrid, List, FileText, CalendarPlus, Phone, Mail, MapPin, Pencil, DollarSign, Copy, CheckCircle2, AlertTriangle } from "lucide-react";
 import { useEffect, useState, useMemo } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
