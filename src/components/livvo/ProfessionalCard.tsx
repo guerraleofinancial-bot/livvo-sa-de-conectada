@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { Star, MapPin, Calendar, ShieldCheck, Crown, Sparkles, ArrowRight } from "lucide-react";
 import { VerifiedBadge } from "./VerifiedBadge";
+import { LivvoBadge } from "./ui";
 
 export interface ProfessionalCardData {
   id: string;
@@ -21,7 +22,13 @@ export interface ProfessionalCardData {
   sponsoredLabel?: string;
   agendaOpen?: boolean;
   insurances?: string[] | null;
+  /** Derived trust/quality badges (all optional; caller decides based on real data). */
+  isTopRated?: boolean;
+  isNewPartner?: boolean;
+  isHotToday?: boolean;
+  isFastResponder?: boolean;
 }
+
 
 interface Props {
   data: ProfessionalCardData;
