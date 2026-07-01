@@ -201,7 +201,7 @@ function MarketingHub() {
 
         {/* ============ PÁGINA PÚBLICA ============ */}
         <TabsContent value="pagina" className="space-y-4 mt-4">
-          <MyPublicPageCard
+          <PageEditorWithPreview
             publicUrl={publicUrl}
             previewUrl={previewUrl}
             slugDraft={slugDraft}
