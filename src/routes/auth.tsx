@@ -102,6 +102,10 @@ function AuthPage() {
           {tab === "signup" && (
             <div className="mb-5">
               <p className="mb-2 text-xs font-semibold text-muted-foreground">Como deseja usar a Livvo?</p>
+              <p className="mb-3 text-[11px] text-muted-foreground">
+                Cada conta tem uma única identidade. Para atuar em outro papel, crie uma conta separada com outro e-mail.
+              </p>
+
               <div className="grid grid-cols-1 gap-2">
                 {([
                   { id: "paciente", label: "Paciente", desc: "Buscar e agendar atendimentos" },
