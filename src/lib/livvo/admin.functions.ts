@@ -506,3 +506,86 @@ export const seedDemoData = createServerFn({ method: "POST" })
 
     return { ok: true, professionals: proIds.length, companies: companyIds.length, units: unitIds.length, services: serviceSpecs.length };
   });
+
+// ============================================================
+// Modo Demonstração — toggle + purga de dados demo
+// ============================================================
+
+export const setDemoMode = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: { enabled: boolean; purge?: boolean }) =>
+    z.object({ enabled: z.boolean(), purge: z.boolean().optional() }).parse(d),
+  )
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: before } = await supabaseAdmin
+      .from("platform_settings").select("demo_mode").eq("id", 1).maybeSingle();
+    const previous = Boolean(before?.demo_mode);
+
+    const { error } = await supabaseAdmin
+      .from("platform_settings")
+      .update({
+        demo_mode: data.enabled,
+        demo_mode_changed_at: new Date().toISOString(),
+        demo_mode_changed_by: context.userId,
+        updated_at: new Date().toISOString(),
+        updated_by: context.userId,
+      } as never)
+      .eq("id", 1);
+    if (error) throw error;
+
+    let purged = 0;
+    if (!data.enabled && data.purge !== false) {
+      purged = await purgeDemoInternal(supabaseAdmin);
+    }
+
+    await writeAudit({
+      event: data.enabled ? "settings.demo_mode.enable" : "settings.demo_mode.disable",
+      module: "settings",
+      actorId: context.userId,
+      entityType: "platform_settings",
+      entityId: "1",
+      description: data.enabled
+        ? "Modo Demonstração ATIVADO"
+        : `Modo Demonstração DESATIVADO${purged ? ` (purgados ${purged} usuários demo)` : ""}`,
+      before: { demo_mode: previous },
+      after: { demo_mode: data.enabled },
+    });
+
+    return { ok: true, previous, current: data.enabled, purged };
+  });
+
+export const purgeDemoData = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    await assertAdmin(context);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const purged = await purgeDemoInternal(supabaseAdmin);
+    await writeAudit({
+      event: "settings.demo_mode.purge",
+      module: "settings",
+      actorId: context.userId,
+      entityType: "platform_settings",
+      entityId: "1",
+      description: `Purga manual de dados de demonstração (${purged} contas removidas)`,
+    });
+    return { ok: true, purged };
+  });
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function purgeDemoInternal(admin: any): Promise<number> {
+  // Remove todas as contas com email @livvo.demo — deleta o auth.user;
+  // cascatas de FK removem profiles / professionals / companies / appointments etc.
+  const { data: users } = await admin.auth.admin.listUsers({ perPage: 1000 });
+  const demoUsers = (users?.users ?? []).filter((u: { email?: string | null }) =>
+    (u.email ?? "").toLowerCase().endsWith("@livvo.demo"),
+  );
+  let removed = 0;
+  for (const u of demoUsers) {
+    const { error } = await admin.auth.admin.deleteUser(u.id);
+    if (!error) removed++;
+  }
+  return removed;
+}
+
