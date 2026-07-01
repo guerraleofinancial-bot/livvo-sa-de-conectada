@@ -28,7 +28,7 @@ import {
   type ProfessionalCardData,
 } from "@/components/livvo/ProfessionalCard";
 import { CompanyCard } from "@/components/livvo/CompanyCard";
-import { SectionHeader, EmptyState, TrustStrip, SkeletonBlock } from "@/components/livvo/ui";
+import { SectionHeader, EmptyState, TrustStrip, SkeletonBlock, HorizontalScroller } from "@/components/livvo/ui";
 
 export const Route = createFileRoute("/_authenticated/app/")({
   component: PatientHome,
