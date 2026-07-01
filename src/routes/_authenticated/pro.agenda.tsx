@@ -186,7 +186,7 @@ function Agenda() {
     const d = new Date(a.scheduled_at);
     const overdue = isPending(a);
     return (
-      <div key={a.id} className={`p-3 rounded-2xl border flex items-center gap-3 ${overdue ? "bg-warning-soft/40 border-warning/40" : "bg-card border-border"}`}>
+      <div key={a.id} className={`p-3 rounded-2xl border flex flex-wrap items-center gap-3 ${overdue ? "bg-warning-soft/40 border-warning/40" : "bg-card border-border"}`}>
         <div className="flex flex-col items-center justify-center w-14 shrink-0">
           <span className="text-[10px] uppercase font-bold text-muted-foreground">{d.toLocaleDateString("pt-BR", { weekday: "short" }).replace(".", "")}</span>
           <span className="text-sm font-bold tabular-nums">{d.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}</span>
