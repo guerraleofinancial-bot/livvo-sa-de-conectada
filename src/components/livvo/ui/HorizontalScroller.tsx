@@ -112,8 +112,10 @@ export function HorizontalScroller({
   const scrollBy = (dir: 1 | -1) => {
     const el = trackRef.current;
     if (!el) return;
-    const step = scrollStep ?? Math.max(240, Math.round(el.clientWidth * 0.8));
+    // ~70% da largura visível por clique de seta
+    const step = scrollStep ?? Math.max(200, Math.round(el.clientWidth * 0.7));
     el.scrollBy({ left: dir * step, behavior: "smooth" });
+  };
   };
 
   const onKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
