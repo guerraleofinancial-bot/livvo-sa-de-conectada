@@ -124,7 +124,7 @@ function BuscarLayout() {
     <div className="pb-16 livvo-fade-in">
       {/* Hero */}
       <header className="livvo-hero-gradient border-b border-border/60 rounded-b-[28px] md:rounded-b-[40px]">
-        <div className="mx-auto w-full max-w-6xl px-5 md:px-8 pt-8 md:pt-12 pb-5 md:pb-8">
+        <div className="mx-auto w-full max-w-7xl px-5 md:px-8 pt-8 md:pt-12 pb-5 md:pb-8">
           <div className="mb-4 flex items-center justify-between">
             <Link
               to="/app"
@@ -183,7 +183,7 @@ function BuscarLayout() {
         {/* Tabs */}
         <nav
           aria-label="Categorias de busca"
-          className="mx-auto w-full max-w-6xl px-5 md:px-8"
+          className="mx-auto w-full max-w-7xl px-5 md:px-8"
         >
           <div className="-mx-5 md:-mx-8 px-5 md:px-8 pb-4 md:pb-5 overflow-x-auto scrollbar-hide">
             <div className="inline-flex items-center gap-1.5 rounded-2xl border border-border/60 bg-card/70 backdrop-blur p-1 shadow-[var(--shadow-soft)]">
@@ -216,7 +216,7 @@ function BuscarLayout() {
         </nav>
       </header>
 
-      <div className="mx-auto w-full max-w-6xl px-5 md:px-8 pt-6 md:pt-8 space-y-8 md:space-y-10">
+      <div className="mx-auto w-full max-w-7xl px-5 md:px-8 pt-6 md:pt-8 space-y-8 md:space-y-10">
         {showFilters && (
           <div className="rounded-2xl border border-border bg-card p-4 md:p-5 shadow-[var(--shadow-soft)] livvo-slide-up">
             <p className="livvo-eyebrow mb-3">Localização</p>
