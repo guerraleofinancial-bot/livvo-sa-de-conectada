@@ -45,21 +45,30 @@ function ProHome() {
       const start = new Date(); start.setHours(0, 0, 0, 0);
       const end = new Date(start); end.setDate(end.getDate() + 1);
       const nowIso = new Date().toISOString();
-      const [{ data: dayRows }, { data: pendRows }] = await Promise.all([
-        supabase.from("appointments").select("status").eq("professional_id", user!.id).gte("scheduled_at", start.toISOString()).lt("scheduled_at", end.toISOString()),
-        supabase.from("appointments").select("id").eq("professional_id", user!.id).eq("status", "agendada").lt("scheduled_at", nowIso),
+      const back30 = new Date(); back30.setDate(back30.getDate() - 30);
+      const [{ data: dayRows }, { data: pendRows }, { data: doneRows }, { data: futureRows }] = await Promise.all([
+        supabase.from("appointments").select("status, scheduled_at").eq("professional_id", user!.id).gte("scheduled_at", start.toISOString()).lt("scheduled_at", end.toISOString()),
+        supabase.from("appointments").select("id").eq("professional_id", user!.id).in("status", ["agendada", "confirmada"]).lt("scheduled_at", nowIso),
+        supabase.from("appointments").select("patient_id").eq("professional_id", user!.id).eq("status", "realizada").gte("scheduled_at", back30.toISOString()),
+        supabase.from("appointments").select("patient_id").eq("professional_id", user!.id).in("status", ["agendada", "confirmada"]).gte("scheduled_at", nowIso),
       ]);
       const rows = dayRows ?? [];
       const count = (s: string) => rows.filter((r) => r.status === s).length;
+      const awaiting = rows.filter((r) => r.status === "agendada" && new Date(r.scheduled_at) >= new Date()).length;
+      const futureIds = new Set((futureRows ?? []).map((r) => r.patient_id).filter(Boolean));
+      const returnsIds = new Set((doneRows ?? []).map((r) => r.patient_id).filter((p) => p && !futureIds.has(p)));
       return {
         total: rows.length,
         done: count("realizada"),
         cancelled: count("cancelada"),
         noShow: count("nao_compareceu"),
         pending: (pendRows ?? []).length,
+        awaiting,
+        returns: returnsIds.size,
       };
     },
   });
+
 
 
   const p = pro as (typeof pro & { profiles: { full_name?: string } | null; specialties: { name?: string } | null }) | null;
@@ -104,7 +113,25 @@ function ProHome() {
         </div>
       </section>
 
+      <section className="rounded-2xl border border-border bg-primary-soft/40 p-4">
+        <div className="flex items-center gap-2 mb-2">
+          <Clock className="size-4 text-primary" />
+          <h2 className="text-sm font-bold">Resumo do dia</h2>
+        </div>
+        <p className="text-sm text-muted-foreground mb-3">Hoje você possui:</p>
+        <ul className="text-sm space-y-1.5">
+          <li>• <span className="font-semibold">{today?.total ?? 0}</span> consultas agendadas</li>
+          <li>• <span className="font-semibold">{today?.awaiting ?? 0}</span> aguardando confirmação</li>
+          <li>• <span className="font-semibold text-warning">{today?.pending ?? 0}</span> pendentes de definição</li>
+          <li>• <span className="font-semibold">{today?.returns ?? 0}</span> retornos para agendar</li>
+        </ul>
+        {(today?.pending ?? 0) > 0 && (
+          <Link to="/pro/agenda" className="mt-3 inline-block text-xs font-semibold text-primary">Resolver pendências →</Link>
+        )}
+      </section>
+
       <section>
+
 
         <div className="flex items-center justify-between mb-3 gap-3 flex-wrap">
           <h2 className="text-sm font-bold">Visão comercial · últimos 30 dias</h2>

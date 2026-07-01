@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import type { TablesUpdate } from "@/integrations/supabase/types";
 import { Button } from "@/components/ui/button";
@@ -11,6 +12,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { CheckCircle2, XCircle, Clock, MoreVertical, UserX, Play, RotateCcw, History } from "lucide-react";
 import { toast } from "sonner";
+import { createManualAppointment } from "@/lib/livvo/patients.functions";
+
 
 
 export type ApptForActions = {
@@ -38,13 +41,34 @@ export function AppointmentActions({ appt, onOpenTimeline, invalidateKeys }: {
   invalidateKeys?: string[];
 }) {
   const qc = useQueryClient();
-  const [open, setOpen] = useState<null | "reschedule" | "cancel" | "noshow" | "complete">(null);
+  const [open, setOpen] = useState<null | "reschedule" | "cancel" | "noshow" | "complete" | "return">(null);
+  const createApptFn = useServerFn(createManualAppointment);
 
   const invalidate = () => {
     (invalidateKeys ?? ["pro-agenda", "pro-next", "crm-dashboard", "pro-pending"]).forEach((k) =>
       qc.invalidateQueries({ queryKey: [k] })
     );
   };
+
+  const returnMut = useMutation({
+    mutationFn: async ({ when }: { when: string }) => {
+      if (!appt.patient_id) throw new Error("Paciente não vinculado");
+      await createApptFn({
+        data: {
+          patient_id: appt.patient_id,
+          professional_id: appt.professional_id,
+          scheduled_at: new Date(when).toISOString(),
+          duration_minutes: appt.duration_minutes ?? 30,
+          service_id: appt.service_id ?? null,
+          price: appt.price ?? 0,
+          notes: "Retorno da consulta anterior",
+        },
+      });
+    },
+    onSuccess: () => { toast.success("Retorno agendado"); invalidate(); setOpen(null); },
+    onError: (e: Error) => toast.error(e.message ?? "Erro ao agendar retorno"),
+  });
+
 
   const setStatus = useMutation({
     mutationFn: async (patch: TablesUpdate<"appointments">) => {
@@ -104,6 +128,12 @@ export function AppointmentActions({ appt, onOpenTimeline, invalidateKeys }: {
           <DropdownMenuItem onClick={() => setOpen("reschedule")}>
             <Clock className="size-4 mr-2" /> Reagendar
           </DropdownMenuItem>
+          {appt.status === "realizada" && appt.patient_id && (
+            <DropdownMenuItem onClick={() => setOpen("return")}>
+              <RotateCcw className="size-4 mr-2" /> Agendar retorno
+            </DropdownMenuItem>
+          )}
+
           <DropdownMenuSeparator />
           {onOpenTimeline && (
             <DropdownMenuItem onClick={onOpenTimeline}>
@@ -156,14 +186,29 @@ export function AppointmentActions({ appt, onOpenTimeline, invalidateKeys }: {
         onConfirm={() => setStatus.mutate({ status: "realizada", completed_at: new Date().toISOString() })}
         loading={setStatus.isPending}
       />
+      {/* Return visit */}
+      <RescheduleDialog
+        open={open === "return"}
+        onOpenChange={(v) => setOpen(v ? "return" : null)}
+        initial={new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()}
+        title="Agendar retorno"
+        description="Um novo agendamento será criado para este paciente."
+        confirmLabel="Agendar retorno"
+        showReason={false}
+        onConfirm={(when) => returnMut.mutate({ when })}
+        loading={returnMut.isPending}
+      />
     </>
   );
 }
 
-function RescheduleDialog({ open, onOpenChange, initial, onConfirm, loading }: {
+
+function RescheduleDialog({ open, onOpenChange, initial, onConfirm, loading, title, description, confirmLabel, showReason = true }: {
   open: boolean; onOpenChange: (v: boolean) => void; initial: string;
   onConfirm: (when: string, reason: string) => void; loading?: boolean;
+  title?: string; description?: string; confirmLabel?: string; showReason?: boolean;
 }) {
+
   const iso = new Date(initial);
   const local = new Date(iso.getTime() - iso.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
   const [when, setWhen] = useState(local);
@@ -173,23 +218,26 @@ function RescheduleDialog({ open, onOpenChange, initial, onConfirm, loading }: {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-sm rounded-2xl">
         <DialogHeader>
-          <DialogTitle>Reagendar consulta</DialogTitle>
-          <DialogDescription>O histórico da consulta anterior será preservado.</DialogDescription>
+          <DialogTitle>{title ?? "Reagendar consulta"}</DialogTitle>
+          <DialogDescription>{description ?? "O histórico da consulta anterior será preservado."}</DialogDescription>
         </DialogHeader>
         <div className="space-y-3">
           <div className="space-y-1.5">
             <Label htmlFor="when">Nova data e horário</Label>
             <Input id="when" type="datetime-local" value={when} onChange={(e) => setWhen(e.target.value)} />
           </div>
-          <div className="space-y-1.5">
-            <Label htmlFor="reason">Motivo (opcional)</Label>
-            <Textarea id="reason" value={reason} onChange={(e) => setReason(e.target.value)} placeholder="Ex.: paciente solicitou remarcação" rows={3} maxLength={500} />
-          </div>
+          {showReason && (
+            <div className="space-y-1.5">
+              <Label htmlFor="reason">Motivo (opcional)</Label>
+              <Textarea id="reason" value={reason} onChange={(e) => setReason(e.target.value)} placeholder="Ex.: paciente solicitou remarcação" rows={3} maxLength={500} />
+            </div>
+          )}
         </div>
         <DialogFooter>
           <Button variant="ghost" onClick={() => onOpenChange(false)}>Cancelar</Button>
-          <Button onClick={() => onConfirm(when, reason)} disabled={!when || loading}>Reagendar</Button>
+          <Button onClick={() => onConfirm(when, reason)} disabled={!when || loading}>{confirmLabel ?? "Reagendar"}</Button>
         </DialogFooter>
+
       </DialogContent>
     </Dialog>
   );
