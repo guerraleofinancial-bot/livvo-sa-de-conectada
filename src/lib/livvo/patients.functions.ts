@@ -234,6 +234,15 @@ export const updateCrmContact = createServerFn({ method: "POST" })
     const { data: row, error } = await context.supabase
       .from("crm_contacts").update(patch as never).eq("id", contactId).select().single();
     if (error) throw error;
+    await writeAudit({
+      event: "patient.update",
+      module: "crm",
+      actorId: context.userId,
+      entityType: "crm_contact",
+      entityId: contactId,
+      description: "Paciente atualizado",
+      after: patch,
+    });
     return row;
   });
 
