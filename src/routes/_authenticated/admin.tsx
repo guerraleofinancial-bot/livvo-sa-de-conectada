@@ -375,25 +375,63 @@ function AdminPanel() {
         {tab === "users" && (
           <section>
             <h2 className="text-sm font-bold mb-3">Usuários recentes</h2>
+            <p className="text-xs text-muted-foreground mb-3">
+              O status da conta é calculado automaticamente conforme o papel (paciente, profissional, empresa) e o estágio de aprovação. Use "Suspender" ou "Bloquear" para intervenção manual.
+            </p>
             <div className="rounded-2xl bg-card border border-border overflow-hidden">
               <table className="w-full text-sm">
                 <thead className="bg-muted/50 text-xs uppercase font-bold text-muted-foreground">
-                  <tr><th className="text-left p-3">Nome</th><th className="text-left p-3 hidden md:table-cell">Email</th><th className="text-left p-3">Status</th><th></th></tr>
+                  <tr><th className="text-left p-3">Nome</th><th className="text-left p-3 hidden md:table-cell">Email</th><th className="text-left p-3">Status da conta</th><th></th></tr>
                 </thead>
                 <tbody>
-                  {(users ?? []).map((u) => (
-                    <tr key={u.id} className="border-t border-border">
-                      <td className="p-3 font-semibold">{u.full_name}</td>
-                      <td className="p-3 text-muted-foreground hidden md:table-cell">{u.email}</td>
-                      <td className="p-3"><span className={`px-2 py-0.5 text-[10px] uppercase font-bold rounded-full ${u.suspended ? "bg-destructive/10 text-destructive" : "bg-health-soft text-health"}`}>{u.suspended ? "Suspenso" : "Ativo"}</span></td>
-                      <td className="p-3 text-right"><Button size="sm" variant="ghost" onClick={async () => { await setSusp({ data: { userId: u.id, suspended: !u.suspended } }); toast.success("Usuário atualizado"); qc.invalidateQueries({ queryKey: ["all-profiles"] }); }}><Ban className="size-4 mr-1" />{u.suspended ? "Reativar" : "Suspender"}</Button></td>
-                    </tr>
-                  ))}
+                  {(users ?? []).map((u) => {
+                    const s = (u as { account_status?: string }).account_status ?? "paciente";
+                    const label: Record<string, string> = {
+                      paciente: "Paciente",
+                      profissional_pendente: "Profissional pendente",
+                      profissional_aprovado: "Profissional aprovado",
+                      empresa_pendente: "Empresa pendente",
+                      empresa_aprovada: "Empresa aprovada",
+                      suspenso: "Suspenso",
+                      bloqueado: "Bloqueado",
+                    };
+                    const tone =
+                      s === "bloqueado" ? "bg-destructive/10 text-destructive"
+                      : s === "suspenso" ? "bg-warning-soft text-warning-foreground"
+                      : s.endsWith("_aprovado") || s.endsWith("_aprovada") ? "bg-health-soft text-health"
+                      : s.endsWith("_pendente") ? "bg-warning-soft text-warning-foreground"
+                      : "bg-muted text-foreground/80";
+                    const set = async (status: string, reason?: string | null) => {
+                      const { error } = await supabase.rpc("admin_set_account_status", { _user_id: u.id, _status: status as never, _reason: reason ?? undefined });
+
+                      if (error) return toast.error(error.message);
+                      toast.success("Status atualizado");
+                      qc.invalidateQueries({ queryKey: ["all-profiles"] });
+                    };
+                    return (
+                      <tr key={u.id} className="border-t border-border">
+                        <td className="p-3 font-semibold">{u.full_name}</td>
+                        <td className="p-3 text-muted-foreground hidden md:table-cell">{u.email}</td>
+                        <td className="p-3"><span className={`px-2 py-0.5 text-[10px] uppercase font-bold rounded-full ${tone}`}>{label[s] ?? s}</span></td>
+                        <td className="p-3 text-right space-x-1 whitespace-nowrap">
+                          {s === "suspenso" || s === "bloqueado" ? (
+                            <Button size="sm" variant="ghost" onClick={() => set("paciente")}>Reativar</Button>
+                          ) : (
+                            <>
+                              <Button size="sm" variant="ghost" onClick={() => { const r = prompt("Motivo da suspensão (opcional):") ?? undefined; set("suspenso", r); }}>Suspender</Button>
+                              <Button size="sm" variant="ghost" className="text-destructive" onClick={() => { const r = prompt("Motivo do bloqueio (opcional):") ?? undefined; set("bloqueado", r); }}><Ban className="size-4 mr-1" />Bloquear</Button>
+                            </>
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
           </section>
         )}
+
 
         {tab === "settings" && settings && (
           <section className="space-y-4">
