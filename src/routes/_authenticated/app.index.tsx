@@ -306,7 +306,7 @@ function PatientHome() {
 
 
         {/* Atalhos por tipo de parceiro */}
-        <div className="mt-3 grid grid-cols-4 gap-2">
+        <div className="mt-3 md:mt-5 grid grid-cols-4 gap-2 md:gap-4">
           {[
             { to: "/app/buscar/profissionais", label: "Profissionais", Icon: Stethoscope, tone: "primary" },
             { to: "/app/buscar/clinicas", label: "Clínicas", Icon: Building2, tone: "health" },
@@ -316,20 +316,21 @@ function PatientHome() {
             <Link
               key={to}
               to={to}
-              className="group flex flex-col items-center gap-1.5 rounded-2xl border border-border/70 bg-card p-3 text-center transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-[var(--shadow-soft)]"
+              className="group flex flex-col md:flex-row items-center gap-1.5 md:gap-3 rounded-2xl border border-border/70 bg-card p-3 md:p-5 text-center md:text-left transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-[var(--shadow-soft)]"
             >
               <div
-                className={`grid size-10 place-items-center rounded-xl transition-transform group-hover:scale-105 ${
+                className={`grid size-10 md:size-12 shrink-0 place-items-center rounded-xl transition-transform group-hover:scale-105 ${
                   tone === "primary" ? "bg-primary-soft text-primary" : "bg-health-soft text-health"
                 }`}
               >
-                <Icon className="size-5" />
+                <Icon className="size-5 md:size-6" />
               </div>
-              <span className="text-[11px] font-semibold text-foreground leading-tight">{label}</span>
+              <span className="text-[11px] md:text-sm font-semibold text-foreground leading-tight">{label}</span>
             </Link>
           ))}
         </div>
       </section>
+
 
 
       {/* Specialties */}
