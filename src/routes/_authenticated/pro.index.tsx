@@ -113,6 +113,23 @@ function ProHome() {
         </div>
       </section>
 
+      <section className="rounded-2xl border border-border bg-primary-soft/40 p-4">
+        <div className="flex items-center gap-2 mb-2">
+          <Clock className="size-4 text-primary" />
+          <h2 className="text-sm font-bold">Resumo do dia</h2>
+        </div>
+        <p className="text-sm text-muted-foreground mb-3">Hoje você possui:</p>
+        <ul className="text-sm space-y-1.5">
+          <li>• <span className="font-semibold">{today?.total ?? 0}</span> consultas agendadas</li>
+          <li>• <span className="font-semibold">{today?.awaiting ?? 0}</span> aguardando confirmação</li>
+          <li>• <span className="font-semibold text-warning">{today?.pending ?? 0}</span> pendentes de definição</li>
+          <li>• <span className="font-semibold">{today?.returns ?? 0}</span> retornos para agendar</li>
+        </ul>
+        {(today?.pending ?? 0) > 0 && (
+          <Link to="/pro/agenda" className="mt-3 inline-block text-xs font-semibold text-primary">Resolver pendências →</Link>
+        )}
+
+
       <section>
 
         <div className="flex items-center justify-between mb-3 gap-3 flex-wrap">
