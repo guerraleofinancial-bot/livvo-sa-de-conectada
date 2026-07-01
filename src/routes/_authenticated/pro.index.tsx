@@ -4,7 +4,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { getCrmDashboard } from "@/lib/livvo/crm.functions";
-import { Calendar, Users, Star, Wallet, Clock, FileText, TrendingUp, UserCheck, UserX } from "lucide-react";
+import { Calendar, Users, Star, Wallet, Clock, FileText, TrendingUp, UserCheck, UserX, AlertTriangle, RefreshCw, CheckCircle2 } from "lucide-react";
 import { useState } from "react";
 import { NewPatientDialog } from "@/components/livvo/new-patient-dialog";
 import { ImportPatientsDialog, NewPatientButtons } from "@/components/livvo/import-patients-dialog";
