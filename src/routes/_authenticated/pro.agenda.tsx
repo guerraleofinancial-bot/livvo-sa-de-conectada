@@ -200,17 +200,12 @@ function Agenda() {
             ) : a.patient_name}
           </p>
           <p className="text-xs text-muted-foreground truncate">{a.service_name}</p>
-          {overdue && (
-            <p className="text-[10px] font-bold text-warning mt-0.5 flex items-center gap-1">
-              <AlertTriangle className="size-3" /> Pendente de definição
-            </p>
+          {overdue ? (
+            <StatusBadge status="pendente_definicao" />
+          ) : (
+            <StatusBadge status={a.status} />
           )}
-        </div>
-        {!overdue && (
-          <span className={`px-2 py-0.5 text-[10px] uppercase font-bold rounded-full ${STATUS_STYLE[a.status] ?? "bg-muted text-muted-foreground"}`}>
-            {STATUS_LABEL[a.status] ?? a.status}
-          </span>
-        )}
+
         <AppointmentActions
           appt={apptForActions(a)}
           onOpenTimeline={() => setTimelineId(a.id)}
