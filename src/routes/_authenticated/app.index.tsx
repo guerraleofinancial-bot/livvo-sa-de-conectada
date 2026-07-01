@@ -256,9 +256,10 @@ function PatientHome() {
   const firstName = profile?.full_name?.split(" ")[0] ?? "";
 
   return (
-    <div className="pb-10 livvo-fade-in">
+    <div className="pb-10 livvo-fade-in mx-auto w-full max-w-7xl">
       {/* Header */}
-      <header className="px-5 pt-10 pb-4 flex items-center justify-between">
+      <header className="px-5 md:px-8 pt-10 flex items-center justify-between">
+
         <div className="flex items-center gap-3 min-w-0">
           <div className="size-11 shrink-0 rounded-full bg-primary-soft grid place-items-center text-primary font-bold ring-1 ring-border overflow-hidden">
             {profile?.avatar_url ? (
@@ -284,29 +285,28 @@ function PatientHome() {
       </header>
 
       {/* Hero search */}
-      <section className="px-5">
+      <section className="px-5 md:px-8 mt-4">
         <Link to="/app/buscar" className="block">
-          <div className="livvo-hero-gradient rounded-3xl border border-border/70 p-5 shadow-[var(--shadow-soft)]">
+          <div className="livvo-hero-gradient rounded-3xl border border-border/70 p-5 md:p-10 shadow-[var(--shadow-soft)]">
             <p className="livvo-eyebrow">Marketplace de saúde</p>
-            <h2 className="livvo-h1 mt-1">
-              Encontre profissionais
-              <br />
-              verificados perto de você
+            <h2 className="livvo-h1 mt-1 md:text-4xl lg:text-5xl md:leading-[1.1] md:max-w-2xl">
+              Encontre profissionais verificados perto de você
             </h2>
-            <div className="relative mt-4">
-              <Search className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
-              <div className="h-12 pl-11 pr-4 bg-card border border-border rounded-2xl flex items-center text-sm text-muted-foreground shadow-sm">
+            <div className="relative mt-4 md:mt-6 md:max-w-2xl">
+              <Search className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 size-4 md:size-5 text-muted-foreground" />
+              <div className="h-12 md:h-14 pl-11 md:pl-14 pr-4 bg-card border border-border rounded-2xl flex items-center text-sm md:text-base text-muted-foreground shadow-sm">
                 Especialidade, nome ou exame
               </div>
             </div>
-            <p className="livvo-subtle mt-3 text-[11px]">
+            <p className="livvo-subtle mt-3 text-[11px] md:text-xs">
               Todos os profissionais têm registro do conselho verificado.
             </p>
           </div>
         </Link>
 
+
         {/* Atalhos por tipo de parceiro */}
-        <div className="mt-3 grid grid-cols-4 gap-2">
+        <div className="mt-3 md:mt-5 grid grid-cols-4 gap-2 md:gap-4">
           {[
             { to: "/app/buscar/profissionais", label: "Profissionais", Icon: Stethoscope, tone: "primary" },
             { to: "/app/buscar/clinicas", label: "Clínicas", Icon: Building2, tone: "health" },
@@ -316,24 +316,25 @@ function PatientHome() {
             <Link
               key={to}
               to={to}
-              className="group flex flex-col items-center gap-1.5 rounded-2xl border border-border/70 bg-card p-3 text-center transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-[var(--shadow-soft)]"
+              className="group flex flex-col md:flex-row items-center gap-1.5 md:gap-3 rounded-2xl border border-border/70 bg-card p-3 md:p-5 text-center md:text-left transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-[var(--shadow-soft)]"
             >
               <div
-                className={`grid size-10 place-items-center rounded-xl transition-transform group-hover:scale-105 ${
+                className={`grid size-10 md:size-12 shrink-0 place-items-center rounded-xl transition-transform group-hover:scale-105 ${
                   tone === "primary" ? "bg-primary-soft text-primary" : "bg-health-soft text-health"
                 }`}
               >
-                <Icon className="size-5" />
+                <Icon className="size-5 md:size-6" />
               </div>
-              <span className="text-[11px] font-semibold text-foreground leading-tight">{label}</span>
+              <span className="text-[11px] md:text-sm font-semibold text-foreground leading-tight">{label}</span>
             </Link>
           ))}
         </div>
       </section>
 
 
+
       {/* Specialties */}
-      <section className="px-5 mt-6 livvo-slide-up">
+      <section className="px-5 md:px-8 mt-6 md:mt-10 livvo-slide-up">
         <SectionHeader
           eyebrow="Categorias"
           title="Especialidades"
@@ -371,7 +372,7 @@ function PatientHome() {
 
       {/* Next appointment */}
       {nextAppt && (
-        <section className="px-5 mt-6 livvo-slide-up">
+        <section className="px-5 md:px-8 mt-6 md:mt-10 livvo-slide-up">
           <div className="rounded-3xl livvo-hero-primary p-5 shadow-[var(--shadow-hero)] relative overflow-hidden">
             <div className="relative z-10">
               <div className="flex justify-between items-start mb-5">
@@ -445,7 +446,7 @@ function PatientHome() {
 
       {/* Clinics */}
       {clinics && clinics.length > 0 && (
-        <section className="px-5 mt-8 livvo-slide-up">
+        <section className="px-5 md:px-8 mt-8 md:mt-12 livvo-slide-up">
           <SectionHeader
             eyebrow="Estabelecimentos"
             title="Clínicas em destaque"
@@ -458,7 +459,7 @@ function PatientHome() {
               </Link>
             }
           />
-          <HorizontalScroller className="mt-3" snap="start">
+          <div className="mt-3 hidden md:grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {clinics.map((c) => (
               <CompanyCard
                 key={c.id}
@@ -472,14 +473,32 @@ function PatientHome() {
                 }}
               />
             ))}
-          </HorizontalScroller>
+          </div>
+          <div className="md:hidden">
+            <HorizontalScroller className="mt-3" snap="start">
+              {clinics.map((c) => (
+                <CompanyCard
+                  key={c.id}
+                  data={{
+                    id: c.id,
+                    name: c.trade_name ?? c.legal_name,
+                    type: c.type,
+                    city: c.address_city,
+                    state: c.address_state,
+                    logoUrl: c.logo_url,
+                  }}
+                />
+              ))}
+            </HorizontalScroller>
+          </div>
+
 
         </section>
       )}
 
       {/* Labs */}
       {labs && labs.length > 0 && (
-        <section className="px-5 mt-8 livvo-slide-up">
+        <section className="px-5 md:px-8 mt-8 md:mt-12 livvo-slide-up">
           <SectionHeader
             eyebrow="Exames & diagnóstico"
             title="Laboratórios"
@@ -492,7 +511,7 @@ function PatientHome() {
               </Link>
             }
           />
-          <HorizontalScroller className="mt-3" snap="start">
+          <div className="mt-3 hidden md:grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {labs.map((c) => (
               <CompanyCard
                 key={c.id}
@@ -506,7 +525,25 @@ function PatientHome() {
                 }}
               />
             ))}
-          </HorizontalScroller>
+          </div>
+          <div className="md:hidden">
+            <HorizontalScroller className="mt-3" snap="start">
+              {labs.map((c) => (
+                <CompanyCard
+                  key={c.id}
+                  data={{
+                    id: c.id,
+                    name: c.trade_name ?? c.legal_name,
+                    type: c.type,
+                    city: c.address_city,
+                    state: c.address_state,
+                    logoUrl: c.logo_url,
+                  }}
+                />
+              ))}
+            </HorizontalScroller>
+          </div>
+
 
         </section>
       )}
@@ -523,9 +560,9 @@ function PatientHome() {
 
       {/* Reviews rail */}
       {reviews && reviews.length > 0 && (
-        <section className="px-5 mt-8 livvo-slide-up">
+        <section className="px-5 md:px-8 mt-8 md:mt-12 livvo-slide-up">
           <SectionHeader eyebrow="Comunidade" title="Avaliações recentes" />
-          <div className="mt-3 grid gap-3 sm:grid-cols-2">
+          <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {reviews.map((r, i) => {
               const pro = (r as any).professionals;
               return (
@@ -572,7 +609,7 @@ function PatientHome() {
       )}
 
       {/* Trust strip */}
-      <section className="px-5 mt-10">
+      <section className="px-5 md:px-8 mt-10 md:mt-14">
         <TrustStrip />
       </section>
     </div>
@@ -595,7 +632,7 @@ function ProRail({
   highlight?: "premium" | "hot" | "new";
 }) {
   return (
-    <section className="px-5 mt-8 livvo-slide-up">
+    <section className="px-5 md:px-8 mt-8 md:mt-12 livvo-slide-up">
       <SectionHeader
         eyebrow={eyebrow}
         title={title}
@@ -618,27 +655,49 @@ function ProRail({
           />
         </div>
       ) : (
-        <HorizontalScroller className="mt-3" snap="start">
-          {loading &&
-            Array.from({ length: 3 }).map((_, i) => (
-              <div key={i} className="w-[300px]">
-                <ProfessionalCardSkeleton />
-              </div>
-            ))}
-          {!loading &&
-            (pros ?? []).map((p) => (
-              <div key={p.id} className="w-[300px]">
+        <>
+          {/* Desktop grid */}
+          <div className="mt-3 hidden md:grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {loading &&
+              Array.from({ length: 4 }).map((_, i) => <ProfessionalCardSkeleton key={i} />)}
+            {!loading &&
+              (pros ?? []).map((p) => (
                 <ProfessionalCard
+                  key={p.id}
                   data={toCard(p, {
                     isPremium: highlight === "premium",
                     isHotToday: highlight === "hot",
                     isNewPartner: highlight === "new" ? true : undefined,
                   })}
                 />
-              </div>
-            ))}
-        </HorizontalScroller>
+              ))}
+          </div>
+          {/* Mobile carousel */}
+          <div className="md:hidden">
+            <HorizontalScroller className="mt-3" snap="start">
+              {loading &&
+                Array.from({ length: 3 }).map((_, i) => (
+                  <div key={i} className="w-[300px]">
+                    <ProfessionalCardSkeleton />
+                  </div>
+                ))}
+              {!loading &&
+                (pros ?? []).map((p) => (
+                  <div key={p.id} className="w-[300px]">
+                    <ProfessionalCard
+                      data={toCard(p, {
+                        isPremium: highlight === "premium",
+                        isHotToday: highlight === "hot",
+                        isNewPartner: highlight === "new" ? true : undefined,
+                      })}
+                    />
+                  </div>
+                ))}
+            </HorizontalScroller>
+          </div>
+        </>
       )}
+
     </section>
 
   );

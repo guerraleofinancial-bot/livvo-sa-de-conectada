@@ -185,7 +185,7 @@ function BuscarTodos() {
       )}
 
       {isLoading && (
-        <section className="grid gap-3 md:grid-cols-2">
+        <section className="grid gap-3 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {Array.from({ length: 6 }).map((_, i) => (
             <ProfessionalCardSkeleton key={i} />
           ))}
@@ -218,7 +218,7 @@ function BuscarTodos() {
                   }
                 />
 
-                <div className="mt-4 grid gap-3 md:grid-cols-2">
+                <div className="mt-4 grid gap-3 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                   {g.items.map((p) => (
                     <ProfessionalCard
                       key={p.professional_id}

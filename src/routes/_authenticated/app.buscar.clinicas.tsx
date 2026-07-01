@@ -47,14 +47,14 @@ function BuscarClinicas() {
         }
       />
       {isLoading && (
-        <div className="mt-4 grid gap-3 md:grid-cols-2">
+        <div className="mt-4 grid gap-3 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {Array.from({ length: 6 }).map((_, i) => (
             <CompanyResultCardSkeleton key={i} />
           ))}
         </div>
       )}
       {!isLoading && (data ?? []).length > 0 && (
-        <div className="mt-4 grid gap-3 md:grid-cols-2">
+        <div className="mt-4 grid gap-3 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {(data ?? []).map((row) => (
             <CompanyResultCard key={row.id} row={row} />
           ))}

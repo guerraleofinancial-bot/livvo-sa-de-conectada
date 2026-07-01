@@ -121,7 +121,7 @@ function BuscarProfissionais() {
   return (
     <>
       {isLoading && (
-        <section className="grid gap-3 md:grid-cols-2">
+        <section className="grid gap-3 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {Array.from({ length: 6 }).map((_, i) => (
             <ProfessionalCardSkeleton key={i} />
           ))}
@@ -140,7 +140,7 @@ function BuscarProfissionais() {
               </span>
             }
           />
-          <div className="mt-4 grid gap-3 md:grid-cols-2">
+          <div className="mt-4 grid gap-3 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {sponsored.map((p) => (
               <ProfessionalCard key={p.professional_id} data={toCard(p, "Destaque")} onClick={() => onClick(p)} />
             ))}
@@ -155,7 +155,7 @@ function BuscarProfissionais() {
             title="Profissionais"
             trailing={<span className="livvo-subtle">{organic.length} resultado{organic.length !== 1 ? "s" : ""}</span>}
           />
-          <div className="mt-4 grid gap-3 md:grid-cols-2">
+          <div className="mt-4 grid gap-3 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {organic.map((p) => (
               <ProfessionalCard key={p.professional_id} data={toCard(p)} onClick={() => onClick(p)} />
             ))}

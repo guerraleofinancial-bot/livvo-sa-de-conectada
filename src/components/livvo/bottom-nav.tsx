@@ -23,8 +23,8 @@ const proItems: NavItem[] = [
 function Nav({ items }: { items: NavItem[] }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-card/90 backdrop-blur-xl">
-      <div className="mx-auto flex max-w-md items-center justify-between px-2 py-3">
+    <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-card/95 backdrop-blur-xl">
+      <div className="mx-auto flex w-full max-w-md md:max-w-2xl items-center justify-between px-3 py-3">
         {items.map((it, i) => {
           const active = it.exact ? pathname === it.to : pathname.startsWith(it.to);
           return (

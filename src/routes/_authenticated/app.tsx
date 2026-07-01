@@ -7,10 +7,8 @@ export const Route = createFileRoute("/_authenticated/app")({
 
 function AppLayout() {
   return (
-    <div className="min-h-screen bg-surface pb-24">
-      <div className="mx-auto max-w-md">
-        <Outlet />
-      </div>
+    <div className="min-h-screen bg-surface pb-24 md:pb-10">
+      <Outlet />
       <PatientBottomNav />
     </div>
   );
