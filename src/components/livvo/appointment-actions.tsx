@@ -44,6 +44,12 @@ export function AppointmentActions({ appt, onOpenTimeline, invalidateKeys }: {
   const [open, setOpen] = useState<null | "reschedule" | "cancel" | "noshow" | "complete" | "return">(null);
   const createApptFn = useServerFn(createManualAppointment);
 
+  const invalidate = () => {
+    (invalidateKeys ?? ["pro-agenda", "pro-next", "crm-dashboard", "pro-pending"]).forEach((k) =>
+      qc.invalidateQueries({ queryKey: [k] })
+    );
+  };
+
   const returnMut = useMutation({
     mutationFn: async ({ when }: { when: string }) => {
       if (!appt.patient_id) throw new Error("Paciente não vinculado");
@@ -63,12 +69,6 @@ export function AppointmentActions({ appt, onOpenTimeline, invalidateKeys }: {
     onError: (e: Error) => toast.error(e.message ?? "Erro ao agendar retorno"),
   });
 
-
-  const invalidate = () => {
-    (invalidateKeys ?? ["pro-agenda", "pro-next", "crm-dashboard", "pro-pending"]).forEach((k) =>
-      qc.invalidateQueries({ queryKey: [k] })
-    );
-  };
 
   const setStatus = useMutation({
     mutationFn: async (patch: TablesUpdate<"appointments">) => {
