@@ -172,53 +172,52 @@ function Agenda() {
     onSuccess: () => qc.invalidateQueries({ queryKey: ["my-blocked"] }),
   });
 
-  const renderActions = (a: ApptRow) => (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <button className="p-1.5 rounded-lg hover:bg-muted" aria-label="Ações"><MoreVertical className="size-4 text-muted-foreground" /></button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
-        {a.patient_id && (
-          <DropdownMenuItem asChild>
-            <Link to="/pro/crm/$id" params={{ id: a.patient_id }}><User className="size-4 mr-2" /> Ver paciente</Link>
-          </DropdownMenuItem>
-        )}
-        <DropdownMenuItem onClick={() => {
-          const cur = new Date(a.scheduled_at);
-          const iso = cur.toISOString().slice(0, 16);
-          const next = window.prompt("Reagendar para (AAAA-MM-DDTHH:MM)", iso);
-          if (next) reschedule.mutate({ id: a.id, when: next });
-        }}><Clock className="size-4 mr-2" /> Reagendar</DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setStatus.mutate({ id: a.id, status: "realizada" })}>
-          <CheckCircle2 className="size-4 mr-2" /> Marcar como atendido
-        </DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem className="text-destructive focus:text-destructive" onClick={() => setStatus.mutate({ id: a.id, status: "cancelada" })}>
-          <XCircle className="size-4 mr-2" /> Cancelar
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
-  );
+  const apptForActions = (a: ApptRow): ApptForActions => ({
+    id: a.id,
+    patient_id: a.patient_id,
+    professional_id: user!.id,
+    scheduled_at: a.scheduled_at,
+    duration_minutes: a.duration_minutes,
+    status: a.status,
+    service_id: a.service_id,
+  });
 
   const ApptItem = (a: ApptRow) => {
     const d = new Date(a.scheduled_at);
+    const overdue = isPending(a);
     return (
-      <div key={a.id} className="p-3 rounded-2xl bg-card border border-border flex items-center gap-3">
+      <div key={a.id} className={`p-3 rounded-2xl border flex items-center gap-3 ${overdue ? "bg-warning-soft/40 border-warning/40" : "bg-card border-border"}`}>
         <div className="flex flex-col items-center justify-center w-14 shrink-0">
           <span className="text-[10px] uppercase font-bold text-muted-foreground">{d.toLocaleDateString("pt-BR", { weekday: "short" }).replace(".", "")}</span>
           <span className="text-sm font-bold tabular-nums">{d.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}</span>
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-semibold truncate">{a.patient_name}</p>
+          <p className="text-sm font-semibold truncate">
+            {a.patient_id ? (
+              <Link to="/pro/crm/$id" params={{ id: a.patient_id }} className="hover:text-primary">{a.patient_name}</Link>
+            ) : a.patient_name}
+          </p>
           <p className="text-xs text-muted-foreground truncate">{a.service_name}</p>
+          {overdue && (
+            <p className="text-[10px] font-bold text-warning mt-0.5 flex items-center gap-1">
+              <AlertTriangle className="size-3" /> Pendente de definição
+            </p>
+          )}
         </div>
-        <span className={`px-2 py-0.5 text-[10px] uppercase font-bold rounded-full ${STATUS_STYLE[a.status] ?? "bg-muted text-muted-foreground"}`}>
-          {STATUS_LABEL[a.status] ?? a.status}
-        </span>
-        {renderActions(a)}
+        {!overdue && (
+          <span className={`px-2 py-0.5 text-[10px] uppercase font-bold rounded-full ${STATUS_STYLE[a.status] ?? "bg-muted text-muted-foreground"}`}>
+            {STATUS_LABEL[a.status] ?? a.status}
+          </span>
+        )}
+        <AppointmentActions
+          appt={apptForActions(a)}
+          onOpenTimeline={() => setTimelineId(a.id)}
+          invalidateKeys={["pro-agenda", "pro-next", "crm-dashboard", "pro-pending"]}
+        />
       </div>
     );
   };
+
 
   return (
     <div className="px-5 pt-10 pb-24 space-y-6 livvo-fade-in">
