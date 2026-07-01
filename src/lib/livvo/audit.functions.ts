@@ -43,6 +43,7 @@ export async function writeAudit(p: AuditPayload): Promise<void> {
     let ua = p.userAgent ?? null;
     if (!ip || !ua) {
       try {
+        const { getRequest } = await import("@tanstack/react-start/server");
         const req = getRequest();
         if (req?.headers) {
           ip = ip ?? req.headers.get("x-forwarded-for") ?? req.headers.get("x-real-ip") ?? null;
