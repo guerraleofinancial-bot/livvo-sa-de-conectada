@@ -393,8 +393,18 @@ function AdminPanel() {
 
         {tab === "settings" && settings && (
           <section className="space-y-4">
-            <h2 className="text-sm font-bold">Configurações da plataforma</h2>
-            <SettingsForm initial={settings} onSave={async (v) => { await updSettings({ data: v }); toast.success("Salvo"); qc.invalidateQueries({ queryKey: ["settings"] }); }} />
+            <h2 className="text-sm font-bold">Central de configurações</h2>
+            <SettingsCenter
+              initial={settings as never}
+              onSave={async (v) => { await updSettings({ data: v }); qc.invalidateQueries({ queryKey: ["settings"] }); }}
+            />
+          </section>
+        )}
+
+        {tab === "audit" && (
+          <section className="space-y-4">
+            <h2 className="text-sm font-bold">Logs de auditoria</h2>
+            <AuditLogsTab />
           </section>
         )}
       </main>
@@ -402,26 +412,3 @@ function AdminPanel() {
   );
 }
 
-function SettingsForm({ initial, onSave }: { initial: { commission_percent: number; cancellation_window_hours: number; refund_policy: string }; onSave: (v: { commission_percent: number; cancellation_window_hours: number; refund_policy: string }) => Promise<void> }) {
-  const [pct, setPct] = useState(Number(initial.commission_percent));
-  const [hrs, setHrs] = useState(Number(initial.cancellation_window_hours));
-  const [policy, setPolicy] = useState(initial.refund_policy);
-  return (
-    <div className="rounded-2xl bg-card border border-border p-5 space-y-4 max-w-xl">
-      <div>
-        <label className="text-xs font-bold uppercase text-muted-foreground">Comissão Livvo (%)</label>
-        <Input type="number" step="0.5" min={0} max={50} value={pct} onChange={(e) => setPct(Number(e.target.value))} />
-        <p className="text-[10px] text-muted-foreground mt-1">Percentual retido automaticamente de cada pagamento.</p>
-      </div>
-      <div>
-        <label className="text-xs font-bold uppercase text-muted-foreground">Janela de cancelamento (horas)</label>
-        <Input type="number" min={0} max={168} value={hrs} onChange={(e) => setHrs(Number(e.target.value))} />
-      </div>
-      <div>
-        <label className="text-xs font-bold uppercase text-muted-foreground">Política de reembolso</label>
-        <textarea value={policy} onChange={(e) => setPolicy(e.target.value)} rows={3} className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm" />
-      </div>
-      <Button onClick={() => onSave({ commission_percent: pct, cancellation_window_hours: hrs, refund_policy: policy })}>Salvar configurações</Button>
-    </div>
-  );
-}
