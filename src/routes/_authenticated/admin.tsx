@@ -187,13 +187,19 @@ function AdminPanel() {
               <h1 className="text-base font-bold">Painel da plataforma</h1>
             </div>
           </div>
-          <div className="flex gap-2">
-            <Button size="sm" variant="outline" onClick={() => seedNow.mutate()} disabled={seedNow.isPending}><Database className="size-4 mr-1" /> {seedNow.isPending ? "..." : "Popular demo"}</Button>
+          <div className="flex gap-2 items-center">
+            <span className={`hidden sm:inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wide px-2 py-1 rounded-full border ${demoMode ? "border-amber-400/60 bg-amber-50 text-amber-700" : "border-emerald-400/50 bg-emerald-50 text-emerald-700"}`}>
+              <span className={`size-1.5 rounded-full ${demoMode ? "bg-amber-500" : "bg-emerald-500"}`} />
+              {demoMode ? "Modo Demo ativo" : "Dados reais"}
+            </span>
+            {demoMode && (
+              <Button size="sm" variant="outline" onClick={() => seedNow.mutate()} disabled={seedNow.isPending}>
+                <Database className="size-4 mr-1" /> {seedNow.isPending ? "..." : "Popular demo"}
+              </Button>
+            )}
             <Button size="sm" variant="ghost" onClick={signOut}><LogOut className="size-4" /></Button>
           </div>
-        </div>
-        <nav className="max-w-6xl mx-auto px-5 flex gap-1 overflow-x-auto scrollbar-hide">
-          {tabs.map((t) => (
+
             <button key={t.id} onClick={() => setTab(t.id)} className={`px-3 py-2 text-xs font-semibold border-b-2 shrink-0 flex items-center gap-1.5 ${tab === t.id ? "border-primary text-primary" : "border-transparent text-muted-foreground"}`}>
               <t.icon className="size-3.5" /> {t.label}
             </button>
