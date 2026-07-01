@@ -30,10 +30,10 @@ export const Route = createFileRoute("/ajuda/$slug")({
 });
 
 function ArticlePage() {
-  const { article } = Route.useLoaderData();
+  const { article } = Route.useLoaderData() as { article: HelpArticle };
   const related = (article.related ?? [])
-    .map((s) => helpArticles.find((a) => a.slug === s))
-    .filter(Boolean) as typeof helpArticles;
+    .map((s: string) => helpArticles.find((a) => a.slug === s))
+    .filter((a): a is HelpArticle => Boolean(a));
 
   return (
     <div className="min-h-screen bg-surface">
