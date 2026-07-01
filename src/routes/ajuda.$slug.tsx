@@ -48,7 +48,7 @@ function ArticlePage() {
           <section className="mt-8">
             <h2 className="mb-3 text-sm font-bold uppercase tracking-wider text-muted-foreground">Passo a passo</h2>
             <ol className="space-y-3">
-              {article.steps.map((s, i) => (
+              {article.steps.map((s: string, i: number) => (
                 <li key={i} className="flex gap-3 rounded-xl border border-border bg-card p-3">
                   <span className="grid size-6 shrink-0 place-items-center rounded-full bg-primary text-xs font-bold text-primary-foreground">{i + 1}</span>
                   <span className="text-sm">{s}</span>
@@ -64,7 +64,7 @@ function ArticlePage() {
               <Lightbulb className="size-4" /> Dicas
             </p>
             <ul className="mt-2 space-y-1.5">
-              {article.tips.map((t, i) => (
+              {article.tips.map((t: string, i: number) => (
                 <li key={i} className="flex gap-2 text-sm">
                   <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-primary" />
                   {t}
@@ -80,7 +80,7 @@ function ArticlePage() {
               <Info className="size-4" /> Observações
             </p>
             <ul className="mt-2 space-y-1.5 text-sm text-muted-foreground">
-              {article.notes.map((n, i) => <li key={i}>• {n}</li>)}
+              {article.notes.map((n: string, i: number) => <li key={i}>• {n}</li>)}
             </ul>
           </section>
         )}
