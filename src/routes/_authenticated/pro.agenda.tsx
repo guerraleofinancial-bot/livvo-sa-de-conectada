@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { FirstVisitTip } from "@/components/livvo/first-visit-tip";
 import { AppointmentActions, isPending, type ApptForActions } from "@/components/livvo/appointment-actions";
 import { AppointmentTimelineDialog } from "@/components/livvo/appointment-timeline";
 import { StatusBadge } from "@/components/livvo/status-badge";
@@ -220,6 +221,12 @@ function Agenda() {
 
   return (
     <div className="px-5 pt-10 pb-24 space-y-6 livvo-fade-in">
+      <FirstVisitTip
+        id="pro-agenda"
+        title="Sua agenda"
+        message="Configure seus horários disponíveis. Novos agendamentos aparecem aqui automaticamente."
+        articleSlug="criar-horario"
+      />
       <header>
         <h1 className="text-2xl font-bold tracking-tight">Minha agenda</h1>
         <p className="text-sm text-muted-foreground mt-1">Atendimentos do dia, calendário e configurações</p>

@@ -164,6 +164,9 @@ function AuthPage() {
         <p className="mt-6 text-center text-xs text-muted-foreground">
           Ao continuar, você concorda com nossos Termos e Política de Privacidade (LGPD).
         </p>
+        <p className="mt-2 text-center text-xs">
+          <a href="/ajuda" className="font-semibold text-primary hover:underline">Central de Ajuda</a>
+        </p>
       </div>
     </div>
   );

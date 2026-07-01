@@ -8,6 +8,7 @@ const navLinks = [
   { to: "/para-parceiros", label: "Para parceiros" },
   { to: "/para-empresas", label: "Para empresas" },
   { to: "/planos-e-precos", label: "Planos e preços" },
+  { to: "/ajuda", label: "Ajuda" },
 ] as const;
 
 export function MarketingNav() {
@@ -76,7 +77,12 @@ export function MarketingFooter() {
           </ul>
         </div>
         <div>
-          <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Legal</p>
+          <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Ajuda</p>
+          <ul className="space-y-2 text-sm">
+            <li><Link to="/ajuda" className="hover:text-primary">Central de Ajuda</Link></li>
+            <li><a href="mailto:suporte@livvo.app" className="hover:text-primary">Suporte</a></li>
+          </ul>
+          <p className="mb-3 mt-5 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Legal</p>
           <ul className="space-y-2 text-sm text-muted-foreground">
             <li>Termos de uso</li>
             <li>Política de privacidade</li>

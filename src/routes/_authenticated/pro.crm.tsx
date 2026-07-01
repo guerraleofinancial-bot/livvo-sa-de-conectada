@@ -14,6 +14,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { NewPatientDialog } from "@/components/livvo/new-patient-dialog";
+import { FirstVisitTip } from "@/components/livvo/first-visit-tip";
 import { ImportPatientsDialog, NewPatientButtons } from "@/components/livvo/import-patients-dialog";
 import { toast } from "sonner";
 
@@ -139,6 +140,12 @@ function CrmPage() {
 
   return (
     <div className="px-5 pt-10 space-y-5 livvo-fade-in">
+      <FirstVisitTip
+        id="pro-crm"
+        title="Este é o seu CRM"
+        message="Aqui você organiza todos os pacientes, move pelo funil e registra o histórico."
+        articleSlug="cadastrar-paciente"
+      />
       <header className="flex items-start justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">CRM de pacientes</h1>
