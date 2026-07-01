@@ -203,10 +203,12 @@ export function AppointmentActions({ appt, onOpenTimeline, invalidateKeys }: {
 }
 
 
-function RescheduleDialog({ open, onOpenChange, initial, onConfirm, loading }: {
+function RescheduleDialog({ open, onOpenChange, initial, onConfirm, loading, title, description, confirmLabel, showReason = true }: {
   open: boolean; onOpenChange: (v: boolean) => void; initial: string;
   onConfirm: (when: string, reason: string) => void; loading?: boolean;
+  title?: string; description?: string; confirmLabel?: string; showReason?: boolean;
 }) {
+
   const iso = new Date(initial);
   const local = new Date(iso.getTime() - iso.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
   const [when, setWhen] = useState(local);
