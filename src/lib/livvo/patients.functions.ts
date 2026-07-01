@@ -287,6 +287,15 @@ export const createManualAppointment = createServerFn({ method: "POST" })
       })
       .eq("professional_id", data.professional_id)
       .eq("patient_id", data.patient_id);
+    await writeAudit({
+      event: "appointment.create",
+      module: "agenda",
+      actorId: context.userId,
+      entityType: "appointment",
+      entityId: row.id,
+      description: `Agendamento criado para ${data.scheduled_at}`,
+      after: { patient_id: data.patient_id, professional_id: data.professional_id, scheduled_at: data.scheduled_at, price: data.price },
+    });
     return row;
   });
 
