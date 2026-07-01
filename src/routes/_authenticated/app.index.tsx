@@ -582,35 +582,37 @@ function ProRail({
           </Link>
         }
       />
-      <div className="mt-3 flex gap-3 overflow-x-auto scrollbar-hide -mx-5 px-5 pb-2 snap-x snap-mandatory">
-        {loading &&
-          Array.from({ length: 3 }).map((_, i) => (
-            <div key={i} className="w-[300px] shrink-0 snap-start">
-              <ProfessionalCardSkeleton />
-            </div>
-          ))}
-        {!loading &&
-          (pros ?? []).map((p) => (
-            <div key={p.id} className="w-[300px] shrink-0 snap-start">
-              <ProfessionalCard
-                data={toCard(p, {
-                  isPremium: highlight === "premium",
-                  isHotToday: highlight === "hot",
-                  isNewPartner: highlight === "new" ? true : undefined,
-                })}
-              />
-            </div>
-          ))}
-        {!loading && (!pros || pros.length === 0) && (
-          <div className="w-full">
-            <EmptyState
-              icon={<Sparkles className="size-5" />}
-              title="Ainda sem parceiros nessa categoria"
-              description="Novos profissionais entram toda semana."
-            />
-          </div>
-        )}
-      </div>
+      {!loading && (!pros || pros.length === 0) ? (
+        <div className="mt-3">
+          <EmptyState
+            icon={<Sparkles className="size-5" />}
+            title="Ainda sem parceiros nessa categoria"
+            description="Novos profissionais entram toda semana."
+          />
+        </div>
+      ) : (
+        <HorizontalScroller className="mt-3" snap="start">
+          {loading &&
+            Array.from({ length: 3 }).map((_, i) => (
+              <div key={i} className="w-[300px]">
+                <ProfessionalCardSkeleton />
+              </div>
+            ))}
+          {!loading &&
+            (pros ?? []).map((p) => (
+              <div key={p.id} className="w-[300px]">
+                <ProfessionalCard
+                  data={toCard(p, {
+                    isPremium: highlight === "premium",
+                    isHotToday: highlight === "hot",
+                    isNewPartner: highlight === "new" ? true : undefined,
+                  })}
+                />
+              </div>
+            ))}
+        </HorizontalScroller>
+      )}
     </section>
+
   );
 }
