@@ -180,22 +180,7 @@ function AdminPanel() {
       <main className="max-w-6xl mx-auto px-5 py-6 space-y-6">
         {tab === "overview" && (
           <>
-            <section className="grid grid-cols-2 md:grid-cols-4 gap-3">
-              {[
-                { icon: Users, label: "Pacientes", value: stats?.patients ?? 0 },
-                { icon: Stethoscope, label: "Profissionais", value: stats?.pros ?? 0 },
-                { icon: Building2, label: "Empresas", value: stats?.companies ?? 0 },
-                { icon: Calendar, label: "Agendamentos", value: (stats?.scheduled ?? 0) + (stats?.done ?? 0) },
-                { icon: Wallet, label: "GMV (volume)", value: `R$ ${(stats?.gmv ?? 0).toFixed(0)}` },
-                { icon: Percent, label: "Receita Livvo", value: `R$ ${(stats?.commission ?? 0).toFixed(0)}` },
-              ].map((s) => (
-                <div key={s.label} className="rounded-2xl bg-card border border-border p-4">
-                  <s.icon className="size-4 text-primary mb-2" />
-                  <p className="font-mono text-2xl font-bold">{s.value}</p>
-                  <p className="text-xs text-muted-foreground mt-1">{s.label}</p>
-                </div>
-              ))}
-            </section>
+            <AdminGrowthCharts />
             <section className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="rounded-2xl bg-card border border-border p-5">
                 <h3 className="text-sm font-bold mb-2">Pendências</h3>
@@ -213,6 +198,7 @@ function AdminPanel() {
             </section>
           </>
         )}
+
 
         {tab === "pros" && (
           <section>
