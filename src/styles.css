@@ -171,3 +171,29 @@
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+@utility livvo-card {
+  @apply rounded-2xl bg-card border border-border/70;
+  box-shadow: 0 1px 2px hsl(220 15% 20% / 0.04);
+}
+@utility livvo-card-hover {
+  @apply transition-all duration-200;
+  &:hover {
+    box-shadow: var(--shadow-elevated);
+    transform: translateY(-1px);
+    border-color: color-mix(in oklab, var(--primary) 30%, var(--border));
+  }
+}
+@utility livvo-shimmer {
+  background: linear-gradient(90deg,
+    color-mix(in oklab, var(--muted) 60%, transparent) 0%,
+    color-mix(in oklab, var(--muted) 30%, transparent) 50%,
+    color-mix(in oklab, var(--muted) 60%, transparent) 100%);
+  background-size: 200% 100%;
+  animation: livvo-shimmer 1.4s ease-in-out infinite;
+}
+@keyframes livvo-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
