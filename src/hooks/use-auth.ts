@@ -37,17 +37,23 @@ export function useAuth(): AuthState {
       setAdminLevel((g?.level as AdminLevel | undefined) ?? null);
     };
 
-    supabase.auth.getUser().then(({ data }) => {
+    supabase.auth.getUser().then(async ({ data }) => {
       if (!mounted) return;
       setUser(data.user);
-      if (data.user) loadRoles(data.user.id);
-      setLoading(false);
+      if (data.user) await loadRoles(data.user.id);
+      else { setRoles([]); setAdminLevel(null); }
+      if (mounted) setLoading(false);
     });
 
-    const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: sub } = supabase.auth.onAuthStateChange(async (_event, session) => {
       setUser(session?.user ?? null);
-      if (session?.user) loadRoles(session.user.id);
-      else { setRoles([]); setAdminLevel(null); }
+      if (session?.user) {
+        setLoading(true);
+        await loadRoles(session.user.id);
+        if (mounted) setLoading(false);
+      } else {
+        setRoles([]); setAdminLevel(null);
+      }
     });
 
     return () => {
