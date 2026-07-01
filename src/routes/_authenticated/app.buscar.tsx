@@ -8,6 +8,7 @@ import { Search as SearchIcon, ArrowLeft, SlidersHorizontal, Sparkles, MapPin, X
 import { Input } from "@/components/ui/input";
 import { ProfessionalCard, ProfessionalCardSkeleton, type ProfessionalCardData } from "@/components/livvo/ProfessionalCard";
 import { CompanyCard } from "@/components/livvo/CompanyCard";
+import { HorizontalScroller } from "@/components/livvo/ui";
 import { trackAdEvent } from "@/lib/livvo/ads.functions";
 
 const searchSchema = z.object({
