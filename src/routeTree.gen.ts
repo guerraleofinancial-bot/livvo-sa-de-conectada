@@ -14,9 +14,11 @@ import { Route as ParaParceirosRouteImport } from './routes/para-parceiros'
 import { Route as ParaEmpresasRouteImport } from './routes/para-empresas'
 import { Route as ComoFuncionaRouteImport } from './routes/como-funciona'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AjudaRouteImport } from './routes/ajuda'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as PayTokenRouteImport } from './routes/pay.$token'
+import { Route as AjudaSlugRouteImport } from './routes/ajuda.$slug'
 import { Route as AuthenticatedProRouteImport } from './routes/_authenticated/pro'
 import { Route as AuthenticatedOnboardingProRouteImport } from './routes/_authenticated/onboarding-pro'
 import { Route as AuthenticatedOnboardingEmpresaRouteImport } from './routes/_authenticated/onboarding-empresa'
@@ -75,6 +77,11 @@ const AuthRoute = AuthRouteImport.update({
   path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AjudaRoute = AjudaRouteImport.update({
+  id: '/ajuda',
+  path: '/ajuda',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedRoute = AuthenticatedRouteImport.update({
   id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
@@ -88,6 +95,11 @@ const PayTokenRoute = PayTokenRouteImport.update({
   id: '/pay/$token',
   path: '/pay/$token',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AjudaSlugRoute = AjudaSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => AjudaRoute,
 } as any)
 const AuthenticatedProRoute = AuthenticatedProRouteImport.update({
   id: '/pro',
@@ -272,6 +284,7 @@ const AuthenticatedAppChatIdRoute = AuthenticatedAppChatIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/ajuda': typeof AjudaRouteWithChildren
   '/auth': typeof AuthRoute
   '/como-funciona': typeof ComoFuncionaRoute
   '/para-empresas': typeof ParaEmpresasRoute
@@ -282,6 +295,7 @@ export interface FileRoutesByFullPath {
   '/onboarding-empresa': typeof AuthenticatedOnboardingEmpresaRoute
   '/onboarding-pro': typeof AuthenticatedOnboardingProRoute
   '/pro': typeof AuthenticatedProRouteWithChildren
+  '/ajuda/$slug': typeof AjudaSlugRoute
   '/pay/$token': typeof PayTokenRoute
   '/app/buscar': typeof AuthenticatedAppBuscarRoute
   '/app/carteira': typeof AuthenticatedAppCarteiraRoute
@@ -313,6 +327,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/ajuda': typeof AjudaRouteWithChildren
   '/auth': typeof AuthRoute
   '/como-funciona': typeof ComoFuncionaRoute
   '/para-empresas': typeof ParaEmpresasRoute
@@ -321,6 +336,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AuthenticatedAdminRoute
   '/onboarding-empresa': typeof AuthenticatedOnboardingEmpresaRoute
   '/onboarding-pro': typeof AuthenticatedOnboardingProRoute
+  '/ajuda/$slug': typeof AjudaSlugRoute
   '/pay/$token': typeof PayTokenRoute
   '/app/buscar': typeof AuthenticatedAppBuscarRoute
   '/app/carteira': typeof AuthenticatedAppCarteiraRoute
@@ -354,6 +370,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteWithChildren
+  '/ajuda': typeof AjudaRouteWithChildren
   '/auth': typeof AuthRoute
   '/como-funciona': typeof ComoFuncionaRoute
   '/para-empresas': typeof ParaEmpresasRoute
@@ -364,6 +381,7 @@ export interface FileRoutesById {
   '/_authenticated/onboarding-empresa': typeof AuthenticatedOnboardingEmpresaRoute
   '/_authenticated/onboarding-pro': typeof AuthenticatedOnboardingProRoute
   '/_authenticated/pro': typeof AuthenticatedProRouteWithChildren
+  '/ajuda/$slug': typeof AjudaSlugRoute
   '/pay/$token': typeof PayTokenRoute
   '/_authenticated/app/buscar': typeof AuthenticatedAppBuscarRoute
   '/_authenticated/app/carteira': typeof AuthenticatedAppCarteiraRoute
@@ -397,6 +415,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/ajuda'
     | '/auth'
     | '/como-funciona'
     | '/para-empresas'
@@ -407,6 +426,7 @@ export interface FileRouteTypes {
     | '/onboarding-empresa'
     | '/onboarding-pro'
     | '/pro'
+    | '/ajuda/$slug'
     | '/pay/$token'
     | '/app/buscar'
     | '/app/carteira'
@@ -438,6 +458,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/ajuda'
     | '/auth'
     | '/como-funciona'
     | '/para-empresas'
@@ -446,6 +467,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/onboarding-empresa'
     | '/onboarding-pro'
+    | '/ajuda/$slug'
     | '/pay/$token'
     | '/app/buscar'
     | '/app/carteira'
@@ -478,6 +500,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/_authenticated'
+    | '/ajuda'
     | '/auth'
     | '/como-funciona'
     | '/para-empresas'
@@ -488,6 +511,7 @@ export interface FileRouteTypes {
     | '/_authenticated/onboarding-empresa'
     | '/_authenticated/onboarding-pro'
     | '/_authenticated/pro'
+    | '/ajuda/$slug'
     | '/pay/$token'
     | '/_authenticated/app/buscar'
     | '/_authenticated/app/carteira'
@@ -521,6 +545,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
+  AjudaRoute: typeof AjudaRouteWithChildren
   AuthRoute: typeof AuthRoute
   ComoFuncionaRoute: typeof ComoFuncionaRoute
   ParaEmpresasRoute: typeof ParaEmpresasRoute
@@ -568,6 +593,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/ajuda': {
+      id: '/ajuda'
+      path: '/ajuda'
+      fullPath: '/ajuda'
+      preLoaderRoute: typeof AjudaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated': {
       id: '/_authenticated'
       path: ''
@@ -588,6 +620,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/pay/$token'
       preLoaderRoute: typeof PayTokenRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/ajuda/$slug': {
+      id: '/ajuda/$slug'
+      path: '/$slug'
+      fullPath: '/ajuda/$slug'
+      preLoaderRoute: typeof AjudaSlugRouteImport
+      parentRoute: typeof AjudaRoute
     }
     '/_authenticated/pro': {
       id: '/_authenticated/pro'
@@ -937,9 +976,20 @@ const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
   AuthenticatedRouteChildren,
 )
 
+interface AjudaRouteChildren {
+  AjudaSlugRoute: typeof AjudaSlugRoute
+}
+
+const AjudaRouteChildren: AjudaRouteChildren = {
+  AjudaSlugRoute: AjudaSlugRoute,
+}
+
+const AjudaRouteWithChildren = AjudaRoute._addFileChildren(AjudaRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
+  AjudaRoute: AjudaRouteWithChildren,
   AuthRoute: AuthRoute,
   ComoFuncionaRoute: ComoFuncionaRoute,
   ParaEmpresasRoute: ParaEmpresasRoute,
@@ -952,13 +1002,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

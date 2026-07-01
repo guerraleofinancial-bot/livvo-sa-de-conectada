@@ -1,6 +1,6 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { ArrowLeft, MessageCircle, Mail, CheckCircle2, Lightbulb, Info } from "lucide-react";
-import { getArticle, helpArticles } from "@/lib/livvo/help-content";
+import { getArticle, helpArticles, type HelpArticle } from "@/lib/livvo/help-content";
 
 export const Route = createFileRoute("/ajuda/$slug")({
   loader: ({ params }) => {
