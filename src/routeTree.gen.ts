@@ -56,6 +56,7 @@ import { Route as AuthenticatedAppEmpresaIdRouteImport } from './routes/_authent
 import { Route as AuthenticatedAppCheckoutIdRouteImport } from './routes/_authenticated/app.checkout.$id'
 import { Route as AuthenticatedAppChatIdRouteImport } from './routes/_authenticated/app.chat.$id'
 import { Route as AuthenticatedAppBuscarProfissionaisRouteImport } from './routes/_authenticated/app.buscar.profissionais'
+import { Route as AuthenticatedAppBuscarClinicasRouteImport } from './routes/_authenticated/app.buscar.clinicas'
 
 const PlanosEPrecosRoute = PlanosEPrecosRouteImport.update({
   id: '/planos-e-precos',
@@ -314,6 +315,12 @@ const AuthenticatedAppBuscarProfissionaisRoute =
     path: '/profissionais',
     getParentRoute: () => AuthenticatedAppBuscarRoute,
   } as any)
+const AuthenticatedAppBuscarClinicasRoute =
+  AuthenticatedAppBuscarClinicasRouteImport.update({
+    id: '/clinicas',
+    path: '/clinicas',
+    getParentRoute: () => AuthenticatedAppBuscarRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -351,6 +358,7 @@ export interface FileRoutesByFullPath {
   '/pro/servicos': typeof AuthenticatedProServicosRoute
   '/app/': typeof AuthenticatedAppIndexRoute
   '/pro/': typeof AuthenticatedProIndexRoute
+  '/app/buscar/clinicas': typeof AuthenticatedAppBuscarClinicasRoute
   '/app/buscar/profissionais': typeof AuthenticatedAppBuscarProfissionaisRoute
   '/app/chat/$id': typeof AuthenticatedAppChatIdRoute
   '/app/checkout/$id': typeof AuthenticatedAppCheckoutIdRoute
@@ -396,6 +404,7 @@ export interface FileRoutesByTo {
   '/pro/servicos': typeof AuthenticatedProServicosRoute
   '/app': typeof AuthenticatedAppIndexRoute
   '/pro': typeof AuthenticatedProIndexRoute
+  '/app/buscar/clinicas': typeof AuthenticatedAppBuscarClinicasRoute
   '/app/buscar/profissionais': typeof AuthenticatedAppBuscarProfissionaisRoute
   '/app/chat/$id': typeof AuthenticatedAppChatIdRoute
   '/app/checkout/$id': typeof AuthenticatedAppCheckoutIdRoute
@@ -446,6 +455,7 @@ export interface FileRoutesById {
   '/_authenticated/pro/servicos': typeof AuthenticatedProServicosRoute
   '/_authenticated/app/': typeof AuthenticatedAppIndexRoute
   '/_authenticated/pro/': typeof AuthenticatedProIndexRoute
+  '/_authenticated/app/buscar/clinicas': typeof AuthenticatedAppBuscarClinicasRoute
   '/_authenticated/app/buscar/profissionais': typeof AuthenticatedAppBuscarProfissionaisRoute
   '/_authenticated/app/chat/$id': typeof AuthenticatedAppChatIdRoute
   '/_authenticated/app/checkout/$id': typeof AuthenticatedAppCheckoutIdRoute
@@ -496,6 +506,7 @@ export interface FileRouteTypes {
     | '/pro/servicos'
     | '/app/'
     | '/pro/'
+    | '/app/buscar/clinicas'
     | '/app/buscar/profissionais'
     | '/app/chat/$id'
     | '/app/checkout/$id'
@@ -541,6 +552,7 @@ export interface FileRouteTypes {
     | '/pro/servicos'
     | '/app'
     | '/pro'
+    | '/app/buscar/clinicas'
     | '/app/buscar/profissionais'
     | '/app/chat/$id'
     | '/app/checkout/$id'
@@ -590,6 +602,7 @@ export interface FileRouteTypes {
     | '/_authenticated/pro/servicos'
     | '/_authenticated/app/'
     | '/_authenticated/pro/'
+    | '/_authenticated/app/buscar/clinicas'
     | '/_authenticated/app/buscar/profissionais'
     | '/_authenticated/app/chat/$id'
     | '/_authenticated/app/checkout/$id'
@@ -950,16 +963,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAppBuscarProfissionaisRouteImport
       parentRoute: typeof AuthenticatedAppBuscarRoute
     }
+    '/_authenticated/app/buscar/clinicas': {
+      id: '/_authenticated/app/buscar/clinicas'
+      path: '/clinicas'
+      fullPath: '/app/buscar/clinicas'
+      preLoaderRoute: typeof AuthenticatedAppBuscarClinicasRouteImport
+      parentRoute: typeof AuthenticatedAppBuscarRoute
+    }
   }
 }
 
 interface AuthenticatedAppBuscarRouteChildren {
+  AuthenticatedAppBuscarClinicasRoute: typeof AuthenticatedAppBuscarClinicasRoute
   AuthenticatedAppBuscarProfissionaisRoute: typeof AuthenticatedAppBuscarProfissionaisRoute
   AuthenticatedAppBuscarIndexRoute: typeof AuthenticatedAppBuscarIndexRoute
 }
 
 const AuthenticatedAppBuscarRouteChildren: AuthenticatedAppBuscarRouteChildren =
   {
+    AuthenticatedAppBuscarClinicasRoute: AuthenticatedAppBuscarClinicasRoute,
     AuthenticatedAppBuscarProfissionaisRoute:
       AuthenticatedAppBuscarProfissionaisRoute,
     AuthenticatedAppBuscarIndexRoute: AuthenticatedAppBuscarIndexRoute,
