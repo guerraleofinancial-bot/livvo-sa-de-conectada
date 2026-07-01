@@ -32,7 +32,7 @@ export const Route = createFileRoute("/_authenticated/admin")({
   component: AdminPanel,
 });
 
-type Tab = "overview" | "pros" | "companies" | "finance" | "ads" | "reviews" | "users" | "settings" | "audit";
+type Tab = "overview" | "pros" | "companies" | "finance" | "ads" | "reviews" | "users" | "identidades" | "settings" | "audit";
 
 function AdminPanel() {
   const { isAdmin, loading } = useAuth();
