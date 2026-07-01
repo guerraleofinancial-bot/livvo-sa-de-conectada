@@ -22,15 +22,16 @@ function BuscarClinicas() {
     queryFn: async () => {
       let query = supabase
         .from("companies")
-        .select("id, legal_name, trade_name, type, address_city, address_state, logo_url, slug, description, rating_average, rating_count")
+        .select("id, legal_name, trade_name, type, address_city, address_state, logo_url, slug, description")
         .eq("status", "aprovado")
         .eq("type", "clinica");
       if (uf.trim()) query = query.eq("address_state", uf.trim().toUpperCase());
       if (city.trim()) query = query.ilike("address_city", `%${city}%`);
       if (q.trim()) query = query.or(`legal_name.ilike.%${q}%,trade_name.ilike.%${q}%,description.ilike.%${q}%`);
-      return ((await query.order("rating_average", { ascending: false }).limit(60)).data ?? []) as CompanyRow[];
+      return ((await query.order("trade_name", { ascending: true }).limit(60)).data ?? []) as CompanyRow[];
     },
   });
+
 
   return (
     <>
