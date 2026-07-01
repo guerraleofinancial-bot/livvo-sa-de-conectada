@@ -274,6 +274,14 @@ export const seedDemoData = createServerFn({ method: "POST" })
     await assertAdmin(context);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
+    // Guard: só popula se o Modo Demonstração estiver ATIVO.
+    const { data: ps } = await supabaseAdmin
+      .from("platform_settings").select("demo_mode").eq("id", 1).maybeSingle();
+    if (!ps?.demo_mode) {
+      throw new Error("Modo Demonstração está desativado. Ative-o em Admin → Configurações → Geral antes de popular dados de exemplo.");
+    }
+
+
     const { data: specs } = await supabaseAdmin.from("specialties").select("id, slug");
     const bySlug = Object.fromEntries((specs ?? []).map((s) => [s.slug, s.id]));
     const { data: cats } = await supabaseAdmin.from("categories").select("id, slug");
