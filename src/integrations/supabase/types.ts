@@ -2262,6 +2262,7 @@ export type Database = {
       }
       profiles: {
         Row: {
+          account_status: Database["public"]["Enums"]["account_status"] | null
           avatar_url: string | null
           city: string | null
           created_at: string
@@ -2273,10 +2274,14 @@ export type Database = {
           phone: string | null
           role_exception: boolean
           state: string | null
+          status_changed_at: string | null
+          status_changed_by: string | null
+          status_reason: string | null
           suspended: boolean
           updated_at: string
         }
         Insert: {
+          account_status?: Database["public"]["Enums"]["account_status"] | null
           avatar_url?: string | null
           city?: string | null
           created_at?: string
@@ -2288,10 +2293,14 @@ export type Database = {
           phone?: string | null
           role_exception?: boolean
           state?: string | null
+          status_changed_at?: string | null
+          status_changed_by?: string | null
+          status_reason?: string | null
           suspended?: boolean
           updated_at?: string
         }
         Update: {
+          account_status?: Database["public"]["Enums"]["account_status"] | null
           avatar_url?: string | null
           city?: string | null
           created_at?: string
@@ -2303,6 +2312,9 @@ export type Database = {
           phone?: string | null
           role_exception?: boolean
           state?: string | null
+          status_changed_at?: string | null
+          status_changed_by?: string | null
+          status_reason?: string | null
           suspended?: boolean
           updated_at?: string
         }
@@ -3024,6 +3036,38 @@ export type Database = {
           user_id: string
         }[]
       }
+      admin_set_account_status: {
+        Args: {
+          _reason?: string
+          _status: Database["public"]["Enums"]["account_status"]
+          _user_id: string
+        }
+        Returns: {
+          account_status: Database["public"]["Enums"]["account_status"] | null
+          avatar_url: string | null
+          city: string | null
+          created_at: string
+          date_of_birth: string | null
+          email: string
+          full_name: string
+          gender: Database["public"]["Enums"]["gender_type"] | null
+          id: string
+          phone: string | null
+          role_exception: boolean
+          state: string | null
+          status_changed_at: string | null
+          status_changed_by: string | null
+          status_reason: string | null
+          suspended: boolean
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "profiles"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       admin_set_role_exception: {
         Args: { _flag: boolean; _user_id: string }
         Returns: boolean
@@ -3102,6 +3146,10 @@ export type Database = {
         }
       }
       claim_contact_match: { Args: { _user: string }; Returns: number }
+      compute_account_status: {
+        Args: { _user: string }
+        Returns: Database["public"]["Enums"]["account_status"]
+      }
       crm_dashboard: {
         Args: { _from: string; _pro: string; _to: string }
         Returns: Json
@@ -3183,6 +3231,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_account_active: { Args: { _user: string }; Returns: boolean }
       is_approved_professional: { Args: { _user: string }; Returns: boolean }
       is_company_owner: {
         Args: { _company: string; _user: string }
@@ -3322,6 +3371,14 @@ export type Database = {
       wallet_releasable: { Args: { _provider: string }; Returns: number }
     }
     Enums: {
+      account_status:
+        | "paciente"
+        | "profissional_pendente"
+        | "profissional_aprovado"
+        | "empresa_pendente"
+        | "empresa_aprovada"
+        | "suspenso"
+        | "bloqueado"
       ad_event_kind: "impression" | "click" | "booking"
       ad_target_type: "professional" | "company"
       app_role: "paciente" | "profissional" | "admin" | "empresa"
@@ -3576,6 +3633,15 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      account_status: [
+        "paciente",
+        "profissional_pendente",
+        "profissional_aprovado",
+        "empresa_pendente",
+        "empresa_aprovada",
+        "suspenso",
+        "bloqueado",
+      ],
       ad_event_kind: ["impression", "click", "booking"],
       ad_target_type: ["professional", "company"],
       app_role: ["paciente", "profissional", "admin", "empresa"],
