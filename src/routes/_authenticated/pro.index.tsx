@@ -128,9 +128,10 @@ function ProHome() {
         {(today?.pending ?? 0) > 0 && (
           <Link to="/pro/agenda" className="mt-3 inline-block text-xs font-semibold text-primary">Resolver pendências →</Link>
         )}
-
+      </section>
 
       <section>
+
 
         <div className="flex items-center justify-between mb-3 gap-3 flex-wrap">
           <h2 className="text-sm font-bold">Visão comercial · últimos 30 dias</h2>
