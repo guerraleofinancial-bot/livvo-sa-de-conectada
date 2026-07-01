@@ -130,6 +130,24 @@ function AdminPanel() {
     onError: (e) => toast.error((e as Error).message),
   });
 
+  const demoMode = Boolean((settings as { demo_mode?: boolean } | null | undefined)?.demo_mode);
+  const toggleDemoMut = useMutation({
+    mutationFn: async (enabled: boolean) => toggleDemo({ data: { enabled, purge: true } }),
+    onSuccess: (r) => {
+      toast.success(r.current
+        ? "Modo Demonstração ATIVADO — dados fictícios podem aparecer."
+        : `Modo Demonstração DESATIVADO${r.purged ? ` — ${r.purged} contas demo removidas` : ""}.`);
+      qc.invalidateQueries();
+    },
+    onError: (e) => toast.error((e as Error).message),
+  });
+  const purgeDemoMut = useMutation({
+    mutationFn: async () => purgeDemo(),
+    onSuccess: (r) => { toast.success(`Purga concluída: ${r.purged} contas demo removidas.`); qc.invalidateQueries(); },
+    onError: (e) => toast.error((e as Error).message),
+  });
+
+
   async function signOut() {
     await qc.cancelQueries(); qc.clear();
     await supabase.auth.signOut();
