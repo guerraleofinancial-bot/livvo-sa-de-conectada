@@ -89,6 +89,8 @@
 
   --warning: hsl(38 92% 50%);
   --warning-foreground: hsl(38 92% 15%);
+  --warning-soft: hsl(38 92% 92%);
+
 
   --health: hsl(142 71% 45%);
   --health-foreground: hsl(0 0% 100%);
