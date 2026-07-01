@@ -15,10 +15,21 @@ export const setProfessionalStatus = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     await assertAdmin(context);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: before } = await supabaseAdmin.from("professionals").select("id, status").eq("id", data.professionalId).maybeSingle();
     const patch: { status: typeof data.status; approved_at?: string; approved_by?: string } = { status: data.status };
     if (data.status === "aprovado") { patch.approved_at = new Date().toISOString(); patch.approved_by = context.userId; }
     const { error } = await supabaseAdmin.from("professionals").update(patch).eq("id", data.professionalId);
     if (error) throw error;
+    await writeAudit({
+      event: data.status === "aprovado" ? "partner.approve" : data.status === "rejeitado" ? "partner.reject" : "partner.status_change",
+      module: "admin",
+      actorId: context.userId,
+      entityType: "professional",
+      entityId: data.professionalId,
+      description: `Profissional ${data.status}`,
+      before: before ?? null,
+      after: patch,
+    });
     return { ok: true };
   });
 
