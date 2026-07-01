@@ -218,23 +218,26 @@ function RescheduleDialog({ open, onOpenChange, initial, onConfirm, loading, tit
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-sm rounded-2xl">
         <DialogHeader>
-          <DialogTitle>Reagendar consulta</DialogTitle>
-          <DialogDescription>O histórico da consulta anterior será preservado.</DialogDescription>
+          <DialogTitle>{title ?? "Reagendar consulta"}</DialogTitle>
+          <DialogDescription>{description ?? "O histórico da consulta anterior será preservado."}</DialogDescription>
         </DialogHeader>
         <div className="space-y-3">
           <div className="space-y-1.5">
             <Label htmlFor="when">Nova data e horário</Label>
             <Input id="when" type="datetime-local" value={when} onChange={(e) => setWhen(e.target.value)} />
           </div>
-          <div className="space-y-1.5">
-            <Label htmlFor="reason">Motivo (opcional)</Label>
-            <Textarea id="reason" value={reason} onChange={(e) => setReason(e.target.value)} placeholder="Ex.: paciente solicitou remarcação" rows={3} maxLength={500} />
-          </div>
+          {showReason && (
+            <div className="space-y-1.5">
+              <Label htmlFor="reason">Motivo (opcional)</Label>
+              <Textarea id="reason" value={reason} onChange={(e) => setReason(e.target.value)} placeholder="Ex.: paciente solicitou remarcação" rows={3} maxLength={500} />
+            </div>
+          )}
         </div>
         <DialogFooter>
           <Button variant="ghost" onClick={() => onOpenChange(false)}>Cancelar</Button>
-          <Button onClick={() => onConfirm(when, reason)} disabled={!when || loading}>Reagendar</Button>
+          <Button onClick={() => onConfirm(when, reason)} disabled={!when || loading}>{confirmLabel ?? "Reagendar"}</Button>
         </DialogFooter>
+
       </DialogContent>
     </Dialog>
   );
