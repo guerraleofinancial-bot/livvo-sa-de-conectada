@@ -186,7 +186,7 @@ function Landing() {
       {/* ══════════════════ SEÇÃO 1 · HERO ══════════════════ */}
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 -z-10 bg-[radial-gradient(60%_50%_at_50%_0%,hsl(173_70%_92%)_0%,transparent_70%)]" />
-        <div className="mx-auto grid max-w-6xl gap-12 px-5 pt-14 pb-14 md:pt-20 md:pb-20 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:gap-16">
+        <div className="mx-auto grid max-w-6xl gap-12 px-5 pt-14 pb-14 md:pt-20 md:pb-20 lg:grid-cols-[55fr_45fr] lg:items-center lg:gap-12">
           {/* Coluna esquerda: texto */}
           <div className="text-center lg:text-left">
             <span className="inline-flex animate-in fade-in slide-in-from-top-2 items-center gap-2 rounded-full border border-border bg-card px-3 py-1 text-xs font-semibold text-muted-foreground shadow-sm duration-500">
@@ -202,32 +202,50 @@ function Landing() {
             <p className="mx-auto mt-5 max-w-2xl animate-in fade-in text-base leading-relaxed text-muted-foreground duration-700 md:text-lg lg:mx-0">
               A Livvo conecta pacientes, profissionais, clínicas, laboratórios e
               centros de diagnóstico em uma plataforma segura para encontrar,
-              agendar e pagar consultas, exames e procedimentos presenciais.
+              agendar e pagar atendimentos presenciais.
             </p>
 
             <div className="mt-8 flex flex-wrap justify-center gap-3 lg:justify-start">
-              <a href="#escolha-experiencia">
+              <Link to="/app/buscar">
                 <Button size="lg" className="rounded-xl transition-transform hover:-translate-y-0.5">
-                  Começar agora
+                  Encontrar atendimento
                   <ArrowRight className="ml-1 size-4" />
+                </Button>
+              </Link>
+              <a href="#escolha-experiencia">
+                <Button size="lg" variant="outline" className="rounded-xl">
+                  Sou profissional ou empresa
                 </Button>
               </a>
             </div>
 
-            <div className="mt-10 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 lg:justify-start">
-              <TrustPill Icon={BadgeCheck} label="Parceiros verificados" />
-              <TrustPill Icon={Lock} label="Pagamento seguro" />
-              <TrustPill Icon={Stethoscope} label="Atendimento presencial" />
+            <div className="mt-8 grid gap-3 sm:grid-cols-3 lg:gap-4">
+              <HeroBenefit
+                Icon={BadgeCheck}
+                title="Parceiros verificados"
+                description="Analisamos documentação, registro profissional e cadastro antes de aprovar."
+              />
+              <HeroBenefit
+                Icon={Stethoscope}
+                title="Atendimento presencial"
+                description="Consultas, exames e procedimentos realizados pessoalmente."
+              />
+              <HeroBenefit
+                Icon={Lock}
+                title="Pagamento seguro"
+                description="Agende e pague dentro da plataforma, com mais organização."
+              />
             </div>
           </div>
 
           {/* Coluna direita: mockup do app */}
           <div className="relative flex justify-center lg:justify-end">
-            <div className="w-[280px] max-w-[280px] shrink-0">
+            <div className="w-[240px] max-w-[240px] shrink-0 sm:w-[260px] sm:max-w-[260px] lg:w-[280px] lg:max-w-[280px]">
               <HeroPhoneMockup />
             </div>
           </div>
         </div>
+
       </section>
 
       {/* ══════════════════ SEÇÃO 2 · ESCOLHA SUA EXPERIÊNCIA ══════════════════ */}
@@ -488,6 +506,20 @@ function Landing() {
     </div>
   );
 }
+
+
+function HeroBenefit({ Icon, title, description }: { Icon: React.ComponentType<{ className?: string }>; title: string; description: string }) {
+  return (
+    <div className="flex flex-col items-center gap-1.5 rounded-xl border border-border/60 bg-card/60 p-3 text-center lg:items-start lg:text-left">
+      <div className="grid size-8 place-items-center rounded-lg bg-primary/10 text-primary">
+        <Icon className="size-4" />
+      </div>
+      <div className="text-sm font-semibold">{title}</div>
+      <p className="text-xs leading-snug text-muted-foreground">{description}</p>
+    </div>
+  );
+}
+
 
 function LandingHeader() {
   return (
