@@ -483,7 +483,32 @@ function Landing() {
           </div>
         </div>
       </section>
-    </MarketingShell>
+      </main>
+      <MarketingFooter />
+    </div>
+  );
+}
+
+function LandingHeader() {
+  return (
+    <header className="sticky top-0 z-50 border-b border-border/60 bg-surface/80 backdrop-blur-xl">
+      <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-5 py-3.5">
+        <Link to="/" className="flex min-w-0 items-center gap-2">
+          <div className="grid size-9 shrink-0 place-items-center rounded-xl bg-primary text-primary-foreground shadow-sm">
+            <HeartPulse className="size-5" />
+          </div>
+          <span className="truncate text-lg font-bold tracking-tight">Livvo</span>
+        </Link>
+        <div className="flex shrink-0 items-center gap-2">
+          <Link to="/auth" search={{ mode: "login", role: "paciente" }}>
+            <Button variant="ghost" size="sm">Entrar</Button>
+          </Link>
+          <Link to="/auth" search={{ mode: "signup", role: "paciente" }}>
+            <Button size="sm" className="rounded-lg">Começar conta</Button>
+          </Link>
+        </div>
+      </div>
+    </header>
   );
 }
 
