@@ -4,10 +4,10 @@ import { Button } from "@/components/ui/button";
 import type { ReactNode } from "react";
 
 const navLinks = [
-  { to: "/como-funciona", label: "Como funciona" },
-  { to: "/para-parceiros", label: "Para parceiros" },
+  { to: "/para-pacientes", label: "Para pacientes" },
+  { to: "/para-parceiros", label: "Para profissionais" },
   { to: "/para-empresas", label: "Para empresas" },
-  { to: "/planos-e-precos", label: "Planos e preços" },
+  { to: "/planos-e-precos", label: "Planos" },
   { to: "/ajuda", label: "Ajuda" },
 ] as const;
 
@@ -21,7 +21,7 @@ export function MarketingNav() {
           </div>
           <span className="truncate text-lg font-bold tracking-tight">Livvo</span>
         </Link>
-        <nav className="hidden items-center gap-7 text-sm font-medium text-muted-foreground md:flex">
+        <nav className="hidden items-center gap-6 text-sm font-medium text-muted-foreground md:flex">
           {navLinks.map((l) => (
             <Link
               key={l.to}
@@ -37,8 +37,8 @@ export function MarketingNav() {
           <Link to="/auth" className="hidden sm:inline-flex">
             <Button variant="ghost" size="sm">Entrar</Button>
           </Link>
-          <Link to="/auth" search={{ mode: "signup", role: "paciente" }}>
-            <Button size="sm" className="rounded-lg">Criar conta</Button>
+          <Link to="/#como-usar">
+            <Button size="sm" className="rounded-lg">Começar</Button>
           </Link>
         </div>
       </div>
