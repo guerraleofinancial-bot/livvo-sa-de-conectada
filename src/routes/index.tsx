@@ -180,6 +180,18 @@ const faqs = [
 ];
 
 function Landing() {
+  const navigate = useNavigate();
+  const [heroQuery, setHeroQuery] = useState("");
+  const [heroLocation, setHeroLocation] = useState("");
+
+  const handleHeroSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    const search: Record<string, string> = {};
+    if (heroQuery.trim()) search.q = heroQuery.trim();
+    if (heroLocation.trim()) search.local = heroLocation.trim();
+    navigate({ to: "/app/buscar", search });
+  };
+
   return (
     <div className="min-h-screen bg-surface text-foreground">
       <LandingHeader />
