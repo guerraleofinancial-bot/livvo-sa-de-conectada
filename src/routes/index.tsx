@@ -214,7 +214,7 @@ function Landing() {
               <span className="text-primary">procedimentos</span> em um só lugar.
             </h1>
 
-            <p className="mx-auto mt-3 max-w-xl animate-in fade-in text-sm leading-relaxed text-muted-foreground duration-700 sm:mx-0 md:text-[0.95rem]">
+            <p className="mx-auto mt-4 max-w-xl animate-in fade-in text-base font-medium leading-relaxed text-slate-700 duration-700 sm:mx-0 md:text-lg">
               A Livvo conecta pacientes, profissionais, clínicas, laboratórios e
               centros de diagnóstico em uma plataforma segura para encontrar,
               agendar e pagar atendimentos presenciais.
