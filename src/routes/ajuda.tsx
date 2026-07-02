@@ -7,9 +7,9 @@ import { helpCategories, helpArticles, faqItems, searchHelp, type HelpCategoryId
 export const Route = createFileRoute("/ajuda")({
   head: () => ({
     meta: [
-      { title: "Central de Ajuda — Livvo" },
+      { title: "Central de Ajuda | Livvo" },
       { name: "description", content: "Aprenda a usar a Livvo: guias, tutoriais e respostas rápidas para pacientes, profissionais e empresas." },
-      { property: "og:title", content: "Central de Ajuda — Livvo" },
+      { property: "og:title", content: "Central de Ajuda | Livvo" },
       { property: "og:description", content: "Guias, tutoriais e FAQ da Livvo." },
     ],
   }),

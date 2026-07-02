@@ -25,7 +25,7 @@ import { MarketingShell } from "@/components/livvo/marketing-shell";
 export const Route = createFileRoute("/para-parceiros")({
   head: () => ({
     meta: [
-      { title: "Para profissionais e empresas — Livvo" },
+      { title: "Para profissionais e empresas | Livvo" },
       {
         name: "description",
         content:
@@ -51,7 +51,7 @@ const modules = [
   {
     Icon: FileCheck2,
     title: "Aprovação documental",
-    desc: "Análise manual de identidade, conselho e especialização — só entra quem é verificado.",
+    desc: "Análise manual de identidade, conselho e especialização. Só entra quem é verificado.",
   },
   {
     Icon: UserCircle2,

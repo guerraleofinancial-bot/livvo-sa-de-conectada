@@ -5,13 +5,13 @@ import { ShieldCheck, CheckCircle2, AlertTriangle, RefreshCw, FileText, Building
 export const Route = createFileRoute("/verificacao")({
   head: () => ({
     meta: [
-      { title: "Verificação de parceiros — Livvo" },
+      { title: "Verificação de parceiros | Livvo" },
       {
         name: "description",
         content:
           "Entenda como a equipe Livvo valida a documentação e o registro profissional de cada parceiro antes de exibir o selo Parceiro Verificado.",
       },
-      { property: "og:title", content: "Verificação de parceiros — Livvo" },
+      { property: "og:title", content: "Verificação de parceiros | Livvo" },
       {
         property: "og:description",
         content:

@@ -10,8 +10,11 @@ Páginas institucionais públicas: usar <MarketingShell />. Nunca duplicar nav/f
 Stack: TanStack Start + Lovable Cloud.
 Design: Healthtech Refinado, mobile-first, paleta primary azul + health verde + sponsored âmbar.
 
+Padrão editorial: proibido travessões (—, –) e hifens como recurso de escrita. Usar ponto, vírgula, dois pontos ou listas. Ver mem://preferences/editorial-style.
+
 ## Memories
 - [Ads & destaque](mem://features/ads) — Ordenação patrocinado/regional/categoria/orgânico, kinds de plano, tracking de eventos
+- [Padrão editorial](mem://preferences/editorial-style) — Proibição de travessões/hifens em prosa, exceções ortográficas, como reescrever
 - [Pagamentos](mem://features/payments) — PaymentProvider (Mock/Pagar.me), split server-side, webhook em /api/public/payments/webhook, fluxo financeiro
 - [Onboarding profissional](mem://features/onboarding-pro) — Steps, uploads, documentos, BusinessHoursGrid
 - [Nomenclatura](mem://preferences/nomenclatura) — Paciente/Parceiro/Administrador, regras híbridas, serviços

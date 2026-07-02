@@ -20,13 +20,13 @@ import { MarketingShell } from "@/components/livvo/marketing-shell";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Livvo — O ecossistema da saúde presencial" },
+      { title: "Livvo | O ecossistema da saúde presencial" },
       {
         name: "description",
         content:
           "A Livvo conecta pacientes, profissionais e empresas de saúde em um único ecossistema: busca, agendamento, pagamento, gestão e crescimento.",
       },
-      { property: "og:title", content: "Livvo — O ecossistema da saúde presencial" },
+      { property: "og:title", content: "Livvo | O ecossistema da saúde presencial" },
       {
         property: "og:description",
         content: "Uma plataforma que conecta pacientes, profissionais e clínicas.",
@@ -125,7 +125,7 @@ function Landing() {
             <p className="text-xs font-semibold uppercase tracking-wider text-primary">Ecossistema Livvo</p>
             <h2 className="mt-2 text-3xl font-bold tracking-tight md:text-4xl">Três públicos, uma plataforma</h2>
             <p className="mt-3 text-muted-foreground">
-              Cada agente do cuidado presencial ganha ferramentas próprias — sem misturar experiências.
+              Cada agente do cuidado presencial ganha ferramentas próprias, sem misturar experiências.
             </p>
           </div>
 
@@ -166,7 +166,7 @@ function Landing() {
         </div>
       </section>
 
-      {/* Como você deseja usar — bifurcação */}
+      {/* Como você deseja usar: bifurcação */}
       <section id="como-usar" className="border-t border-border/60 bg-gradient-to-b from-card/40 to-surface py-20 md:py-24">
         <div className="mx-auto max-w-6xl px-5">
           <div className="mx-auto max-w-2xl text-center">
@@ -226,7 +226,7 @@ function Landing() {
               <h3 className="mt-5 text-2xl font-bold tracking-tight">Sou profissional ou empresa</h3>
               <p className="mt-2 text-sm text-muted-foreground">
                 Quero divulgar meus serviços, receber pacientes da minha região e gerenciar toda a
-                operação — agenda, CRM, cobranças, financeiro e marketing — em um só lugar.
+                operação completa em um só lugar: agenda, CRM, cobranças, financeiro e marketing.
               </p>
               <ul className="mt-5 space-y-2 text-sm">
                 {[
@@ -261,7 +261,7 @@ function Landing() {
 
           <p className="mx-auto mt-8 max-w-xl text-center text-xs text-muted-foreground">
             Cada área possui cadastro e login independentes. Uma mesma pessoa não pode ser paciente
-            e profissional na mesma conta — isso garante segurança e clareza de identidade.
+            e profissional na mesma conta. Isso garante segurança e clareza de identidade.
           </p>
         </div>
       </section>
@@ -275,7 +275,7 @@ function Landing() {
           </div>
           <div>
             <p className="text-3xl font-bold text-primary">Presencial</p>
-            <p className="mt-1 text-sm text-muted-foreground">Livvo é focada em atendimento presencial — não telemedicina</p>
+            <p className="mt-1 text-sm text-muted-foreground">Livvo é focada em atendimento presencial. Não fazemos telemedicina.</p>
           </div>
           <div>
             <p className="text-3xl font-bold text-primary flex items-center justify-center gap-1"><FlaskConical className="size-6" /> +</p>

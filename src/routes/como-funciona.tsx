@@ -6,7 +6,7 @@ import { MarketingShell } from "@/components/livvo/marketing-shell";
 export const Route = createFileRoute("/como-funciona")({
   head: () => ({
     meta: [
-      { title: "Como funciona — Livvo" },
+      { title: "Como funciona | Livvo" },
       { name: "description", content: "Em 5 passos: busque, escolha o parceiro, selecione o horário, pague e compareça ao atendimento presencial." },
       { property: "og:title", content: "Como funciona a Livvo" },
       { property: "og:description", content: "Da busca ao atendimento presencial em 5 passos simples." },
