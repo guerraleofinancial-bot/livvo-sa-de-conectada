@@ -203,17 +203,12 @@ function Landing() {
             </p>
 
             <div className="mt-8 flex flex-wrap justify-center gap-3 lg:justify-start">
-              <Link to="/app/buscar/profissionais">
+              <a href="#escolha-experiencia">
                 <Button size="lg" className="rounded-xl transition-transform hover:-translate-y-0.5">
-                  Encontrar um profissional
+                  Começar agora
                   <ArrowRight className="ml-1 size-4" />
                 </Button>
-              </Link>
-              <Link to="/para-parceiros">
-                <Button size="lg" variant="outline" className="rounded-xl transition-transform hover:-translate-y-0.5">
-                  Sou profissional ou empresa
-                </Button>
-              </Link>
+              </a>
             </div>
 
             <div className="mt-10 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 lg:justify-start">
@@ -231,7 +226,7 @@ function Landing() {
       </section>
 
       {/* ══════════════════ SEÇÃO 2 · ESCOLHA SUA EXPERIÊNCIA ══════════════════ */}
-      <section className="border-t border-border/60 bg-gradient-to-b from-card/40 to-transparent py-20 md:py-24">
+      <section id="escolha-experiencia" className="scroll-mt-20 border-t border-border/60 bg-gradient-to-b from-card/40 to-transparent py-20 md:py-24">
         <div className="mx-auto max-w-6xl px-5">
           <SectionHeader
             eyebrow="Escolha sua experiência"
