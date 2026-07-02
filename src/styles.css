@@ -83,7 +83,8 @@
   --secondary-foreground: hsl(222 47% 11%);
 
   --muted: hsl(215 25% 96%);
-  --muted-foreground: hsl(215 15% 45%);
+  /* Slate-600 (#475569) — WCAG AA on white for body/secondary text */
+  --muted-foreground: hsl(215 19% 35%);
 
   --accent: hsl(168 62% 92%);
   --accent-foreground: hsl(173 83% 24%);
@@ -122,7 +123,7 @@
   --secondary: hsl(215 25% 16%);
   --secondary-foreground: hsl(210 40% 96%);
   --muted: hsl(215 25% 16%);
-  --muted-foreground: hsl(215 15% 65%);
+  --muted-foreground: hsl(215 20% 78%);
   --accent: hsl(162 50% 18%);
   --accent-foreground: hsl(162 65% 80%);
   --destructive: hsl(0 65% 55%);
@@ -148,12 +149,25 @@
     background-color: var(--color-background);
     color: var(--color-foreground);
     font-family: var(--font-sans);
+    font-size: 16px;
+    line-height: 1.55;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
   }
 
-  h1, h2, h3, h4 { letter-spacing: -0.01em; }
+  h1, h2, h3, h4 { letter-spacing: -0.01em; font-weight: 700; color: var(--color-foreground); }
+
+  /* Accessibility: readable placeholders (Slate-500 #64748B on white) */
+  input::placeholder,
+  textarea::placeholder {
+    color: hsl(215 16% 47%);
+    opacity: 1;
+  }
+
+  /* Labels and helper text default a bit stronger */
+  label { font-weight: 500; }
 }
+
 
 @keyframes livvo-fade-in {
   from { opacity: 0; }
@@ -206,31 +220,31 @@
 
 /* Premium primitives — chips, headings, skeletons */
 @utility livvo-chip {
-  @apply inline-flex items-center gap-1 rounded-full border border-border bg-card px-2.5 py-1 text-[11px] font-semibold text-muted-foreground;
+  @apply inline-flex items-center gap-1 rounded-full border border-border bg-card px-2.5 py-1 text-xs font-semibold text-foreground/80;
 }
 @utility livvo-chip-primary {
-  @apply inline-flex items-center gap-1 rounded-full border border-transparent bg-primary-soft px-2.5 py-1 text-[11px] font-semibold text-primary;
+  @apply inline-flex items-center gap-1 rounded-full border border-transparent bg-primary-soft px-2.5 py-1 text-xs font-semibold text-primary;
 }
 @utility livvo-chip-health {
-  @apply inline-flex items-center gap-1 rounded-full border border-transparent bg-health-soft px-2.5 py-1 text-[11px] font-semibold text-health;
+  @apply inline-flex items-center gap-1 rounded-full border border-transparent bg-health-soft px-2.5 py-1 text-xs font-semibold text-health;
 }
 @utility livvo-chip-sponsored {
-  @apply inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide;
+  @apply inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-bold uppercase tracking-wide;
   background: linear-gradient(135deg, hsl(45 95% 92%), hsl(38 95% 88%));
-  color: hsl(28 60% 30%);
-  border: 1px solid hsl(38 90% 80%);
+  color: hsl(28 65% 24%);
+  border: 1px solid hsl(38 90% 75%);
 }
 @utility livvo-eyebrow {
-  @apply text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground;
+  @apply text-xs font-semibold uppercase tracking-[0.14em] text-foreground/70;
 }
 @utility livvo-h1 {
-  @apply text-2xl font-semibold tracking-[-0.02em] text-foreground sm:text-[28px];
+  @apply text-2xl font-bold tracking-[-0.02em] text-foreground sm:text-[28px];
 }
 @utility livvo-h2 {
   @apply text-lg font-semibold tracking-[-0.01em] text-foreground sm:text-xl;
 }
 @utility livvo-subtle {
-  @apply text-sm text-muted-foreground;
+  @apply text-[15px] text-muted-foreground;
 }
 @utility livvo-skeleton {
   @apply rounded-xl bg-muted/70;
