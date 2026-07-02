@@ -179,6 +179,44 @@ function MarketingHub() {
     setSavingSlug(false);
   };
 
+  // Fallback seguro: se não existe registro de profissional (usuário ainda
+  // não completou onboarding, ou é apenas admin/empresa), mostra empty state
+  // em vez de deixar cards travados carregando.
+  if (!loadingPro && !pro) {
+    return (
+      <div className="px-5 pt-4 pb-8 space-y-4">
+        <div>
+          <p className="text-[11px] font-bold uppercase tracking-wider text-primary flex items-center gap-1.5">
+            <Megaphone className="size-3.5" /> Marketing
+          </p>
+          <h1 className="text-2xl font-bold tracking-tight">Centro de Crescimento</h1>
+          <p className="text-xs text-muted-foreground mt-0.5">Divulgue seu perfil, atraia mais pacientes e acompanhe sua evolução.</p>
+        </div>
+        <EmptyState
+          icon={Sparkles}
+          title="Seu Centro de Crescimento está pronto para começar"
+          description={
+            proError
+              ? "Não conseguimos carregar seus dados agora. Tente novamente em instantes."
+              : "Complete seu cadastro profissional para gerar sua página pública, kit de divulgação e recomendações personalizadas."
+          }
+          action={
+            <div className="flex flex-wrap gap-2 justify-center">
+              <Button asChild size="sm"><Link to="/onboarding-pro"><UserPlus className="size-3.5 mr-1.5" /> Completar cadastro</Link></Button>
+              <Button asChild size="sm" variant="outline"><Link to="/pro">Voltar ao painel</Link></Button>
+            </div>
+          }
+        />
+        <div className="grid gap-2">
+          <QuickStartLink to="/onboarding-pro" icon={CheckCircle2} label="Completar perfil" hint="Foto, bio, especialidade e endereço" />
+          <QuickStartLink to="/pro/agenda" icon={CheckCircle2} label="Configurar agenda" hint="Horários e dias de atendimento" />
+          <QuickStartLink to="/pro/servicos" icon={CheckCircle2} label="Cadastrar serviços" hint="Procedimentos, preços e duração" />
+          <QuickStartLink to="/pro/financeiro" icon={CheckCircle2} label="Enviar primeira cobrança" hint="Cobrança digital com repasse automático" />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="px-5 pt-4 pb-4 space-y-4">
       {/* Header */}
