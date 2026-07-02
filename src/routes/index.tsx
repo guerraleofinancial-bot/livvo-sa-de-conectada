@@ -218,7 +218,48 @@ function Landing() {
               agendar e pagar atendimentos presenciais.
             </p>
 
-            <div className="mt-6 flex flex-wrap justify-center gap-3 md:justify-start">
+            <h1 className="mx-auto mt-5 max-w-2xl animate-in fade-in slide-in-from-bottom-2 text-3xl font-bold leading-[1.1] tracking-tight duration-700 sm:text-4xl md:mx-0 md:text-[2.5rem] lg:text-[2.75rem]">
+              Encontre, agende e pague{" "}
+              <span className="text-primary">consultas</span>,{" "}
+              <span className="text-primary">exames</span> e{" "}
+              <span className="text-primary">procedimentos</span> em um só lugar.
+            </h1>
+
+            <p className="mx-auto mt-4 max-w-xl animate-in fade-in text-sm leading-relaxed text-muted-foreground duration-700 md:mx-0 md:text-base">
+              A Livvo conecta pacientes, profissionais, clínicas, laboratórios e
+              centros de diagnóstico em uma plataforma segura para encontrar,
+              agendar e pagar atendimentos presenciais.
+            </p>
+
+            <form
+              onSubmit={handleHeroSearch}
+              className="mx-auto mt-5 flex max-w-xl flex-col gap-2 rounded-2xl border border-border bg-card p-2 shadow-sm sm:flex-row sm:items-center md:mx-0"
+            >
+              <div className="flex flex-1 items-center gap-2 rounded-xl px-3 py-2">
+                <Search className="size-4 shrink-0 text-muted-foreground" />
+                <input
+                  value={heroQuery}
+                  onChange={(e) => setHeroQuery(e.target.value)}
+                  placeholder="Especialidade, exame, profissional ou clínica"
+                  className="w-full min-w-0 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
+                />
+              </div>
+              <div className="hidden h-8 w-px bg-border sm:block" />
+              <div className="flex flex-1 items-center gap-2 rounded-xl px-3 py-2 sm:max-w-[40%]">
+                <MapPin className="size-4 shrink-0 text-muted-foreground" />
+                <input
+                  value={heroLocation}
+                  onChange={(e) => setHeroLocation(e.target.value)}
+                  placeholder="Cidade ou bairro"
+                  className="w-full min-w-0 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
+                />
+              </div>
+              <Button type="submit" className="rounded-xl">
+                Buscar
+              </Button>
+            </form>
+
+            <div className="mt-5 flex flex-wrap justify-center gap-3 md:justify-start">
               <Link to="/app/buscar">
                 <Button size="lg" className="rounded-xl transition-transform hover:-translate-y-0.5">
                   Encontrar atendimento
@@ -235,15 +276,15 @@ function Landing() {
             <ul className="mx-auto mt-6 grid max-w-xl gap-2.5 text-left sm:grid-cols-3 md:mx-0 md:max-w-none">
               <HeroBenefit
                 title="Parceiros verificados"
-                description="Analisamos documentos e registros profissionais antes da aprovação."
+                description="Nossa equipe analisa documentos, registros profissionais e informações cadastrais antes da aprovação de cada parceiro."
               />
               <HeroBenefit
                 title="Atendimento presencial"
-                description="Consultas, exames e procedimentos realizados presencialmente."
+                description="Consultas, exames e procedimentos realizados presencialmente por profissionais e empresas parceiras."
               />
               <HeroBenefit
                 title="Pagamento seguro"
-                description="Mais organização e segurança para pacientes e parceiros."
+                description="Agende e pague diretamente pela plataforma com mais organização, segurança e transparência."
               />
             </ul>
           </div>
@@ -258,6 +299,7 @@ function Landing() {
               <HeroPhoneMockup />
             </div>
           </div>
+
         </div>
       </section>
 
