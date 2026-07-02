@@ -226,7 +226,7 @@ function Landing() {
       </section>
 
       {/* ══════════════════ SEÇÃO 2 · ESCOLHA SUA EXPERIÊNCIA ══════════════════ */}
-      <section className="border-t border-border/60 bg-gradient-to-b from-card/40 to-transparent py-20 md:py-24">
+      <section id="escolha-experiencia" className="scroll-mt-20 border-t border-border/60 bg-gradient-to-b from-card/40 to-transparent py-20 md:py-24">
         <div className="mx-auto max-w-6xl px-5">
           <SectionHeader
             eyebrow="Escolha sua experiência"
