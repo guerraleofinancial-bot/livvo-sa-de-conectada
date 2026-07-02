@@ -741,7 +741,7 @@ const heroResults: SearchResult[] = [
 
 function HeroPhoneMockup() {
   return (
-    <div className="relative w-[280px] max-w-[280px] animate-in fade-in slide-in-from-bottom-4 duration-700">
+    <div className="relative w-full max-w-full animate-in fade-in slide-in-from-bottom-4 duration-700">
       {/* halo */}
       <div className="absolute -inset-6 -z-10 rounded-[3rem] bg-gradient-to-br from-primary/20 via-transparent to-health/20 blur-2xl" />
 
