@@ -150,23 +150,33 @@
     color: var(--color-foreground);
     font-family: var(--font-sans);
     font-size: 16px;
-    line-height: 1.55;
+    line-height: 1.6;
+    font-weight: 500;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
   }
 
-  h1, h2, h3, h4 { letter-spacing: -0.01em; font-weight: 700; color: var(--color-foreground); }
+  h1, h2, h3, h4 { letter-spacing: -0.01em; font-weight: 700; color: var(--color-foreground); line-height: 1.2; }
 
-  /* Accessibility: readable placeholders (Slate-500 #64748B on white) */
+  p { line-height: 1.6; }
+
+  /* Accessibility: readable placeholders (Slate-600 #475569 on white) */
   input::placeholder,
   textarea::placeholder {
-    color: hsl(215 16% 47%);
+    color: hsl(215 19% 35%);
+    font-weight: 500;
     opacity: 1;
   }
 
-  /* Labels and helper text default a bit stronger */
-  label { font-weight: 500; }
+  input, textarea, select { font-size: 16px; }
+
+  label { font-weight: 600; color: var(--color-foreground); }
+
+  button { font-weight: 600; }
+
+  a { font-weight: 600; }
 }
+
 
 
 @keyframes livvo-fade-in {
