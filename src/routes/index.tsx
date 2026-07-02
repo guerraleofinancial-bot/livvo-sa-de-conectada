@@ -279,12 +279,12 @@ function Landing() {
           </div>
 
           {/* Coluna direita: mockup do app (lateral, menor, centrado verticalmente) */}
-          <div className="relative flex w-[168px] shrink-0 items-center justify-center self-center sm:ml-auto sm:w-[176px] md:w-[190px] lg:w-[198px] xl:w-[208px]" data-hero-phone>
+          <div className="relative flex h-[300px] w-[164px] shrink-0 items-center justify-end self-center sm:ml-auto sm:h-[318px] sm:w-[174px] md:h-[336px] md:w-[184px] lg:h-[354px] lg:w-[194px]" data-hero-phone>
             <div
               aria-hidden
               className="absolute inset-0 -z-10 bg-[radial-gradient(60%_60%_at_50%_50%,hsl(173_70%_88%/0.6)_0%,transparent_70%)]"
             />
-            <div className="w-full drop-shadow-[0_20px_40px_hsl(173_50%_25%/0.22)]">
+            <div className="absolute right-0 top-1/2 w-[280px] origin-right -translate-y-1/2 scale-[0.58] drop-shadow-[0_20px_40px_hsl(173_50%_25%/0.22)] sm:scale-[0.62] md:scale-[0.66] lg:scale-[0.69]">
               <HeroPhoneMockup />
             </div>
           </div>
@@ -741,7 +741,7 @@ const heroResults: SearchResult[] = [
 
 function HeroPhoneMockup() {
   return (
-    <div className="relative w-full max-w-full animate-in fade-in slide-in-from-bottom-4 duration-700">
+    <div className="relative w-[280px] max-w-[280px] animate-in fade-in slide-in-from-bottom-4 duration-700">
       {/* halo */}
       <div className="absolute -inset-6 -z-10 rounded-[3rem] bg-gradient-to-br from-primary/20 via-transparent to-health/20 blur-2xl" />
 
