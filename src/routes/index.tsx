@@ -22,6 +22,7 @@ import {
   UserCheck,
   ScanSearch,
   Lock,
+  HeartHandshake,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { MarketingShell } from "@/components/livvo/marketing-shell";
@@ -62,7 +63,7 @@ export const Route = createFileRoute("/")({
   component: Landing,
 });
 
-/* ────────────────── SEÇÃO 2 ────────────────── */
+/* ────────────────── SEÇÃO 3 · Como funciona ────────────────── */
 const steps = [
   {
     Icon: Search,
@@ -72,7 +73,7 @@ const steps = [
   {
     Icon: ScanSearch,
     title: "Escolha",
-    desc: "Compare perfis, avaliações, especialidades, preços e disponibilidade.",
+    desc: "Compare perfis, especialidades, preços e disponibilidade.",
   },
   {
     Icon: CalendarClock,
@@ -91,31 +92,7 @@ const steps = [
   },
 ];
 
-/* ────────────────── SEÇÃO 3 ────────────────── */
-const reasons = [
-  {
-    Icon: BadgeCheck,
-    title: "Profissionais verificados",
-    desc: "Nossa equipe analisa documentos, registros profissionais e informações cadastrais antes da aprovação de cada parceiro.",
-  },
-  {
-    Icon: Lock,
-    title: "Pagamento protegido",
-    desc: "Todo o processo financeiro acontece dentro da plataforma, oferecendo mais segurança para pacientes e profissionais.",
-  },
-  {
-    Icon: Sparkles,
-    title: "Marketplace especializado",
-    desc: "Encontre profissionais, clínicas, laboratórios e exames organizados em um único ambiente.",
-  },
-  {
-    Icon: ClipboardList,
-    title: "Tudo em um só lugar",
-    desc: "Agenda, pagamentos, avaliações, histórico de atendimentos e comunicação centralizados em uma única plataforma.",
-  },
-];
-
-/* ────────────────── SEÇÃO 4 ────────────────── */
+/* ────────────────── SEÇÃO 4 · Quem faz parte ────────────────── */
 const audiences = [
   {
     Icon: Stethoscope,
@@ -147,7 +124,30 @@ const audiences = [
   },
 ];
 
-/* ────────────────── SEÇÃO 5 ────────────────── */
+/* ────────────────── SEÇÃO 5 · Segurança e verificação ────────────────── */
+const trustCards = [
+  {
+    Icon: BadgeCheck,
+    title: "Profissionais verificados",
+    desc: "Nossa equipe analisa documentos, registros profissionais e informações cadastrais antes da aprovação de cada parceiro.",
+  },
+  {
+    Icon: Lock,
+    title: "Pagamento protegido",
+    desc: "Todo o processo financeiro acontece dentro da plataforma, oferecendo mais segurança para pacientes e profissionais.",
+  },
+  {
+    Icon: Sparkles,
+    title: "Marketplace especializado",
+    desc: "Encontre profissionais, clínicas, laboratórios e exames organizados em um único ambiente.",
+  },
+  {
+    Icon: ClipboardList,
+    title: "Tudo em um só lugar",
+    desc: "Agenda, pagamentos, histórico de atendimentos e comunicação centralizados em uma única plataforma.",
+  },
+];
+
 const verificationFlow = [
   { Icon: UserCheck, label: "Cadastro" },
   { Icon: FileCheck2, label: "Envio da documentação" },
@@ -157,32 +157,7 @@ const verificationFlow = [
   { Icon: Sparkles, label: "Selo Parceiro Verificado" },
 ];
 
-/* ────────────────── SEÇÃO 6 ────────────────── */
-const reviews = [
-  {
-    name: "Mariana R.",
-    city: "São Paulo, SP",
-    specialty: "Cardiologia",
-    rating: 5,
-    text: "Consegui marcar minha consulta rapidamente e o profissional foi excelente. A plataforma facilitou tudo, desde a busca até o pagamento.",
-  },
-  {
-    name: "Rafael T.",
-    city: "Belo Horizonte, MG",
-    specialty: "Odontologia",
-    rating: 5,
-    text: "Interface simples e clara. Gostei de conseguir comparar avaliações e horários antes de escolher a clínica.",
-  },
-  {
-    name: "Camila O.",
-    city: "Porto Alegre, RS",
-    specialty: "Exames laboratoriais",
-    rating: 5,
-    text: "Encontrei um laboratório próximo, agendei em poucos minutos e recebi todas as informações no app. Recomendo.",
-  },
-];
-
-/* ────────────────── SEÇÃO 7 ────────────────── */
+/* ────────────────── SEÇÃO 7 · FAQ ────────────────── */
 const faqs = [
   {
     q: "Como faço um agendamento?",
@@ -239,7 +214,7 @@ function Landing() {
             </Link>
           </div>
 
-          <div className="mt-10 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-sm text-muted-foreground">
+          <div className="mt-10 flex flex-wrap items-center justify-center gap-x-8 gap-y-3">
             <TrustPill Icon={BadgeCheck} label="Parceiros verificados" />
             <TrustPill Icon={Lock} label="Pagamento seguro" />
             <TrustPill Icon={Stethoscope} label="Atendimento presencial" />
@@ -247,7 +222,63 @@ function Landing() {
         </div>
       </section>
 
-      {/* ══════════════════ SEÇÃO 2 · COMO FUNCIONA ══════════════════ */}
+      {/* ══════════════════ SEÇÃO 2 · ESCOLHA SUA EXPERIÊNCIA ══════════════════ */}
+      <section className="border-t border-border/60 bg-gradient-to-b from-card/40 to-transparent py-20 md:py-24">
+        <div className="mx-auto max-w-6xl px-5">
+          <SectionHeader
+            eyebrow="Escolha sua experiência"
+            title="Como você deseja utilizar a Livvo?"
+          />
+
+          <div className="mt-14 grid gap-6 md:grid-cols-2">
+            {/* Paciente */}
+            <div className="group relative overflow-hidden rounded-3xl border border-border bg-card p-8 shadow-[var(--shadow-elevated)] transition-all duration-300 hover:-translate-y-1">
+              <div className="absolute -right-16 -top-16 size-48 rounded-full bg-primary/10 blur-2xl" />
+              <div className="grid size-14 place-items-center rounded-2xl bg-primary text-primary-foreground shadow-sm">
+                <Users className="size-7" />
+              </div>
+              <h3 className="mt-6 text-2xl font-bold tracking-tight">Sou paciente</h3>
+              <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+                Encontre profissionais, clínicas, laboratórios e exames. Agende
+                atendimentos com segurança e acompanhe tudo em um único lugar.
+              </p>
+              <div className="mt-7">
+                <Link to="/auth" search={{ mode: "signup", role: "paciente" }}>
+                  <Button className="rounded-xl transition-transform hover:-translate-y-0.5">
+                    Criar conta como paciente
+                    <ArrowRight className="ml-1 size-4" />
+                  </Button>
+                </Link>
+              </div>
+            </div>
+
+            {/* Profissional / Empresa */}
+            <div className="group relative overflow-hidden rounded-3xl border border-border bg-card p-8 shadow-[var(--shadow-elevated)] transition-all duration-300 hover:-translate-y-1">
+              <div className="absolute -right-16 -top-16 size-48 rounded-full bg-health/10 blur-2xl" />
+              <div className="grid size-14 place-items-center rounded-2xl bg-health text-white shadow-sm">
+                <Briefcase className="size-7" />
+              </div>
+              <h3 className="mt-6 text-2xl font-bold tracking-tight">
+                Sou profissional ou empresa
+              </h3>
+              <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+                Receba novos pacientes, organize sua agenda, administre cobranças
+                e fortaleça sua presença digital dentro da Livvo.
+              </p>
+              <div className="mt-7">
+                <Link to="/para-parceiros">
+                  <Button className="rounded-xl bg-health text-white transition-transform hover:-translate-y-0.5 hover:bg-health/90">
+                    Conhecer área profissional
+                    <ArrowRight className="ml-1 size-4" />
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ══════════════════ SEÇÃO 3 · COMO FUNCIONA ══════════════════ */}
       <section className="border-t border-border/60 bg-card/40 py-20 md:py-24">
         <div className="mx-auto max-w-6xl px-5">
           <SectionHeader
@@ -278,35 +309,8 @@ function Landing() {
         </div>
       </section>
 
-      {/* ══════════════════ SEÇÃO 3 · POR QUE ESCOLHER ══════════════════ */}
-      <section className="py-20 md:py-24">
-        <div className="mx-auto max-w-6xl px-5">
-          <SectionHeader
-            eyebrow="Por que escolher a Livvo"
-            title="Mais segurança para pacientes e parceiros."
-          />
-
-          <div className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-            {reasons.map(({ Icon, title, desc }) => (
-              <article
-                key={title}
-                className="group rounded-3xl border border-border bg-card p-6 shadow-[var(--shadow-card)] transition-all duration-300 hover:-translate-y-1 hover:border-primary/30 hover:shadow-[var(--shadow-elevated)]"
-              >
-                <div className="grid size-12 place-items-center rounded-2xl bg-primary-soft text-primary transition-transform group-hover:scale-105">
-                  <Icon className="size-6" />
-                </div>
-                <h3 className="mt-5 text-lg font-semibold">{title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                  {desc}
-                </p>
-              </article>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* ══════════════════ SEÇÃO 4 · QUEM FAZ PARTE ══════════════════ */}
-      <section className="border-t border-border/60 bg-gradient-to-b from-card/30 to-transparent py-20 md:py-24">
+      <section className="py-20 md:py-24">
         <div className="mx-auto max-w-6xl px-5">
           <SectionHeader
             eyebrow="Quem faz parte da Livvo"
@@ -338,30 +342,39 @@ function Landing() {
         </div>
       </section>
 
-      {/* ══════════════════ SEÇÃO 5 · VERIFICAÇÃO ══════════════════ */}
-      <section className="py-20 md:py-24">
-        <div className="mx-auto max-w-5xl px-5">
+      {/* ══════════════════ SEÇÃO 5 · SEGURANÇA E VERIFICAÇÃO ══════════════════ */}
+      <section className="border-t border-border/60 bg-card/40 py-20 md:py-24">
+        <div className="mx-auto max-w-6xl px-5">
           <SectionHeader
-            eyebrow="Nosso processo de verificação"
-            title="Cada parceiro passa por uma análise antes de entrar na Livvo."
+            eyebrow="Segurança e verificação"
+            title="Mais segurança para pacientes e parceiros."
+            subtitle="Cada parceiro passa por uma análise antes de entrar na Livvo."
           />
 
-          <div className="mx-auto mt-10 max-w-3xl space-y-4 text-center text-sm leading-relaxed text-muted-foreground md:text-base">
-            <p>A confiança da plataforma começa pela qualidade dos parceiros.</p>
-            <p>
-              Antes da aprovação, nossa equipe realiza uma análise documental
-              para confirmar identidade, registros profissionais e informações
-              cadastrais.
-            </p>
-            <p>
-              Somente após essa validação o perfil recebe o selo de Parceiro
-              Verificado.
-            </p>
+          {/* Cards de benefício */}
+          <div className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            {trustCards.map(({ Icon, title, desc }) => (
+              <article
+                key={title}
+                className="group rounded-3xl border border-border bg-card p-6 shadow-[var(--shadow-card)] transition-all duration-300 hover:-translate-y-1 hover:border-primary/30 hover:shadow-[var(--shadow-elevated)]"
+              >
+                <div className="grid size-12 place-items-center rounded-2xl bg-primary-soft text-primary transition-transform group-hover:scale-105">
+                  <Icon className="size-6" />
+                </div>
+                <h3 className="mt-5 text-lg font-semibold">{title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                  {desc}
+                </p>
+              </article>
+            ))}
           </div>
 
-          {/* Fluxo visual */}
+          {/* Fluxo de verificação */}
           <div className="mt-14 rounded-3xl border border-border bg-card p-6 shadow-[var(--shadow-card)] md:p-10">
-            <ol className="grid gap-3 md:grid-cols-6">
+            <p className="text-center text-xs font-semibold uppercase tracking-[0.14em] text-primary">
+              Processo de verificação
+            </p>
+            <ol className="mt-8 grid gap-3 md:grid-cols-6">
               {verificationFlow.map(({ Icon, label }, i) => (
                 <li
                   key={label}
@@ -391,52 +404,34 @@ function Landing() {
         </div>
       </section>
 
-      {/* ══════════════════ SEÇÃO 6 · AVALIAÇÕES ══════════════════ */}
-      <section className="border-t border-border/60 bg-card/40 py-20 md:py-24">
-        <div className="mx-auto max-w-6xl px-5">
+      {/* ══════════════════ SEÇÃO 6 · POR QUE CRIAMOS A LIVVO ══════════════════ */}
+      <section className="py-20 md:py-24">
+        <div className="mx-auto max-w-4xl px-5">
           <SectionHeader
-            eyebrow="Avaliações"
-            title="Experiências compartilhadas por pacientes."
-            subtitle="Veja o que outros usuários disseram após seus atendimentos."
+            eyebrow="Nossa história"
+            title="Nascemos para simplificar o acesso à saúde."
+            subtitle="A Livvo foi criada para eliminar a burocracia entre pacientes e profissionais de saúde, unindo busca, agendamento, pagamento e histórico em um único lugar, com segurança em cada etapa."
           />
 
-          <div className="mt-14 grid gap-5 md:grid-cols-3">
-            {reviews.map((r) => (
-              <figure
-                key={r.name}
-                className="flex flex-col rounded-3xl border border-border bg-card p-7 shadow-[var(--shadow-card)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[var(--shadow-elevated)]"
-              >
-                <div className="flex items-center gap-1 text-primary">
-                  {Array.from({ length: r.rating }).map((_, i) => (
-                    <Star key={i} className="size-4 fill-current" />
-                  ))}
-                  <span className="ml-2 text-sm font-bold text-foreground">
-                    {r.rating.toFixed(1)}
-                  </span>
-                </div>
-                <blockquote className="mt-4 flex-1 text-[15px] leading-relaxed text-foreground">
-                  “{r.text}”
-                </blockquote>
-                <figcaption className="mt-6 border-t border-border/60 pt-4">
-                  <p className="text-sm font-semibold">{r.name}</p>
-                  <p className="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
-                    <span className="inline-flex items-center gap-1">
-                      <Stethoscope className="size-3.5" /> {r.specialty}
-                    </span>
-                    <span className="text-border">•</span>
-                    <span className="inline-flex items-center gap-1">
-                      <MapPin className="size-3.5" /> {r.city}
-                    </span>
-                  </p>
-                </figcaption>
-              </figure>
-            ))}
+          <div className="mx-auto mt-12 flex max-w-2xl items-start gap-4 rounded-3xl border border-border bg-card p-7 shadow-[var(--shadow-card)]">
+            <div className="grid size-11 shrink-0 place-items-center rounded-2xl bg-primary-soft text-primary">
+              <HeartHandshake className="size-5" />
+            </div>
+            <p className="text-sm leading-relaxed text-foreground">
+              Estamos no início dessa jornada e cada parceiro que entra na
+              plataforma passa pelo mesmo processo rigoroso de verificação. É
+              assim que construímos confiança desde o primeiro dia.
+            </p>
           </div>
+
+          {/* Placeholder para futuras avaliações reais. Ative com showReviews={true}
+              e um array real assim que houver atendimentos concluídos. */}
+          <ReviewsSection showReviews={false} reviews={[]} />
         </div>
       </section>
 
       {/* ══════════════════ SEÇÃO 7 · FAQ ══════════════════ */}
-      <section className="py-20 md:py-24">
+      <section className="border-t border-border/60 bg-card/40 py-20 md:py-24">
         <div className="mx-auto max-w-3xl px-5">
           <SectionHeader
             eyebrow="Perguntas frequentes"
@@ -450,63 +445,7 @@ function Landing() {
         </div>
       </section>
 
-      {/* ══════════════════ SEÇÃO 8 · ESCOLHA SUA EXPERIÊNCIA ══════════════════ */}
-      <section className="border-t border-border/60 bg-gradient-to-b from-card/40 to-surface py-20 md:py-24">
-        <div className="mx-auto max-w-6xl px-5">
-          <SectionHeader
-            eyebrow="Escolha sua experiência"
-            title="Como você deseja utilizar a Livvo?"
-          />
-
-          <div className="mt-14 grid gap-6 md:grid-cols-2">
-            {/* Card 1 · Paciente */}
-            <div className="group relative overflow-hidden rounded-3xl border border-border bg-card p-8 shadow-[var(--shadow-elevated)] transition-all duration-300 hover:-translate-y-1">
-              <div className="absolute -right-16 -top-16 size-48 rounded-full bg-primary/10 blur-2xl" />
-              <div className="grid size-14 place-items-center rounded-2xl bg-primary text-primary-foreground shadow-sm">
-                <Users className="size-7" />
-              </div>
-              <h3 className="mt-6 text-2xl font-bold tracking-tight">Sou paciente</h3>
-              <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-                Encontre profissionais, clínicas, laboratórios e exames. Agende
-                atendimentos com segurança e acompanhe tudo em um único lugar.
-              </p>
-              <div className="mt-7">
-                <Link to="/auth" search={{ mode: "signup", role: "paciente" }}>
-                  <Button className="rounded-xl transition-transform hover:-translate-y-0.5">
-                    Criar conta como paciente
-                    <ArrowRight className="ml-1 size-4" />
-                  </Button>
-                </Link>
-              </div>
-            </div>
-
-            {/* Card 2 · Profissional / Empresa */}
-            <div className="group relative overflow-hidden rounded-3xl border border-border bg-card p-8 shadow-[var(--shadow-elevated)] transition-all duration-300 hover:-translate-y-1">
-              <div className="absolute -right-16 -top-16 size-48 rounded-full bg-health/10 blur-2xl" />
-              <div className="grid size-14 place-items-center rounded-2xl bg-health text-white shadow-sm">
-                <Briefcase className="size-7" />
-              </div>
-              <h3 className="mt-6 text-2xl font-bold tracking-tight">
-                Sou profissional ou empresa
-              </h3>
-              <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-                Receba novos pacientes, organize sua agenda, administre cobranças
-                e fortaleça sua presença digital dentro da Livvo.
-              </p>
-              <div className="mt-7">
-                <Link to="/para-parceiros">
-                  <Button className="rounded-xl bg-health text-white transition-transform hover:-translate-y-0.5 hover:bg-health/90">
-                    Conhecer área profissional
-                    <ArrowRight className="ml-1 size-4" />
-                  </Button>
-                </Link>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ══════════════════ SEÇÃO 9 · CHAMADA FINAL ══════════════════ */}
+      {/* ══════════════════ SEÇÃO 8 · CHAMADA FINAL ══════════════════ */}
       <section className="relative overflow-hidden py-20 md:py-28">
         <div className="absolute inset-0 -z-10 bg-[radial-gradient(50%_60%_at_50%_50%,hsl(173_70%_92%)_0%,transparent_70%)]" />
         <div className="mx-auto max-w-3xl px-5 text-center">
@@ -514,10 +453,7 @@ function Landing() {
             Pronto para começar?
           </h2>
           <div className="mx-auto mt-5 max-w-xl space-y-3 text-base leading-relaxed text-muted-foreground">
-            <p>
-              Milhares de pacientes procuram diariamente por profissionais
-              confiáveis.
-            </p>
+            <p>A busca por atendimento de saúde confiável começa aqui.</p>
             <p>
               Faça parte da Livvo e tenha acesso a uma plataforma criada para
               conectar pessoas e facilitar toda a jornada do atendimento
@@ -606,6 +542,68 @@ function FaqRow({ q, a }: { q: string; a: string }) {
           {a}
         </p>
       )}
+    </div>
+  );
+}
+
+/* ────────────────── Avaliações (placeholder pronto para o futuro) ────────────────── */
+
+type Review = {
+  name: string;
+  city: string;
+  specialty: string;
+  rating: number;
+  text: string;
+};
+
+function ReviewsSection({
+  showReviews,
+  reviews,
+}: {
+  showReviews: boolean;
+  reviews: Review[];
+}) {
+  if (!showReviews || reviews.length === 0) return null;
+
+  return (
+    <div className="mt-16">
+      <SectionHeader
+        eyebrow="Avaliações"
+        title="Experiências compartilhadas por pacientes."
+        subtitle="Veja o que outros usuários disseram após seus atendimentos."
+      />
+      <div className="mt-10 grid gap-5 md:grid-cols-3">
+        {reviews.map((r) => (
+          <figure
+            key={r.name + r.text}
+            className="flex flex-col rounded-3xl border border-border bg-card p-7 shadow-[var(--shadow-card)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[var(--shadow-elevated)]"
+          >
+            <div className="flex items-center gap-1 text-primary">
+              {Array.from({ length: r.rating }).map((_, i) => (
+                <Star key={i} className="size-4 fill-current" />
+              ))}
+              <span className="ml-2 text-sm font-bold text-foreground">
+                {r.rating.toFixed(1)}
+              </span>
+            </div>
+            <blockquote className="mt-4 flex-1 text-[15px] leading-relaxed text-foreground">
+              “{r.text}”
+            </blockquote>
+            <figcaption className="mt-6 border-t border-border/60 pt-4">
+              <p className="text-sm font-semibold">{r.name}</p>
+              <p className="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
+                <span className="inline-flex items-center gap-1">
+                  <Stethoscope className="size-3.5" /> {r.specialty}
+                </span>
+                <span className="text-border">•</span>
+                <span className="inline-flex items-center gap-1">
+                  <MapPin className="size-3.5" /> {r.city}
+                </span>
+              </p>
+            </figcaption>
+          </figure>
+        ))}
+      </div>
     </div>
   );
 }
