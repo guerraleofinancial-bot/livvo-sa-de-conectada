@@ -561,8 +561,8 @@ function HeroBenefit({ title, description }: { title: string; description: strin
         <Check className="size-3" strokeWidth={3} />
       </span>
       <div className="min-w-0">
-        <div className="text-sm font-semibold leading-tight">{title}</div>
-        <p className="mt-0.5 text-xs leading-snug text-muted-foreground">{description}</p>
+        <div className="text-base font-semibold leading-snug text-slate-900">{title}</div>
+        <p className="mt-1 text-base font-medium leading-[1.6] text-slate-700">{description}</p>
       </div>
     </li>
   );
