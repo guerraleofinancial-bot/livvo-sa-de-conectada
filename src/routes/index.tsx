@@ -220,7 +220,9 @@ function Landing() {
 
           {/* Coluna direita: mockup do app */}
           <div className="relative flex justify-center lg:justify-end">
-            <HeroPhoneMockup />
+            <div className="w-[280px] max-w-[280px] shrink-0">
+              <HeroPhoneMockup />
+            </div>
           </div>
         </div>
       </section>
