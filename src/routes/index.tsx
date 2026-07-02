@@ -197,24 +197,24 @@ function Landing() {
       <LandingHeader />
       <main>
       {/* ══════════════════ SEÇÃO 1 · HERO ══════════════════ */}
-      <section className="relative overflow-hidden">
+      <section className="relative overflow-hidden" data-hero-section>
         <div className="absolute inset-0 -z-10 bg-[radial-gradient(60%_50%_at_50%_0%,hsl(173_70%_92%)_0%,transparent_70%)]" />
-        <div className="mx-auto flex max-w-6xl flex-col items-center gap-8 px-5 pt-8 pb-10 md:flex-row md:items-center md:gap-8 md:pt-12 md:pb-12 lg:gap-12">
+        <div className="mx-auto flex max-w-6xl flex-col items-center gap-8 px-5 pt-8 pb-10 sm:flex-row sm:flex-nowrap sm:items-center sm:justify-between sm:gap-8 sm:pt-10 sm:pb-12 md:gap-10 md:pt-12 lg:gap-14">
           {/* Coluna esquerda: texto */}
-          <div className="min-w-0 flex-1 text-center md:text-left">
+          <div className="min-w-0 flex-1 text-center sm:text-left">
             <span className="inline-flex animate-in fade-in slide-in-from-top-2 items-center gap-2 rounded-full border border-border bg-card px-3 py-1 text-xs font-semibold text-muted-foreground shadow-sm duration-500">
               <span className="size-2 rounded-full bg-health animate-pulse" />
               Marketplace de saúde presencial
             </span>
 
-            <h1 className="mx-auto mt-4 max-w-2xl animate-in fade-in slide-in-from-bottom-2 text-3xl font-bold leading-[1.1] tracking-tight duration-700 sm:text-[2.25rem] md:mx-0 md:text-[2.25rem] lg:text-[2.5rem]">
+            <h1 className="mx-auto mt-4 max-w-2xl animate-in fade-in slide-in-from-bottom-2 text-3xl font-bold leading-[1.1] tracking-tight duration-700 sm:mx-0 sm:text-[2rem] md:text-[2.25rem] lg:text-[2.5rem]">
               Encontre, agende e pague{" "}
               <span className="text-primary">consultas</span>,{" "}
               <span className="text-primary">exames</span> e{" "}
               <span className="text-primary">procedimentos</span> em um só lugar.
             </h1>
 
-            <p className="mx-auto mt-3 max-w-xl animate-in fade-in text-sm leading-relaxed text-muted-foreground duration-700 md:mx-0 md:text-[0.95rem]">
+            <p className="mx-auto mt-3 max-w-xl animate-in fade-in text-sm leading-relaxed text-muted-foreground duration-700 sm:mx-0 md:text-[0.95rem]">
               A Livvo conecta pacientes, profissionais, clínicas, laboratórios e
               centros de diagnóstico em uma plataforma segura para encontrar,
               agendar e pagar atendimentos presenciais.
@@ -222,7 +222,7 @@ function Landing() {
 
             <form
               onSubmit={handleHeroSearch}
-              className="mx-auto mt-4 flex max-w-xl flex-col gap-2 rounded-2xl border border-border bg-card p-2 shadow-sm sm:flex-row sm:items-center md:mx-0"
+              className="mx-auto mt-4 flex max-w-xl flex-col gap-2 rounded-2xl border border-border bg-card p-2 shadow-sm md:flex-row md:items-center sm:mx-0"
             >
               <div className="flex flex-1 items-center gap-2 rounded-xl px-3 py-2">
                 <Search className="size-4 shrink-0 text-muted-foreground" />
@@ -233,8 +233,8 @@ function Landing() {
                   className="w-full min-w-0 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
                 />
               </div>
-              <div className="hidden h-8 w-px bg-border sm:block" />
-              <div className="flex flex-1 items-center gap-2 rounded-xl px-3 py-2 sm:max-w-[40%]">
+              <div className="hidden h-8 w-px bg-border md:block" />
+              <div className="flex flex-1 items-center gap-2 rounded-xl px-3 py-2 md:max-w-[40%]">
                 <MapPin className="size-4 shrink-0 text-muted-foreground" />
                 <input
                   value={heroLocation}
@@ -248,7 +248,7 @@ function Landing() {
               </Button>
             </form>
 
-            <div className="mt-4 flex flex-wrap justify-center gap-3 md:justify-start">
+            <div className="mt-4 flex flex-wrap justify-center gap-3 sm:justify-start">
               <Link to="/app/buscar">
                 <Button size="lg" className="rounded-xl transition-transform hover:-translate-y-0.5">
                   Encontrar atendimento
@@ -262,7 +262,7 @@ function Landing() {
               </a>
             </div>
 
-            <ul className="mx-auto mt-5 grid max-w-xl gap-2.5 text-left sm:grid-cols-3 md:mx-0 md:max-w-none">
+            <ul className="mx-auto mt-5 grid max-w-xl gap-2.5 text-left md:grid-cols-3 sm:mx-0 sm:max-w-none">
               <HeroBenefit
                 title="Parceiros verificados"
                 description="Nossa equipe analisa documentos, registros profissionais e informações cadastrais antes da aprovação de cada parceiro."
@@ -279,12 +279,12 @@ function Landing() {
           </div>
 
           {/* Coluna direita: mockup do app (lateral, menor, centrado verticalmente) */}
-          <div className="relative flex w-[220px] shrink-0 items-center justify-center self-center md:w-[240px] lg:w-[260px]">
+          <div className="relative flex h-[300px] w-[164px] shrink-0 items-center justify-end self-center sm:ml-auto sm:h-[318px] sm:w-[174px] md:h-[336px] md:w-[184px] lg:h-[354px] lg:w-[194px]" data-hero-phone>
             <div
               aria-hidden
               className="absolute inset-0 -z-10 bg-[radial-gradient(60%_60%_at_50%_50%,hsl(173_70%_88%/0.6)_0%,transparent_70%)]"
             />
-            <div className="w-full drop-shadow-[0_20px_40px_hsl(173_50%_25%/0.22)]">
+            <div className="absolute right-0 top-1/2 w-[280px] origin-right -translate-y-1/2 scale-[0.58] drop-shadow-[0_20px_40px_hsl(173_50%_25%/0.22)] sm:scale-[0.62] md:scale-[0.66] lg:scale-[0.69]">
               <HeroPhoneMockup />
             </div>
           </div>
