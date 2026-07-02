@@ -149,12 +149,25 @@
     background-color: var(--color-background);
     color: var(--color-foreground);
     font-family: var(--font-sans);
+    font-size: 16px;
+    line-height: 1.55;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
   }
 
-  h1, h2, h3, h4 { letter-spacing: -0.01em; }
+  h1, h2, h3, h4 { letter-spacing: -0.01em; font-weight: 700; color: var(--color-foreground); }
+
+  /* Accessibility: readable placeholders (Slate-500 #64748B on white) */
+  input::placeholder,
+  textarea::placeholder {
+    color: hsl(215 16% 47%);
+    opacity: 1;
+  }
+
+  /* Labels and helper text default a bit stronger */
+  label { font-weight: 500; }
 }
+
 
 @keyframes livvo-fade-in {
   from { opacity: 0; }
