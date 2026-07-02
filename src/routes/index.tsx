@@ -183,41 +183,49 @@ function Landing() {
       {/* ══════════════════ SEÇÃO 1 · HERO ══════════════════ */}
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 -z-10 bg-[radial-gradient(60%_50%_at_50%_0%,hsl(173_70%_92%)_0%,transparent_70%)]" />
-        <div className="mx-auto max-w-6xl px-5 pt-16 pb-14 text-center md:pt-24 md:pb-20">
-          <span className="inline-flex animate-in fade-in slide-in-from-top-2 items-center gap-2 rounded-full border border-border bg-card px-3 py-1 text-xs font-semibold text-muted-foreground shadow-sm duration-500">
-            <span className="size-2 rounded-full bg-health animate-pulse" />
-            Saúde presencial conectada
-          </span>
+        <div className="mx-auto grid max-w-6xl gap-12 px-5 pt-14 pb-14 md:pt-20 md:pb-20 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:gap-16">
+          {/* Coluna esquerda: texto */}
+          <div className="text-center lg:text-left">
+            <span className="inline-flex animate-in fade-in slide-in-from-top-2 items-center gap-2 rounded-full border border-border bg-card px-3 py-1 text-xs font-semibold text-muted-foreground shadow-sm duration-500">
+              <span className="size-2 rounded-full bg-health animate-pulse" />
+              Saúde presencial conectada
+            </span>
 
-          <h1 className="mx-auto mt-6 max-w-3xl animate-in fade-in slide-in-from-bottom-2 text-4xl font-bold leading-[1.08] tracking-tight duration-700 md:text-[3.25rem]">
-            Sua saúde conectada em{" "}
-            <span className="text-primary">um único lugar</span>.
-          </h1>
+            <h1 className="mx-auto mt-6 max-w-3xl animate-in fade-in slide-in-from-bottom-2 text-4xl font-bold leading-[1.08] tracking-tight duration-700 md:text-[3.25rem] lg:mx-0">
+              Sua saúde conectada em{" "}
+              <span className="text-primary">um único lugar</span>.
+            </h1>
 
-          <p className="mx-auto mt-5 max-w-2xl animate-in fade-in text-base leading-relaxed text-muted-foreground duration-700 md:text-lg">
-            A Livvo conecta pacientes, profissionais, clínicas, laboratórios e
-            centros de diagnóstico em uma plataforma segura para encontrar,
-            agendar e pagar consultas, exames e procedimentos presenciais.
-          </p>
+            <p className="mx-auto mt-5 max-w-2xl animate-in fade-in text-base leading-relaxed text-muted-foreground duration-700 md:text-lg lg:mx-0">
+              A Livvo conecta pacientes, profissionais, clínicas, laboratórios e
+              centros de diagnóstico em uma plataforma segura para encontrar,
+              agendar e pagar consultas, exames e procedimentos presenciais.
+            </p>
 
-          <div className="mt-8 flex flex-wrap justify-center gap-3">
-            <Link to="/app/buscar/profissionais">
-              <Button size="lg" className="rounded-xl transition-transform hover:-translate-y-0.5">
-                Encontrar um profissional
-                <ArrowRight className="ml-1 size-4" />
-              </Button>
-            </Link>
-            <Link to="/para-parceiros">
-              <Button size="lg" variant="outline" className="rounded-xl transition-transform hover:-translate-y-0.5">
-                Sou profissional ou empresa
-              </Button>
-            </Link>
+            <div className="mt-8 flex flex-wrap justify-center gap-3 lg:justify-start">
+              <Link to="/app/buscar/profissionais">
+                <Button size="lg" className="rounded-xl transition-transform hover:-translate-y-0.5">
+                  Encontrar um profissional
+                  <ArrowRight className="ml-1 size-4" />
+                </Button>
+              </Link>
+              <Link to="/para-parceiros">
+                <Button size="lg" variant="outline" className="rounded-xl transition-transform hover:-translate-y-0.5">
+                  Sou profissional ou empresa
+                </Button>
+              </Link>
+            </div>
+
+            <div className="mt-10 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 lg:justify-start">
+              <TrustPill Icon={BadgeCheck} label="Parceiros verificados" />
+              <TrustPill Icon={Lock} label="Pagamento seguro" />
+              <TrustPill Icon={Stethoscope} label="Atendimento presencial" />
+            </div>
           </div>
 
-          <div className="mt-10 flex flex-wrap items-center justify-center gap-x-8 gap-y-3">
-            <TrustPill Icon={BadgeCheck} label="Parceiros verificados" />
-            <TrustPill Icon={Lock} label="Pagamento seguro" />
-            <TrustPill Icon={Stethoscope} label="Atendimento presencial" />
+          {/* Coluna direita: mockup do app */}
+          <div className="relative flex justify-center lg:justify-end">
+            <HeroPhoneMockup />
           </div>
         </div>
       </section>
