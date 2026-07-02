@@ -207,16 +207,6 @@ function Landing() {
               Marketplace de saúde presencial
             </span>
 
-            <h1 className="mx-auto mt-5 max-w-2xl animate-in fade-in slide-in-from-bottom-2 text-3xl font-bold leading-[1.08] tracking-tight duration-700 sm:text-4xl md:mx-0 md:text-[2.6rem] lg:text-[3rem]">
-              Sua saúde conectada em{" "}
-              <span className="text-primary">um único lugar</span>.
-            </h1>
-
-            <p className="mx-auto mt-4 max-w-xl animate-in fade-in text-sm leading-relaxed text-muted-foreground duration-700 md:mx-0 md:text-base lg:text-[1.0625rem]">
-              A Livvo conecta pacientes, profissionais, clínicas, laboratórios e
-              centros de diagnóstico em uma plataforma segura para encontrar,
-              agendar e pagar atendimentos presenciais.
-            </p>
 
             <h1 className="mx-auto mt-5 max-w-2xl animate-in fade-in slide-in-from-bottom-2 text-3xl font-bold leading-[1.1] tracking-tight duration-700 sm:text-4xl md:mx-0 md:text-[2.5rem] lg:text-[2.75rem]">
               Encontre, agende e pague{" "}
