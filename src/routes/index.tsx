@@ -183,41 +183,49 @@ function Landing() {
       {/* ══════════════════ SEÇÃO 1 · HERO ══════════════════ */}
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 -z-10 bg-[radial-gradient(60%_50%_at_50%_0%,hsl(173_70%_92%)_0%,transparent_70%)]" />
-        <div className="mx-auto max-w-6xl px-5 pt-16 pb-14 text-center md:pt-24 md:pb-20">
-          <span className="inline-flex animate-in fade-in slide-in-from-top-2 items-center gap-2 rounded-full border border-border bg-card px-3 py-1 text-xs font-semibold text-muted-foreground shadow-sm duration-500">
-            <span className="size-2 rounded-full bg-health animate-pulse" />
-            Saúde presencial conectada
-          </span>
+        <div className="mx-auto grid max-w-6xl gap-12 px-5 pt-14 pb-14 md:pt-20 md:pb-20 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:gap-16">
+          {/* Coluna esquerda: texto */}
+          <div className="text-center lg:text-left">
+            <span className="inline-flex animate-in fade-in slide-in-from-top-2 items-center gap-2 rounded-full border border-border bg-card px-3 py-1 text-xs font-semibold text-muted-foreground shadow-sm duration-500">
+              <span className="size-2 rounded-full bg-health animate-pulse" />
+              Saúde presencial conectada
+            </span>
 
-          <h1 className="mx-auto mt-6 max-w-3xl animate-in fade-in slide-in-from-bottom-2 text-4xl font-bold leading-[1.08] tracking-tight duration-700 md:text-[3.25rem]">
-            Sua saúde conectada em{" "}
-            <span className="text-primary">um único lugar</span>.
-          </h1>
+            <h1 className="mx-auto mt-6 max-w-3xl animate-in fade-in slide-in-from-bottom-2 text-4xl font-bold leading-[1.08] tracking-tight duration-700 md:text-[3.25rem] lg:mx-0">
+              Sua saúde conectada em{" "}
+              <span className="text-primary">um único lugar</span>.
+            </h1>
 
-          <p className="mx-auto mt-5 max-w-2xl animate-in fade-in text-base leading-relaxed text-muted-foreground duration-700 md:text-lg">
-            A Livvo conecta pacientes, profissionais, clínicas, laboratórios e
-            centros de diagnóstico em uma plataforma segura para encontrar,
-            agendar e pagar consultas, exames e procedimentos presenciais.
-          </p>
+            <p className="mx-auto mt-5 max-w-2xl animate-in fade-in text-base leading-relaxed text-muted-foreground duration-700 md:text-lg lg:mx-0">
+              A Livvo conecta pacientes, profissionais, clínicas, laboratórios e
+              centros de diagnóstico em uma plataforma segura para encontrar,
+              agendar e pagar consultas, exames e procedimentos presenciais.
+            </p>
 
-          <div className="mt-8 flex flex-wrap justify-center gap-3">
-            <Link to="/app/buscar/profissionais">
-              <Button size="lg" className="rounded-xl transition-transform hover:-translate-y-0.5">
-                Encontrar um profissional
-                <ArrowRight className="ml-1 size-4" />
-              </Button>
-            </Link>
-            <Link to="/para-parceiros">
-              <Button size="lg" variant="outline" className="rounded-xl transition-transform hover:-translate-y-0.5">
-                Sou profissional ou empresa
-              </Button>
-            </Link>
+            <div className="mt-8 flex flex-wrap justify-center gap-3 lg:justify-start">
+              <Link to="/app/buscar/profissionais">
+                <Button size="lg" className="rounded-xl transition-transform hover:-translate-y-0.5">
+                  Encontrar um profissional
+                  <ArrowRight className="ml-1 size-4" />
+                </Button>
+              </Link>
+              <Link to="/para-parceiros">
+                <Button size="lg" variant="outline" className="rounded-xl transition-transform hover:-translate-y-0.5">
+                  Sou profissional ou empresa
+                </Button>
+              </Link>
+            </div>
+
+            <div className="mt-10 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 lg:justify-start">
+              <TrustPill Icon={BadgeCheck} label="Parceiros verificados" />
+              <TrustPill Icon={Lock} label="Pagamento seguro" />
+              <TrustPill Icon={Stethoscope} label="Atendimento presencial" />
+            </div>
           </div>
 
-          <div className="mt-10 flex flex-wrap items-center justify-center gap-x-8 gap-y-3">
-            <TrustPill Icon={BadgeCheck} label="Parceiros verificados" />
-            <TrustPill Icon={Lock} label="Pagamento seguro" />
-            <TrustPill Icon={Stethoscope} label="Atendimento presencial" />
+          {/* Coluna direita: mockup do app */}
+          <div className="relative flex justify-center lg:justify-end">
+            <HeroPhoneMockup />
           </div>
         </div>
       </section>
@@ -603,6 +611,129 @@ function ReviewsSection({
             </figcaption>
           </figure>
         ))}
+      </div>
+    </div>
+  );
+}
+
+/* ────────────────── Hero · mockup de celular ──────────────────
+   Demonstração ilustrativa da interface de busca. Nomes fictícios,
+   sem sugerir base de parceiros já cadastrada. */
+
+type SearchResult = {
+  name: string;
+  detail: string;
+  Icon: typeof Stethoscope;
+  tone: "primary" | "health";
+};
+
+const heroResults: SearchResult[] = [
+  { name: "Dra. Camila Rocha", detail: "Dermatologista", Icon: Stethoscope, tone: "primary" },
+  { name: "Dr. Rafael Nunes", detail: "Cardiologista", Icon: Stethoscope, tone: "primary" },
+  { name: "Clínica Vida Plena", detail: "Check up completo", Icon: Building2, tone: "health" },
+  { name: "Laboratório Diagnóstica", detail: "Exames de sangue", Icon: FlaskConical, tone: "health" },
+];
+
+function HeroPhoneMockup() {
+  return (
+    <div className="relative w-full max-w-[320px] animate-in fade-in slide-in-from-bottom-4 duration-700">
+      {/* halo */}
+      <div className="absolute -inset-6 -z-10 rounded-[3rem] bg-gradient-to-br from-primary/20 via-transparent to-health/20 blur-2xl" />
+
+      {/* phone frame */}
+      <div className="relative rounded-[2.4rem] border border-border/70 bg-neutral-900 p-2 shadow-[0_30px_60px_-20px_rgba(15,42,60,0.35)]">
+        <div className="relative overflow-hidden rounded-[2rem] bg-card">
+          {/* notch */}
+          <div className="absolute left-1/2 top-2 z-10 h-5 w-24 -translate-x-1/2 rounded-full bg-neutral-900" />
+
+          {/* app content */}
+          <div className="pt-9 pb-5">
+            {/* top bar */}
+            <div className="flex items-center justify-between px-5">
+              <div>
+                <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+                  Livvo
+                </p>
+                <p className="text-sm font-bold">Boa tarde 👋</p>
+              </div>
+              <div className="grid size-8 place-items-center rounded-full bg-primary-soft text-primary text-xs font-bold">
+                C
+              </div>
+            </div>
+
+            {/* search bar */}
+            <div className="mx-5 mt-4 flex items-center gap-2 rounded-2xl border border-border bg-muted/40 px-3 py-2.5">
+              <Search className="size-4 text-muted-foreground" />
+              <span className="text-[13px] text-muted-foreground">Buscar especialidade ou exame</span>
+            </div>
+
+            {/* filter chips */}
+            <div className="mt-3 flex gap-1.5 overflow-hidden px-5">
+              {["Perto de mim", "Hoje", "Convênio"].map((c) => (
+                <span
+                  key={c}
+                  className="whitespace-nowrap rounded-full border border-border bg-card px-2.5 py-1 text-[11px] font-medium text-foreground"
+                >
+                  {c}
+                </span>
+              ))}
+            </div>
+
+            {/* results list */}
+            <ul className="mt-4 space-y-2 px-3">
+              {heroResults.map((r) => (
+                <li
+                  key={r.name}
+                  className="flex items-center gap-3 rounded-2xl border border-border/70 bg-card px-3 py-2.5 shadow-[var(--shadow-card)]"
+                >
+                  <div
+                    className={`grid size-10 shrink-0 place-items-center rounded-xl ${
+                      r.tone === "primary"
+                        ? "bg-primary-soft text-primary"
+                        : "bg-health/10 text-health"
+                    }`}
+                  >
+                    <r.Icon className="size-5" />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-1">
+                      <p className="truncate text-[13px] font-semibold">{r.name}</p>
+                      <BadgeCheck className="size-3.5 shrink-0 text-primary" />
+                    </div>
+                    <p className="truncate text-[11px] text-muted-foreground">{r.detail}</p>
+                  </div>
+                  <ChevronRight className="size-4 shrink-0 text-muted-foreground/60" />
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      {/* floating verified badge */}
+      <div className="absolute -left-3 top-24 hidden rotate-[-6deg] items-center gap-2 rounded-2xl border border-border bg-card px-3 py-2 shadow-[var(--shadow-elevated)] md:flex">
+        <div className="grid size-8 place-items-center rounded-full bg-primary text-primary-foreground">
+          <BadgeCheck className="size-4" />
+        </div>
+        <div>
+          <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+            Parceiro
+          </p>
+          <p className="text-xs font-bold">Verificado</p>
+        </div>
+      </div>
+
+      {/* floating payment badge */}
+      <div className="absolute -right-4 bottom-16 hidden rotate-[4deg] items-center gap-2 rounded-2xl border border-border bg-card px-3 py-2 shadow-[var(--shadow-elevated)] md:flex">
+        <div className="grid size-8 place-items-center rounded-full bg-health text-white">
+          <Lock className="size-4" />
+        </div>
+        <div>
+          <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+            Pagamento
+          </p>
+          <p className="text-xs font-bold">Seguro</p>
+        </div>
       </div>
     </div>
   );
