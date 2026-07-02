@@ -202,7 +202,7 @@ function Landing() {
         <div className="mx-auto flex max-w-6xl flex-col items-center gap-8 px-5 pt-8 pb-10 sm:flex-row sm:flex-nowrap sm:items-center sm:justify-between sm:gap-8 sm:pt-10 sm:pb-12 md:gap-10 md:pt-12 lg:gap-14">
           {/* Coluna esquerda: texto */}
           <div className="min-w-0 flex-1 text-center sm:text-left">
-            <span className="inline-flex animate-in fade-in slide-in-from-top-2 items-center gap-2 rounded-full border border-border bg-card px-3 py-1 text-xs font-semibold text-muted-foreground shadow-sm duration-500">
+            <span className="inline-flex animate-in fade-in slide-in-from-top-2 items-center gap-2 rounded-full border border-border bg-card px-3 py-1 text-sm font-semibold text-foreground shadow-sm duration-500">
               <span className="size-2 rounded-full bg-health animate-pulse" />
               Marketplace de saúde presencial
             </span>
@@ -214,7 +214,7 @@ function Landing() {
               <span className="text-primary">procedimentos</span> em um só lugar.
             </h1>
 
-            <p className="mx-auto mt-3 max-w-xl animate-in fade-in text-sm leading-relaxed text-muted-foreground duration-700 sm:mx-0 md:text-[0.95rem]">
+            <p className="mx-auto mt-4 max-w-xl animate-in fade-in text-base font-medium leading-relaxed text-slate-700 duration-700 sm:mx-0 md:text-lg">
               A Livvo conecta pacientes, profissionais, clínicas, laboratórios e
               centros de diagnóstico em uma plataforma segura para encontrar,
               agendar e pagar atendimentos presenciais.
@@ -225,22 +225,22 @@ function Landing() {
               className="mx-auto mt-4 flex max-w-xl flex-col gap-2 rounded-2xl border border-border bg-card p-2 shadow-sm md:flex-row md:items-center sm:mx-0"
             >
               <div className="flex flex-1 items-center gap-2 rounded-xl px-3 py-2">
-                <Search className="size-4 shrink-0 text-muted-foreground" />
+                <Search className="size-4 shrink-0 text-slate-600" />
                 <input
                   value={heroQuery}
                   onChange={(e) => setHeroQuery(e.target.value)}
                   placeholder="Especialidade, exame, profissional ou clínica"
-                  className="w-full min-w-0 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
+                  className="w-full min-w-0 bg-transparent text-base font-medium text-foreground outline-none placeholder:font-medium placeholder:text-slate-600"
                 />
               </div>
               <div className="hidden h-8 w-px bg-border md:block" />
               <div className="flex flex-1 items-center gap-2 rounded-xl px-3 py-2 md:max-w-[40%]">
-                <MapPin className="size-4 shrink-0 text-muted-foreground" />
+                <MapPin className="size-4 shrink-0 text-slate-600" />
                 <input
                   value={heroLocation}
                   onChange={(e) => setHeroLocation(e.target.value)}
                   placeholder="Cidade ou bairro"
-                  className="w-full min-w-0 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
+                  className="w-full min-w-0 bg-transparent text-base font-medium text-foreground outline-none placeholder:font-medium placeholder:text-slate-600"
                 />
               </div>
               <Button type="submit" className="rounded-xl">
@@ -561,8 +561,8 @@ function HeroBenefit({ title, description }: { title: string; description: strin
         <Check className="size-3" strokeWidth={3} />
       </span>
       <div className="min-w-0">
-        <div className="text-sm font-semibold leading-tight">{title}</div>
-        <p className="mt-0.5 text-xs leading-snug text-muted-foreground">{description}</p>
+        <div className="text-base font-semibold leading-snug text-slate-900">{title}</div>
+        <p className="mt-1 text-base font-medium leading-[1.6] text-slate-700">{description}</p>
       </div>
     </li>
   );
