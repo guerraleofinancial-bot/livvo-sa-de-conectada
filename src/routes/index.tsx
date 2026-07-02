@@ -507,6 +507,20 @@ function Landing() {
   );
 }
 
+
+function HeroBenefit({ Icon, title, description }: { Icon: React.ComponentType<{ className?: string }>; title: string; description: string }) {
+  return (
+    <div className="flex flex-col items-center gap-1.5 rounded-xl border border-border/60 bg-card/60 p-3 text-center lg:items-start lg:text-left">
+      <div className="grid size-8 place-items-center rounded-lg bg-primary/10 text-primary">
+        <Icon className="size-4" />
+      </div>
+      <div className="text-sm font-semibold">{title}</div>
+      <p className="text-xs leading-snug text-muted-foreground">{description}</p>
+    </div>
+  );
+}
+
+
 function LandingHeader() {
   return (
     <header className="sticky top-0 z-50 border-b border-border/60 bg-surface/80 backdrop-blur-xl">
