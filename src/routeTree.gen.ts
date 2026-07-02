@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as VerificacaoRouteImport } from './routes/verificacao'
 import { Route as PlanosEPrecosRouteImport } from './routes/planos-e-precos'
 import { Route as ParaParceirosRouteImport } from './routes/para-parceiros'
+import { Route as ParaPacientesRouteImport } from './routes/para-pacientes'
 import { Route as ParaEmpresasRouteImport } from './routes/para-empresas'
 import { Route as ComoFuncionaRouteImport } from './routes/como-funciona'
 import { Route as AuthRouteImport } from './routes/auth'
@@ -74,6 +75,11 @@ const PlanosEPrecosRoute = PlanosEPrecosRouteImport.update({
 const ParaParceirosRoute = ParaParceirosRouteImport.update({
   id: '/para-parceiros',
   path: '/para-parceiros',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ParaPacientesRoute = ParaPacientesRouteImport.update({
+  id: '/para-pacientes',
+  path: '/para-pacientes',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ParaEmpresasRoute = ParaEmpresasRouteImport.update({
@@ -348,6 +354,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/como-funciona': typeof ComoFuncionaRoute
   '/para-empresas': typeof ParaEmpresasRoute
+  '/para-pacientes': typeof ParaPacientesRoute
   '/para-parceiros': typeof ParaParceirosRoute
   '/planos-e-precos': typeof PlanosEPrecosRoute
   '/verificacao': typeof VerificacaoRoute
@@ -400,6 +407,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/como-funciona': typeof ComoFuncionaRoute
   '/para-empresas': typeof ParaEmpresasRoute
+  '/para-pacientes': typeof ParaPacientesRoute
   '/para-parceiros': typeof ParaParceirosRoute
   '/planos-e-precos': typeof PlanosEPrecosRoute
   '/verificacao': typeof VerificacaoRoute
@@ -451,6 +459,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/como-funciona': typeof ComoFuncionaRoute
   '/para-empresas': typeof ParaEmpresasRoute
+  '/para-pacientes': typeof ParaPacientesRoute
   '/para-parceiros': typeof ParaParceirosRoute
   '/planos-e-precos': typeof PlanosEPrecosRoute
   '/verificacao': typeof VerificacaoRoute
@@ -505,6 +514,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/como-funciona'
     | '/para-empresas'
+    | '/para-pacientes'
     | '/para-parceiros'
     | '/planos-e-precos'
     | '/verificacao'
@@ -557,6 +567,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/como-funciona'
     | '/para-empresas'
+    | '/para-pacientes'
     | '/para-parceiros'
     | '/planos-e-precos'
     | '/verificacao'
@@ -607,6 +618,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/como-funciona'
     | '/para-empresas'
+    | '/para-pacientes'
     | '/para-parceiros'
     | '/planos-e-precos'
     | '/verificacao'
@@ -661,6 +673,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   ComoFuncionaRoute: typeof ComoFuncionaRoute
   ParaEmpresasRoute: typeof ParaEmpresasRoute
+  ParaPacientesRoute: typeof ParaPacientesRoute
   ParaParceirosRoute: typeof ParaParceirosRoute
   PlanosEPrecosRoute: typeof PlanosEPrecosRoute
   VerificacaoRoute: typeof VerificacaoRoute
@@ -692,6 +705,13 @@ declare module '@tanstack/react-router' {
       path: '/para-parceiros'
       fullPath: '/para-parceiros'
       preLoaderRoute: typeof ParaParceirosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/para-pacientes': {
+      id: '/para-pacientes'
+      path: '/para-pacientes'
+      fullPath: '/para-pacientes'
+      preLoaderRoute: typeof ParaPacientesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/para-empresas': {
@@ -1197,6 +1217,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   ComoFuncionaRoute: ComoFuncionaRoute,
   ParaEmpresasRoute: ParaEmpresasRoute,
+  ParaPacientesRoute: ParaPacientesRoute,
   ParaParceirosRoute: ParaParceirosRoute,
   PlanosEPrecosRoute: PlanosEPrecosRoute,
   VerificacaoRoute: VerificacaoRoute,

@@ -4,10 +4,10 @@ import { Button } from "@/components/ui/button";
 import type { ReactNode } from "react";
 
 const navLinks = [
-  { to: "/como-funciona", label: "Como funciona" },
-  { to: "/para-parceiros", label: "Para parceiros" },
+  { to: "/para-pacientes", label: "Para pacientes" },
+  { to: "/para-parceiros", label: "Para profissionais" },
   { to: "/para-empresas", label: "Para empresas" },
-  { to: "/planos-e-precos", label: "Planos e preços" },
+  { to: "/planos-e-precos", label: "Planos" },
   { to: "/ajuda", label: "Ajuda" },
 ] as const;
 
@@ -21,7 +21,7 @@ export function MarketingNav() {
           </div>
           <span className="truncate text-lg font-bold tracking-tight">Livvo</span>
         </Link>
-        <nav className="hidden items-center gap-7 text-sm font-medium text-muted-foreground md:flex">
+        <nav className="hidden items-center gap-6 text-sm font-medium text-muted-foreground md:flex">
           {navLinks.map((l) => (
             <Link
               key={l.to}
@@ -37,8 +37,8 @@ export function MarketingNav() {
           <Link to="/auth" className="hidden sm:inline-flex">
             <Button variant="ghost" size="sm">Entrar</Button>
           </Link>
-          <Link to="/auth" search={{ mode: "signup", role: "paciente" }}>
-            <Button size="sm" className="rounded-lg">Criar conta</Button>
+          <Link to="/#como-usar">
+            <Button size="sm" className="rounded-lg">Começar</Button>
           </Link>
         </div>
       </div>
@@ -64,15 +64,17 @@ export function MarketingFooter() {
         <div>
           <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Pacientes</p>
           <ul className="space-y-2 text-sm">
+            <li><Link to="/para-pacientes" className="hover:text-primary">Área do paciente</Link></li>
             <li><Link to="/auth" search={{ mode: "signup", role: "paciente" }} className="hover:text-primary">Criar conta</Link></li>
-            <li><Link to="/como-funciona" className="hover:text-primary">Como funciona</Link></li>
+            <li><Link to="/auth" search={{ mode: "login", role: "paciente" }} className="hover:text-primary">Entrar</Link></li>
           </ul>
         </div>
         <div>
-          <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Parceiros</p>
+          <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Profissionais e empresas</p>
           <ul className="space-y-2 text-sm">
-            <li><Link to="/para-parceiros" className="hover:text-primary">Para parceiros</Link></li>
-            <li><Link to="/para-empresas" className="hover:text-primary">Para empresas</Link></li>
+            <li><Link to="/para-parceiros" className="hover:text-primary">Área do profissional</Link></li>
+            <li><Link to="/para-empresas" className="hover:text-primary">Área da empresa/clínica</Link></li>
+            <li><Link to="/auth" search={{ mode: "signup", role: "profissional" }} className="hover:text-primary">Cadastrar-se</Link></li>
             <li><Link to="/planos-e-precos" className="hover:text-primary">Planos e preços</Link></li>
           </ul>
         </div>
