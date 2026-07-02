@@ -225,22 +225,22 @@ function Landing() {
               className="mx-auto mt-4 flex max-w-xl flex-col gap-2 rounded-2xl border border-border bg-card p-2 shadow-sm md:flex-row md:items-center sm:mx-0"
             >
               <div className="flex flex-1 items-center gap-2 rounded-xl px-3 py-2">
-                <Search className="size-4 shrink-0 text-muted-foreground" />
+                <Search className="size-4 shrink-0 text-slate-600" />
                 <input
                   value={heroQuery}
                   onChange={(e) => setHeroQuery(e.target.value)}
                   placeholder="Especialidade, exame, profissional ou clínica"
-                  className="w-full min-w-0 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
+                  className="w-full min-w-0 bg-transparent text-base font-medium text-foreground outline-none placeholder:font-medium placeholder:text-slate-600"
                 />
               </div>
               <div className="hidden h-8 w-px bg-border md:block" />
               <div className="flex flex-1 items-center gap-2 rounded-xl px-3 py-2 md:max-w-[40%]">
-                <MapPin className="size-4 shrink-0 text-muted-foreground" />
+                <MapPin className="size-4 shrink-0 text-slate-600" />
                 <input
                   value={heroLocation}
                   onChange={(e) => setHeroLocation(e.target.value)}
                   placeholder="Cidade ou bairro"
-                  className="w-full min-w-0 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
+                  className="w-full min-w-0 bg-transparent text-base font-medium text-foreground outline-none placeholder:font-medium placeholder:text-slate-600"
                 />
               </div>
               <Button type="submit" className="rounded-xl">
