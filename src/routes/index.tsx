@@ -186,26 +186,26 @@ function Landing() {
       {/* ══════════════════ SEÇÃO 1 · HERO ══════════════════ */}
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 -z-10 bg-[radial-gradient(60%_50%_at_50%_0%,hsl(173_70%_92%)_0%,transparent_70%)]" />
-        <div className="mx-auto grid max-w-6xl gap-12 px-5 pt-14 pb-14 md:pt-20 md:pb-20 lg:grid-cols-[55fr_45fr] lg:items-center lg:gap-12">
+        <div className="mx-auto grid max-w-6xl items-center gap-8 px-5 pt-10 pb-10 md:grid-cols-[58fr_42fr] md:gap-10 md:pt-14 md:pb-14 lg:gap-14">
           {/* Coluna esquerda: texto */}
-          <div className="text-center lg:text-left">
+          <div className="text-center md:text-left">
             <span className="inline-flex animate-in fade-in slide-in-from-top-2 items-center gap-2 rounded-full border border-border bg-card px-3 py-1 text-xs font-semibold text-muted-foreground shadow-sm duration-500">
               <span className="size-2 rounded-full bg-health animate-pulse" />
-              Saúde presencial conectada
+              Marketplace de saúde presencial
             </span>
 
-            <h1 className="mx-auto mt-6 max-w-3xl animate-in fade-in slide-in-from-bottom-2 text-4xl font-bold leading-[1.08] tracking-tight duration-700 md:text-[3.25rem] lg:mx-0">
+            <h1 className="mx-auto mt-5 max-w-2xl animate-in fade-in slide-in-from-bottom-2 text-3xl font-bold leading-[1.08] tracking-tight duration-700 sm:text-4xl md:mx-0 md:text-[2.6rem] lg:text-[3rem]">
               Sua saúde conectada em{" "}
               <span className="text-primary">um único lugar</span>.
             </h1>
 
-            <p className="mx-auto mt-5 max-w-2xl animate-in fade-in text-base leading-relaxed text-muted-foreground duration-700 md:text-lg lg:mx-0">
+            <p className="mx-auto mt-4 max-w-xl animate-in fade-in text-sm leading-relaxed text-muted-foreground duration-700 md:mx-0 md:text-base lg:text-[1.0625rem]">
               A Livvo conecta pacientes, profissionais, clínicas, laboratórios e
               centros de diagnóstico em uma plataforma segura para encontrar,
               agendar e pagar atendimentos presenciais.
             </p>
 
-            <div className="mt-8 flex flex-wrap justify-center gap-3 lg:justify-start">
+            <div className="mt-6 flex flex-wrap justify-center gap-3 md:justify-start">
               <Link to="/app/buscar">
                 <Button size="lg" className="rounded-xl transition-transform hover:-translate-y-0.5">
                   Encontrar atendimento
@@ -219,34 +219,36 @@ function Landing() {
               </a>
             </div>
 
-            <div className="mt-8 grid gap-3 sm:grid-cols-3 lg:gap-4">
+            <ul className="mx-auto mt-6 grid max-w-xl gap-2.5 text-left sm:grid-cols-3 md:mx-0 md:max-w-none">
               <HeroBenefit
-                Icon={BadgeCheck}
                 title="Parceiros verificados"
-                description="Analisamos documentação, registro profissional e cadastro antes de aprovar."
+                description="Analisamos documentos e registros profissionais antes da aprovação."
               />
               <HeroBenefit
-                Icon={Stethoscope}
                 title="Atendimento presencial"
-                description="Consultas, exames e procedimentos realizados pessoalmente."
+                description="Consultas, exames e procedimentos realizados presencialmente."
               />
               <HeroBenefit
-                Icon={Lock}
                 title="Pagamento seguro"
-                description="Agende e pague dentro da plataforma, com mais organização."
+                description="Mais organização e segurança para pacientes e parceiros."
               />
-            </div>
+            </ul>
           </div>
 
           {/* Coluna direita: mockup do app */}
-          <div className="relative flex justify-center lg:justify-end">
-            <div className="w-[240px] max-w-[240px] shrink-0 sm:w-[260px] sm:max-w-[260px] lg:w-[280px] lg:max-w-[280px]">
+          <div className="relative flex items-center justify-center md:justify-end">
+            <div
+              aria-hidden
+              className="absolute inset-0 -z-10 bg-[radial-gradient(60%_60%_at_60%_50%,hsl(173_70%_92%/0.55)_0%,transparent_70%)]"
+            />
+            <div className="w-[220px] max-w-[220px] shrink-0 drop-shadow-[0_18px_40px_hsl(173_50%_25%/0.18)] sm:w-[240px] sm:max-w-[240px] md:w-[200px] md:max-w-[200px] lg:w-[220px] lg:max-w-[220px]">
               <HeroPhoneMockup />
             </div>
           </div>
         </div>
-
       </section>
+
+
 
       {/* ══════════════════ SEÇÃO 2 · ESCOLHA SUA EXPERIÊNCIA ══════════════════ */}
       <section id="escolha-experiencia" className="scroll-mt-20 border-t border-border/60 bg-gradient-to-b from-card/40 to-transparent py-20 md:py-24">
