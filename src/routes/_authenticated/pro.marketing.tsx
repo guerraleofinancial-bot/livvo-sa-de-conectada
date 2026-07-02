@@ -33,15 +33,19 @@ function MarketingHub() {
   const { user } = useAuth();
   const qc = useQueryClient();
 
-  const { data: pro, isLoading: loadingPro } = useQuery({
+  const { data: pro, isLoading: loadingPro, error: proError } = useQuery({
     queryKey: ["me-pro-marketing", user?.id],
     enabled: !!user,
-    queryFn: async () =>
-      (await supabase
+    queryFn: async () => {
+      const { data, error } = await supabase
         .from("professionals")
         .select("*, profiles:profiles!professionals_profile_fkey(full_name, avatar_url), specialties(name), companies(trade_name, legal_name, logo_url)")
         .eq("id", user!.id)
-        .maybeSingle()).data,
+        .maybeSingle();
+      if (error) throw error;
+      return data;
+    },
+    retry: 1,
   });
 
   const { data: agg } = useQuery({
