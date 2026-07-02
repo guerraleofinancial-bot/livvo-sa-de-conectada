@@ -10,7 +10,7 @@ export const Route = createFileRoute("/ajuda/$slug")({
   },
   head: ({ loaderData }) => ({
     meta: [
-      { title: `${loaderData?.article.title ?? "Ajuda"} — Central de Ajuda Livvo` },
+      { title: `${loaderData?.article.title ?? "Ajuda"} | Central de Ajuda Livvo` },
       { name: "description", content: loaderData?.article.description ?? "Central de Ajuda Livvo" },
     ],
   }),

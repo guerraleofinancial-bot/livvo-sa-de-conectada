@@ -93,7 +93,7 @@ export function MarketingFooter() {
         </div>
       </div>
       <p className="mx-auto mt-8 max-w-6xl px-5 text-xs text-muted-foreground">
-        © {new Date().getFullYear()} Livvo Saúde Conectada — Marketplace de saúde presencial.
+        © {new Date().getFullYear()} Livvo Saúde Conectada. Marketplace de saúde presencial.
       </p>
     </footer>
   );

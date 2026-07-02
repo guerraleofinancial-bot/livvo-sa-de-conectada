@@ -5,7 +5,7 @@ import { ShieldCheck, CheckCircle2, AlertTriangle, RefreshCw, FileText, Building
 export const Route = createFileRoute("/verificacao")({
   head: () => ({
     meta: [
-      { title: "Verificação de parceiros — Livvo" },
+      { title: "Verificação de parceiros | Livvo" },
       {
         name: "description",
         content:
