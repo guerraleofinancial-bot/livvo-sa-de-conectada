@@ -83,7 +83,8 @@
   --secondary-foreground: hsl(222 47% 11%);
 
   --muted: hsl(215 25% 96%);
-  --muted-foreground: hsl(215 15% 45%);
+  /* Slate-600 (#475569) — WCAG AA on white for body/secondary text */
+  --muted-foreground: hsl(215 19% 35%);
 
   --accent: hsl(168 62% 92%);
   --accent-foreground: hsl(173 83% 24%);
