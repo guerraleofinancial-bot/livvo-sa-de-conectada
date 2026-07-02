@@ -220,31 +220,31 @@
 
 /* Premium primitives — chips, headings, skeletons */
 @utility livvo-chip {
-  @apply inline-flex items-center gap-1 rounded-full border border-border bg-card px-2.5 py-1 text-[11px] font-semibold text-muted-foreground;
+  @apply inline-flex items-center gap-1 rounded-full border border-border bg-card px-2.5 py-1 text-xs font-semibold text-foreground/80;
 }
 @utility livvo-chip-primary {
-  @apply inline-flex items-center gap-1 rounded-full border border-transparent bg-primary-soft px-2.5 py-1 text-[11px] font-semibold text-primary;
+  @apply inline-flex items-center gap-1 rounded-full border border-transparent bg-primary-soft px-2.5 py-1 text-xs font-semibold text-primary;
 }
 @utility livvo-chip-health {
-  @apply inline-flex items-center gap-1 rounded-full border border-transparent bg-health-soft px-2.5 py-1 text-[11px] font-semibold text-health;
+  @apply inline-flex items-center gap-1 rounded-full border border-transparent bg-health-soft px-2.5 py-1 text-xs font-semibold text-health;
 }
 @utility livvo-chip-sponsored {
-  @apply inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide;
+  @apply inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-bold uppercase tracking-wide;
   background: linear-gradient(135deg, hsl(45 95% 92%), hsl(38 95% 88%));
-  color: hsl(28 60% 30%);
-  border: 1px solid hsl(38 90% 80%);
+  color: hsl(28 65% 24%);
+  border: 1px solid hsl(38 90% 75%);
 }
 @utility livvo-eyebrow {
-  @apply text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground;
+  @apply text-xs font-semibold uppercase tracking-[0.14em] text-foreground/70;
 }
 @utility livvo-h1 {
-  @apply text-2xl font-semibold tracking-[-0.02em] text-foreground sm:text-[28px];
+  @apply text-2xl font-bold tracking-[-0.02em] text-foreground sm:text-[28px];
 }
 @utility livvo-h2 {
   @apply text-lg font-semibold tracking-[-0.01em] text-foreground sm:text-xl;
 }
 @utility livvo-subtle {
-  @apply text-sm text-muted-foreground;
+  @apply text-[15px] text-muted-foreground;
 }
 @utility livvo-skeleton {
   @apply rounded-xl bg-muted/70;
