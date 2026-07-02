@@ -51,7 +51,7 @@ const modules = [
   {
     Icon: FileCheck2,
     title: "Aprovação documental",
-    desc: "Análise manual de identidade, conselho e especialização — só entra quem é verificado.",
+    desc: "Análise manual de identidade, conselho e especialização. Só entra quem é verificado.",
   },
   {
     Icon: UserCircle2,
