@@ -25,7 +25,8 @@ import {
   HeartHandshake,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { MarketingShell } from "@/components/livvo/marketing-shell";
+import { MarketingFooter } from "@/components/livvo/marketing-shell";
+import { HeartPulse } from "lucide-react";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -179,7 +180,9 @@ const faqs = [
 
 function Landing() {
   return (
-    <MarketingShell>
+    <div className="min-h-screen bg-surface text-foreground">
+      <LandingHeader />
+      <main>
       {/* ══════════════════ SEÇÃO 1 · HERO ══════════════════ */}
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 -z-10 bg-[radial-gradient(60%_50%_at_50%_0%,hsl(173_70%_92%)_0%,transparent_70%)]" />
@@ -480,7 +483,32 @@ function Landing() {
           </div>
         </div>
       </section>
-    </MarketingShell>
+      </main>
+      <MarketingFooter />
+    </div>
+  );
+}
+
+function LandingHeader() {
+  return (
+    <header className="sticky top-0 z-50 border-b border-border/60 bg-surface/80 backdrop-blur-xl">
+      <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-5 py-3.5">
+        <Link to="/" className="flex min-w-0 items-center gap-2">
+          <div className="grid size-9 shrink-0 place-items-center rounded-xl bg-primary text-primary-foreground shadow-sm">
+            <HeartPulse className="size-5" />
+          </div>
+          <span className="truncate text-lg font-bold tracking-tight">Livvo</span>
+        </Link>
+        <div className="flex shrink-0 items-center gap-2">
+          <Link to="/auth" search={{ mode: "login", role: "paciente" }}>
+            <Button variant="ghost" size="sm">Entrar</Button>
+          </Link>
+          <Link to="/auth" search={{ mode: "signup", role: "paciente" }}>
+            <Button size="sm" className="rounded-lg">Começar conta</Button>
+          </Link>
+        </div>
+      </div>
+    </header>
   );
 }
 
