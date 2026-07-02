@@ -180,7 +180,9 @@ const faqs = [
 
 function Landing() {
   return (
-    <MarketingShell>
+    <div className="min-h-screen bg-surface text-foreground">
+      <LandingHeader />
+      <main>
       {/* ══════════════════ SEÇÃO 1 · HERO ══════════════════ */}
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 -z-10 bg-[radial-gradient(60%_50%_at_50%_0%,hsl(173_70%_92%)_0%,transparent_70%)]" />
