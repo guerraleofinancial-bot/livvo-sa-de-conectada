@@ -202,7 +202,7 @@ function Landing() {
         <div className="mx-auto flex max-w-6xl flex-col items-center gap-8 px-5 pt-8 pb-10 sm:flex-row sm:flex-nowrap sm:items-center sm:justify-between sm:gap-8 sm:pt-10 sm:pb-12 md:gap-10 md:pt-12 lg:gap-14">
           {/* Coluna esquerda: texto */}
           <div className="min-w-0 flex-1 text-center sm:text-left">
-            <span className="inline-flex animate-in fade-in slide-in-from-top-2 items-center gap-2 rounded-full border border-border bg-card px-3 py-1 text-xs font-semibold text-muted-foreground shadow-sm duration-500">
+            <span className="inline-flex animate-in fade-in slide-in-from-top-2 items-center gap-2 rounded-full border border-border bg-card px-3 py-1 text-sm font-semibold text-foreground shadow-sm duration-500">
               <span className="size-2 rounded-full bg-health animate-pulse" />
               Marketplace de saúde presencial
             </span>
