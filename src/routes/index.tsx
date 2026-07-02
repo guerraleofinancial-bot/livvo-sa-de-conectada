@@ -25,7 +25,8 @@ import {
   HeartHandshake,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { MarketingShell } from "@/components/livvo/marketing-shell";
+import { MarketingFooter } from "@/components/livvo/marketing-shell";
+import { HeartPulse } from "lucide-react";
 
 export const Route = createFileRoute("/")({
   head: () => ({
