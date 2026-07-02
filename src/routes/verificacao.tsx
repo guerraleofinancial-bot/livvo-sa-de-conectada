@@ -11,7 +11,7 @@ export const Route = createFileRoute("/verificacao")({
         content:
           "Entenda como a equipe Livvo valida a documentação e o registro profissional de cada parceiro antes de exibir o selo Parceiro Verificado.",
       },
-      { property: "og:title", content: "Verificação de parceiros — Livvo" },
+      { property: "og:title", content: "Verificação de parceiros | Livvo" },
       {
         property: "og:description",
         content:

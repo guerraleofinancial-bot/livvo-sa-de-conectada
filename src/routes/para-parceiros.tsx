@@ -25,7 +25,7 @@ import { MarketingShell } from "@/components/livvo/marketing-shell";
 export const Route = createFileRoute("/para-parceiros")({
   head: () => ({
     meta: [
-      { title: "Para profissionais e empresas — Livvo" },
+      { title: "Para profissionais e empresas | Livvo" },
       {
         name: "description",
         content:

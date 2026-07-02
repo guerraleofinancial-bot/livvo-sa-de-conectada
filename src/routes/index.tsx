@@ -20,13 +20,13 @@ import { MarketingShell } from "@/components/livvo/marketing-shell";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Livvo — O ecossistema da saúde presencial" },
+      { title: "Livvo | O ecossistema da saúde presencial" },
       {
         name: "description",
         content:
           "A Livvo conecta pacientes, profissionais e empresas de saúde em um único ecossistema: busca, agendamento, pagamento, gestão e crescimento.",
       },
-      { property: "og:title", content: "Livvo — O ecossistema da saúde presencial" },
+      { property: "og:title", content: "Livvo | O ecossistema da saúde presencial" },
       {
         property: "og:description",
         content: "Uma plataforma que conecta pacientes, profissionais e clínicas.",

@@ -6,9 +6,9 @@ import { MarketingShell } from "@/components/livvo/marketing-shell";
 export const Route = createFileRoute("/planos-e-precos")({
   head: () => ({
     meta: [
-      { title: "Planos e preços — Livvo" },
+      { title: "Planos e preços | Livvo" },
       { name: "description", content: "Plano gratuito com 90 dias sem comissão, Perfil Premium e destaques patrocinados. Veja todos os planos da Livvo." },
-      { property: "og:title", content: "Planos e preços — Livvo" },
+      { property: "og:title", content: "Planos e preços | Livvo" },
       { property: "og:description", content: "Comece grátis com 90 dias sem comissão. Cresça com Perfil Premium e destaques patrocinados." },
     ],
   }),
@@ -65,9 +65,9 @@ const plans: Plan[] = [
     priceNote: "por destaque ativo",
     description: "Apareça primeiro nas buscas e categorias mais procuradas.",
     features: [
-      "Destaque Regional — sua cidade ou estado",
-      "Destaque por Categoria — sua especialidade",
-      "Patrocinado Premium — topo absoluto da busca",
+      "Destaque Regional: sua cidade ou estado",
+      "Destaque por Categoria: sua especialidade",
+      "Patrocinado Premium: topo absoluto da busca",
       "Métricas de cliques e agendamentos atribuídos",
       "Pause e reative quando quiser",
     ],
