@@ -23,6 +23,7 @@ import {
   ScanSearch,
   Lock,
   HeartHandshake,
+  Check,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { MarketingFooter } from "@/components/livvo/marketing-shell";
