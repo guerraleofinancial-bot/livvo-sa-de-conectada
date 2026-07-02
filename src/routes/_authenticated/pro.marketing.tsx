@@ -676,3 +676,18 @@ function ComingSoonCard({ icon: Icon, title, description }: { icon: React.Compon
     </div>
   );
 }
+
+function QuickStartLink({ to, icon: Icon, label, hint }: { to: string; icon: React.ComponentType<{ className?: string }>; label: string; hint: string }) {
+  return (
+    <Link to={to} className="livvo-card livvo-card-hover p-3 flex items-center gap-3 group">
+      <div className="size-9 rounded-lg bg-primary-soft text-primary grid place-items-center shrink-0">
+        <Icon className="size-4" />
+      </div>
+      <div className="min-w-0 flex-1">
+        <p className="text-sm font-semibold">{label}</p>
+        <p className="text-[11px] text-muted-foreground leading-snug">{hint}</p>
+      </div>
+      <ChevronRight className="size-4 text-muted-foreground group-hover:text-primary group-hover:translate-x-0.5 transition-all shrink-0" />
+    </Link>
+  );
+}
